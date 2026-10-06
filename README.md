@@ -1,0 +1,2 @@
+# IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+Integrated Project Assignment for Sensors and Controls for Mechatronic Systems 
