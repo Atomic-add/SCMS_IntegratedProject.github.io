@@ -1,7 +1,8 @@
 <mujoco model="turtlebot3_waffle_pi">
   <compiler angle="radian" meshdir="assets/"/>
 
-  <option cone="elliptic" impratio="10"/>
+  <!-- Fix 3: stiffer wheel servos need the implicitfast integrator -->
+  <option cone="elliptic" impratio="10" integrator="implicitfast"/>
 
   <asset>
     <material name="grey" rgba="0.3 0.3 0.3 1"/>
@@ -17,7 +18,8 @@
     <!-- Wheel motor -->
     <default class="wheel">
       <joint limited="false" frictionloss="0.1" armature="0.01"/>
-      <velocity kv="0.1" ctrlrange="-7.88 7.88" ctrllimited="true"/>
+      <!-- Fix 3: kv 0.1 -> 5. With kv 0.1 the 0.1 N m frictionloss leaves the wheels >= 1 rad/s below the command -->
+      <velocity kv="5" ctrlrange="-7.88 7.88" ctrllimited="true" forcelimited="true" forcerange="-2.7 2.7"/>
       <default class="wheel_left">
         <joint axis="0 0 1"/>
       </default>
@@ -39,9 +41,12 @@
       <inertial pos="-0.064 0 0.06" mass="1.8" diaginertia="0.01 0.01 0.008"/>
       <joint type="free" name="base_joint"/>
       <geom pos="-0.064 0 0.01" mesh="waffle_pi_base" material="black" class="visual"/>
-      <geom pos="-0.064 0 0.01" mesh="waffle_pi_base" class="collision"/>
-      <geom size="0.005" pos="-0.177 -0.064 0.005" type="sphere" material="grey" friction="0.0001 0.0001 0.0001" solref="0.02 1" solimp="0.95 0.99 0.001" condim="1"/>
-      <geom size="0.005" pos="-0.177 0.064 0.005" type="sphere" material="grey" friction="0.0001 0.0001 0.0001" solref="0.02 1" solimp="0.95 0.99 0.001" condim="1"/>
+      <!-- Fix 1: the mesh hull reached the floor (z = -0.1 mm) and dragged with mu = 1.
+           Replaced by the base_link collision box from turtlebot3_waffle_pi.urdf (bottom 1 cm above the floor). -->
+      <geom name="chassis_collision" type="box" size="0.133 0.133 0.047" pos="-0.064 0 0.057" group="3"/>
+      <!-- Fix 2: priority="1" so the casters keep their own friction 0.0001 / condim 1 (otherwise MuJoCo takes the max with the floor, mu = 1) -->
+      <geom size="0.005" pos="-0.177 -0.064 0.005" type="sphere" material="grey" friction="0.0001 0.0001 0.0001" solref="0.02 1" solimp="0.95 0.99 0.001" condim="1" priority="1"/>
+      <geom size="0.005" pos="-0.177 0.064 0.005" type="sphere" material="grey" friction="0.0001 0.0001 0.0001" solref="0.02 1" solimp="0.95 0.99 0.001" condim="1" priority="1"/>
       <geom pos="-0.049 0 0.1255" mesh="lds" material="black" class="visual"/>
       <geom pos="-0.049 0 0.1255" mesh="lds" class="collision"/>
       <geom size="0.0075 0.015 0.0135" pos="0.078 0 0.107" type="box" material="grey"/>
