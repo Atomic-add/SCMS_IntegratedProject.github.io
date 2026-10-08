@@ -1,0 +1,198 @@
+MUJOCO SETUP ON WINDOWS
+Python: 3.10.x | Environment: .venv_mujoco | MuJoCo: 3.15.0
+Robot: TurtleBot3 Waffle Pi (models/robotis_tb3, from ROBOTIS robotis_mujoco_menagerie)
+
+Run the commands below in Windows PowerShell, one at a time.
+Do not copy a Linux virtual environment; create your own on Windows.
+
+1. CHECK PYTHON 3.10
+
+Open PowerShell and run:
+
+    py -3.10 --version
+
+Expected: Python 3.10.x. The final patch number can differ from the Linux
+machine's Python 3.10.12.
+
+If Python 3.10 is missing, install the Windows installer (64-bit) from:
+https://www.python.org/downloads/release/python-31011/
+
+During installation, enable the Python launcher and "Add Python to PATH".
+Close and reopen PowerShell, then run the version check again.
+If "py" is not recognized, check that the Python launcher is installed.
+
+2. OPEN THE PROJECT ROOT
+
+Clone or download the team repository if you do not already have it.
+Open the folder in VS Code and select Terminal > New Terminal (PowerShell).
+Start in this folder:
+
+    IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+
+Alternatively, change directory in PowerShell. Replace the example path
+with the actual location on YOUR computer:
+
+    cd "C:\Users\YOUR_NAME\Projects\IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026"
+
+Check that the shared test file is present:
+
+    Test-Path .\mujoco_installation_guide\test_mujoco.py
+
+Expected: True. If False, check the folder and obtain the test file from
+the team repository before continuing.
+
+3. CREATE THE VIRTUAL ENVIRONMENT
+
+    py -3.10 -m venv .venv_mujoco
+
+This creates .venv_mujoco inside the project root.
+If this environment already exists, check its Python version first:
+
+    .\.venv_mujoco\Scripts\python.exe --version
+
+Reuse it if it reports Python 3.10.x. If it uses another version, keep it
+until you have decided how to replace it; do not overwrite it blindly.
+
+4. ACTIVATE THE ENVIRONMENT
+
+    .\.venv_mujoco\Scripts\Activate.ps1
+
+The terminal prompt should now start with (.venv_mujoco).
+
+5. INSTALL MUJOCO
+
+    python --version
+    python -m pip install --upgrade pip
+    python -m pip install mujoco==3.15.0
+
+The version check should show Python 3.10.x. Pinning MuJoCo to 3.15.0
+matches the version already installed on our Linux machine.
+
+6. VERIFY THE INSTALLATION
+
+    python -c "import mujoco; print(mujoco.__version__)"
+
+Expected: 3.15.0
+
+To see which Python is running:
+
+    python -c "import sys; print(sys.executable)"
+
+The path should end with .venv_mujoco\Scripts\python.exe.
+
+7. RUN THE SHARED TEST
+
+From the PROJECT ROOT, run:
+
+    python mujoco_installation_guide/test_mujoco.py
+
+Expected: a MuJoCo window showing a red box and a green sphere.
+They stay still because this test defines fixed objects.
+Close the viewer window to return to the terminal.
+
+8. CHECK GIT
+
+Git is needed to get team updates, including the robot model.
+
+    git --version
+
+Expected: git version 2.x. If "git" is not recognized, install Git for
+Windows from:
+https://git-scm.com/download/win
+
+Keep the default options. Close and reopen PowerShell, return to the project
+root, activate the environment (step 4) and run the check again.
+
+9. GET THE LATEST TEAM REPOSITORY
+
+The robot model is already in our repository, in models/robotis_tb3
+(copied from ROBOTIS robotis_mujoco_menagerie). Do not clone the ROBOTIS
+repository separately. From the PROJECT ROOT, run:
+
+    git pull
+
+Check that the Waffle Pi scene is present:
+
+    Test-Path .\models\robotis_tb3\scene_turtlebot3_waffle_pi.xml
+
+Expected: True.
+
+If git pull fails with "not a git repository", you downloaded the team
+repository as a ZIP. Clone it with Git instead, into a new folder:
+
+    git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
+
+Then continue from step 2 in the new folder.
+
+10. RUN THE WAFFLE PI VIEWER
+
+From the PROJECT ROOT, run:
+
+    python mujoco_installation_guide/view_waffle.py
+
+Expected: a MuJoCo window showing the TurtleBot3 Waffle Pi on a checkered
+floor. It stays still until you drive it.
+
+To drive it, open Control in the right-hand panel and drag the wheel_left
+and wheel_right sliders. The same sign on both drives forward or backward;
+opposite signs turn it on the spot.
+
+Known issue: the original ROBOTIS model drives slowly and its wheels slip.
+This comes from the model itself (weak wheel actuators and caster friction),
+not from your installation. It needs fixing before controller tuning.
+
+If the script prints "Model not found", repeat step 9.
+
+11. LEAVE AND REOPEN THE ENVIRONMENT
+
+To leave:
+
+    deactivate
+
+Each time you open a new PowerShell terminal, return to the project root
+and run:
+
+    .\.venv_mujoco\Scripts\Activate.ps1
+    python mujoco_installation_guide/test_mujoco.py
+    python mujoco_installation_guide/view_waffle.py
+
+IF POWERSHELL BLOCKS ACTIVATE.PS1
+
+Activation is optional. Use the environment's Python directly, without
+changing PowerShell's execution policy:
+
+    .\.venv_mujoco\Scripts\python.exe -m pip install --upgrade pip
+    .\.venv_mujoco\Scripts\python.exe -m pip install mujoco==3.15.0
+    .\.venv_mujoco\Scripts\python.exe -c "import mujoco; print(mujoco.__version__)"
+    .\.venv_mujoco\Scripts\python.exe mujoco_installation_guide/test_mujoco.py
+    .\.venv_mujoco\Scripts\python.exe mujoco_installation_guide/view_waffle.py
+
+VS CODE
+
+Save the test file before running it. Use the terminal commands above.
+For the Python extension, press Ctrl+Shift+P > Python: Select Interpreter
+and select .venv_mujoco\Scripts\python.exe (use Enter interpreter path
+if it is not listed). Code Runner may use a different Python executable.
+view_waffle.py finds the model relative to its own location, so it also
+works from VS Code's Run button.
+
+GITHUB
+
+Add this line to the project's .gitignore:
+
+    .venv_mujoco/
+
+Share the scripts in mujoco_installation_guide and this guide; keep your
+environment on your own computer. Each team member creates their own
+.venv_mujoco.
+
+The robot model is shared through the repository in models/robotis_tb3.
+Keep its LICENSE file: the model is Apache-2.0 licensed by ROBOTIS.
+Do not commit a clone of another Git repository inside ours: Git stores
+only a link to it, and teammates receive an empty folder.
+
+OFFICIAL REFERENCES
+https://docs.python.org/3.10/library/venv.html
+https://mujoco.readthedocs.io/en/stable/python.html
+https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie
+https://git-scm.com/download/win
