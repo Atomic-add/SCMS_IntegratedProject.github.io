@@ -32,7 +32,8 @@ def main():
     args = ap.parse_args()
 
     robot = make_robot(args.obstacle, seed=0)
-    spec, last_scan, last_img, P_W = robot.lidar, None, None, None
+    start = load_config()["start"]
+    spec, last_scan, last_img, P_W, t_prev = robot.lidar, None, None, None, robot.t
     if not args.no_camera:
         robot.read_image()                                      # create the offscreen renderer first
     with mujoco.viewer.launch_passive(robot.m, robot.d) as viewer:
@@ -41,7 +42,11 @@ def main():
             viewer.cam.distance, viewer.cam.azimuth, viewer.cam.elevation = 7.5, 90.0, -65.0
         while viewer.is_running():
             t0 = time.time()
+            if robot.t < t_prev:                                # viewer Reset: MuJoCo put the robot at the
+                robot.reset(*start)                             # XML origin and the clock at 0; go back to the
+                last_scan = last_img = None                     # start pose and restart the sensor clocks
             robot.step(0.02)
+            t_prev = robot.t
             t_scan, rho = robot.read_scan()
             if t_scan != last_scan:
                 ok = lidar.valid_beams(rho, spec.range_min, spec.range_max)

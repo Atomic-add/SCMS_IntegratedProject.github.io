@@ -1,0 +1,75 @@
+{
+  "_doc": "Controller tuning (src/control/). Units m, s, rad unless the key says otherwise. Every value here is a design choice, not a property of the corridor: the corridor itself is in corridor.json.",
+  "Ts": 0.05,
+  "v_nom": 0.2,
+  "lqr": {
+    "_doc": "Bryson's rule (Week 6): Q_ii = 1/x_i_max^2, R = 1/u_max^2, x_max = the largest error we accept in normal driving, u_max = the largest correction we want to spend on it.",
+    "e_y_max": 0.05,
+    "e_theta_max_deg": 10.0,
+    "d_omega_max": 0.5
+  },
+  "lqi": {
+    "_doc": "Integral action on e_y (Assessment 3 A.3). Off until the plain LQR shows a steady cross-track offset. z_max in m*s.",
+    "enabled": false,
+    "z_max": 0.05
+  },
+  "waypoints": {
+    "_doc": "waypoints.py. arrive_tol: a waypoint counts as reached within this distance along the path [m]. turn_start_deg: corners sharper than this stop and turn on the spot. turn_done_deg: the turn ends when the heading error is below this. k_turn, w_turn_max: proportional turn-in-place gain [1/s] and its cap [rad/s]. slow_down_dist, v_min: start slowing this far before a stop [m], never below v_min while moving. a_max, alpha_max: rate limits on v [m/s^2] and omega [rad/s^2], placeholders until measured on the lab robot (same values as sim_env/drive_square_test.py).",
+    "arrive_tol": 0.05,
+    "turn_start_deg": 30.0,
+    "turn_done_deg": 3.0,
+    "k_turn": 2.0,
+    "w_turn_max": 1.0,
+    "slow_down_dist": 0.4,
+    "v_min": 0.04,
+    "a_max": 0.5,
+    "alpha_max": 2.0
+  },
+  "docking": {
+    "_doc": "docking.py. v_dock, v_min_dock [m/s]: approach speed and its floor; slow_down_dist [m]: start slowing this far from the stop range; stop_early [m]: stop this close to it (covers one step of travel). marker_max_age [s]: an ID 0 measurement older than this is not fresh (camera 15 Hz -> 3 frames). marker_lost_timeout, settle_timeout [s]: give up after this long. Complete when, for dock_hold_sec [s] in a row: |range - stop_range_base| <= dock_range_tol, |bearing| <= dock_bearing_tol (3 deg = about 1.9 cm sideways at the stop), lateral and heading error to goal_pose <= dock_lateral_tol [m] / dock_heading_tol_deg, the sd from P <= dock_pos_sigma_max [m] (sqrt(Pxx + Pyy)) / dock_heading_sigma_max_deg, and the encoder speeds are below the speed tolerances [m/s, rad/s].",
+    "v_dock": 0.08,
+    "v_min_dock": 0.02,
+    "slow_down_dist": 0.15,
+    "stop_early": 0.003,
+    "marker_max_age": 0.2,
+    "marker_lost_timeout": 3.0,
+    "settle_timeout": 3.0,
+    "dock_range_tol": 0.02,
+    "dock_bearing_tol_deg": 3.0,
+    "dock_lateral_tol": 0.03,
+    "dock_heading_tol_deg": 5.0,
+    "dock_pos_sigma_max": 0.03,
+    "dock_heading_sigma_max_deg": 3.0,
+    "dock_linear_speed_tol": 0.005,
+    "dock_angular_speed_tol": 0.02,
+    "dock_hold_sec": 0.5
+  },
+  "lidar_obs": {
+    "_doc": "lidar_obs.py (stand-in for Perception's obs). Sectors in degrees in {B}, as the team plan; margin [m] each side of the robot for free_ahead; min_coverage = fraction of forward beams (+-90 deg) that must return for the scan to count as valid.",
+    "left_sector_deg": [
+      15,
+      75
+    ],
+    "right_sector_deg": [
+      -75,
+      -15
+    ],
+    "margin": 0.05,
+    "min_coverage": 0.8
+  },
+  "avoidance": {
+    "_doc": "avoidance.py. trigger_dist [m]: start avoiding when free_ahead is below this; end_ignore [m]: ignore returns this close to the segment's end waypoint (the wall at the end of a leg). side_margin [m]: added to the robot half width (0.153 m) for its swept lane; clearance [m]: extra gap kept from the box. look_ahead [m]: how far ahead points count as the obstacle; box_depth [m]: assumed depth of an obstacle we cannot see behind; max_offset [m]: largest sideways shift allowed. ramp_len [m]: travel over which the offset ramps in and out; rejoin_ahead [m]: the original lane must be free this far ahead before rejoining. stop_dist [m]: stop if something is this close in front; max_scan_age [s]: do not move on an older scan (LiDAR 5 Hz). v_avoid [m/s]: speed while avoiding.",
+    "trigger_dist": 0.8,
+    "end_ignore": 0.3,
+    "side_margin": 0.05,
+    "clearance": 0.05,
+    "look_ahead": 1.2,
+    "box_depth": 0.4,
+    "max_offset": 0.6,
+    "ramp_len": 0.6,
+    "rejoin_ahead": 0.5,
+    "stop_dist": 0.08,
+    "max_scan_age": 0.5,
+    "v_avoid": 0.15
+  }
+}
