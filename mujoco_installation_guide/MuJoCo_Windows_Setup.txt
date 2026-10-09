@@ -59,20 +59,31 @@ until you have decided how to replace it; do not overwrite it blindly.
 
 The terminal prompt should now start with (.venv_mujoco).
 
-5. INSTALL MUJOCO
+5. INSTALL THE PACKAGES
+
+requirements.txt in the project root pins every package the project uses
+(MuJoCo 3.15.0, NumPy, SciPy, Matplotlib, spatialmath, OpenCV with the
+contrib modules), so everyone runs the same versions. Check it is there:
+
+    Test-Path .\requirements.txt
+
+Expected: True. If False, do step 9 (git pull) first. Then run:
 
     python --version
     python -m pip install --upgrade pip
-    python -m pip install mujoco==3.15.0
+    python -m pip uninstall -y opencv-python
+    python -m pip install -r requirements.txt
 
-The version check should show Python 3.10.x. Pinning MuJoCo to 3.15.0
-matches the version already installed on our Linux machine.
+The version check should show Python 3.10.x. The uninstall line only
+matters if you installed opencv-python before: it and opencv-contrib-python
+both provide cv2 and break each other. "Skipping" is fine.
+When requirements.txt changes after a git pull, run the last line again.
 
 6. VERIFY THE INSTALLATION
 
-    python -c "import mujoco; print(mujoco.__version__)"
+    python -c "import mujoco, cv2; print(mujoco.__version__, cv2.__version__)"
 
-Expected: 3.15.0
+Expected: 3.15.0 4.10.0
 
 To see which Python is running:
 
@@ -137,13 +148,26 @@ To drive it, open Control in the right-hand panel and drag the wheel_left
 and wheel_right sliders. The same sign on both drives forward or backward;
 opposite signs turn it on the spot.
 
-Known issue: the original ROBOTIS model drives slowly and its wheels slip.
-This comes from the model itself (weak wheel actuators and caster friction),
-not from your installation. It needs fixing before controller tuning.
+The model in our repository already has the fixes for the original ROBOTIS
+model's slow, slipping wheels (comments in turtlebot3_waffle_pi.xml).
 
 If the script prints "Model not found", repeat step 9.
 
-11. LEAVE AND REOPEN THE ENVIRONMENT
+11. RUN THE SENSOR CHECKS
+
+From the PROJECT ROOT, with the environment active:
+
+    python experiments/make_textures.py
+    python experiments/calibrate_camera.py
+    python evaluation/check_lidar.py
+    python evaluation/check_camera.py
+
+Expected: "6/6 checks passed" for the LiDAR and "8/8 checks passed" for the
+camera. The figures and the camera calibration are written to results/ and
+config/. check_camera.py renders about 600 camera frames, so it takes a
+minute or two. Add --viewer to either check to watch the robot afterwards.
+
+12. LEAVE AND REOPEN THE ENVIRONMENT
 
 To leave:
 
@@ -162,8 +186,8 @@ Activation is optional. Use the environment's Python directly, without
 changing PowerShell's execution policy:
 
     .\.venv_mujoco\Scripts\python.exe -m pip install --upgrade pip
-    .\.venv_mujoco\Scripts\python.exe -m pip install mujoco==3.15.0
-    .\.venv_mujoco\Scripts\python.exe -c "import mujoco; print(mujoco.__version__)"
+    .\.venv_mujoco\Scripts\python.exe -m pip install -r requirements.txt
+    .\.venv_mujoco\Scripts\python.exe -c "import mujoco, cv2; print(mujoco.__version__, cv2.__version__)"
     .\.venv_mujoco\Scripts\python.exe mujoco_installation_guide/test_mujoco.py
     .\.venv_mujoco\Scripts\python.exe mujoco_installation_guide/view_waffle.py
 
