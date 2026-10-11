@@ -3,10 +3,12 @@
 TurtleBot3 **Waffle Pi** in **MuJoCo**: follow waypoints along an L-shaped corridor, avoid an obstacle
 with the 2D LiDAR, and dock at a charging station marked with an ArUco marker. The estimator fuses
 wheel-encoder odometry with camera range-bearing measurements to known ArUco markers (EKF); a
-state-feedback (LQR) controller tracks the waypoints.
+state-feedback (LQR) controller tracks the waypoints on the EKF estimate.
 
-**Status (9 Oct):** environment, sensors and perception are done and verified (`check_lidar` 6/6,
-`check_camera` 8/8). Odometry + EKF, LQR, avoidance and docking are in progress.
+**Status (11 Oct):** the whole mission runs in simulation: odometry + EKF with ArUco range-bearing,
+LQR waypoint tracking, LiDAR avoidance and docking (`python main.py`). Sensor checks: `check_lidar`
+6/6, `check_camera` 8/8; unit checks: `control_test` and `estimation_test`. Next: model and
+observability analysis, repeated trials, hardware.
 
 ## 1. Set up (once per computer)
 
@@ -57,24 +59,41 @@ install line again.
 **Every time** you open a new terminal: go to the project folder and activate the environment
 (`source .venv_mujoco/bin/activate` or `.\.venv_mujoco\Scripts\Activate.ps1`).
 
-## 2. See the environment
+## 2. Run the demo
+
+The same commands work in a Linux terminal and in Windows PowerShell:
 
 ```bash
-python main.py                      # L-corridor, no obstacle
-python main.py --obstacle centre    # none / left / right / centre
+python main.py                      # centre box, EKF, MuJoCo viewer + camera window, real time
+python main.py --case none          # obstacle case: none | left | centre | right
+python main.py --odometry           # steer on wheel odometry only (the baseline, no EKF)
+python main.py --seed 3             # another sensor-noise seed
+python main.py --no-camera          # MuJoCo viewer only
+python main.py --headless           # no windows, prints the result only
 ```
 
-Two windows open: the MuJoCo viewer (top view, red dots = LiDAR hits) and **robot camera**, which
-outlines every ArUco marker the camera detects. The robot stands still for now: drive it with the
-`wheel_left` / `wheel_right` sliders under **Control** in the viewer's right panel.
+Linux without a display (SSH, CI): `MUJOCO_GL=egl python main.py --headless` (`--headless` sets
+`MUJOCO_GL=egl` itself when it is not set).
+
+What happens: the robot starts from the prior in `config/corridor.json`, follows start -> W1 -> W2 -> W3
+-> W4 with the LQR, goes around the box with the LiDAR, then docks at the charging station (marker ID 0).
+The terminal prints each state change (TRACK, AVOID, REJOIN, DOCK, STOP) and finally, for example:
+
+```
+result: docked after 57.1 s of sim time, dock_complete = True
+```
+
+The exit code is 0 when the robot docked and 1 otherwise. In the viewer the red dots are the LiDAR
+returns placed with the EKF estimate (if the estimate drifts, the dots slide off the walls) and the
+top-left panel shows the state and the commands. The **robot camera** window outlines every ArUco
+marker it sees, with the range and bearing that perception hands to the EKF. Close the viewer to exit.
 Viewer: left-drag rotates, right-drag pans, scroll zooms, Tab / Shift+Tab hide the panels.
 
-Other views:
+Drive the robot by hand instead (wheel sliders under **Control** in the viewer's right panel; LiDAR
+drawn with wheel odometry):
 
 ```bash
-python -m mujoco.viewer --mjcf=models/robotis_tb3/scene_corridor.xml   # the scene file alone
-python evaluation/check_lidar.py --viewer     # robot turning in the test room, LiDAR dots
-python evaluation/check_camera.py --viewer    # robot driving at a dock, camera + ArUco window
+python experiments/view_corridor.py --obstacle centre    # none / left / right / centre
 ```
 
 ### The corridor (`models/robotis_tb3/scene_corridor.xml`, numbers in `config/corridor.json`)
@@ -89,48 +108,71 @@ python evaluation/check_camera.py --viewer    # robot driving at a dock, camera 
 
 Three fixed ArUco markers (DICT_4X4_50, 0.10 m) form the EKF's map: id 1 at the end of leg 1,
 id 2 on the dock-area wall, id 0 on the charging station. All ranges are measured from the robot
-base origin (`base_footprint`).
+base origin (`base_footprint`). Only the centre box blocks the robot's lane; the left and right boxes
+leave it free, so those cases drive the same path as `none`.
 
-## 3. Sensor checks
+## 3. Checks
 
-Run these after changing anything in `models/`, `src/robot/` or `src/perception/`:
+Before every merge, from the project root:
+
+```bash
+python -m evaluation.check_rules             # ground-truth rule + both unit checks, exit code 0 = all pass
+python -m src.estimation.estimation_test     # EKF and odometry unit checks
+python -m src.control.control_test           # controller, avoidance and docking unit checks
+```
+
+After changing anything in `models/`, `src/robot/` or `src/perception/`:
 
 ```bash
 python experiments/make_textures.py      # marker and checkerboard images (scenes need them)
 python experiments/calibrate_camera.py   # camera K from checkerboard views -> config/camera_sim.json
 python evaluation/check_lidar.py         # expect 6/6 checks passed -> results/lidar_check.png
 python evaluation/check_camera.py        # expect 8/8 checks passed (1-2 min) -> results/camera_check.png
+python evaluation/drive_square_test.py --no-viewer   # odometry around a 0.5 m square, graded on truth
 ```
 
 Headless Linux (no display): prefix with `MUJOCO_GL=egl`, e.g. `MUJOCO_GL=egl python evaluation/check_camera.py`.
 
-## 4. Repository layout
+## 4. Results
+
+```bash
+python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
+python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
+```
+
+Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
+`demo_compare.*`). An EKF run takes about 2 min on a machine without a GPU, because rendering the
+camera dominates; odometry-only runs take about 20 s.
+
+## 5. Repository layout
 
 ```
-main.py                 demo entry point (currently: the environment viewer)
-config/                 corridor task, camera calibration
+main.py                 the demo: python main.py (section 2)
+config/                 corridor task, camera calibration, EKF and controller tuning
 models/robotis_tb3/     Waffle Pi model (ROBOTIS, fixed), scenes, textures
 src/robot/              SimRobot: read_encoders(), read_scan(), read_image(), send_cmd(v, w), step()
 src/perception/         camera calibration (W3 B/C), ArUco range-bearing (W3 E), LiDAR (W2 C, W4 P5)
-src/estimation/         odometry, EKF                     (in progress)
-src/control/            LQR, waypoints, avoidance, docking (in progress)
+src/estimation/         wheel odometry, EKF with ArUco range-bearing (W7)
+src/control/            error model + LQR (W5, W6), waypoints, LiDAR avoidance, docking, mission loop
 experiments/            textures, calibration, viewers, trial scripts
-evaluation/             checks and metrics: the ONLY place that reads simulator ground truth
+evaluation/             checks, metrics and trials: the ONLY place that reads simulator ground truth
 results/                generated figures and CSV
+mujoco_installation_guide/   step-by-step setup for Windows
 ```
 
-## 5. Rules for everyone
+## 6. Rules for everyone
 
-- **No ground truth in `src/`.** The estimator and controller start from the prior in `config/` and
-  use sensor data only. Ground truth is read only in `evaluation/`.
+- **No ground truth outside `evaluation/`.** The estimator and controller start from the prior in
+  `config/` and use sensor data only. `python -m evaluation.check_rules` fails if `src/estimation` or
+  `src/control` imports `evaluation` or uses the simulator's true pose.
 - Import the robot from one place: `from src.robot.sim_robot import SimRobot`.
 - Fuse a camera or LiDAR measurement only when its timestamp is new (`read_image()` / `read_scan()`
   return `t`); otherwise the same frame is fused several times.
 - One feature branch per task (`feature/ekf`, `feature/lqr`, ...), merged by pull request after a
-  teammate's review. `main` must always run.
+  teammate's review. `main` must always run, and the checks in section 3 must pass before a merge.
 - Paths with `pathlib`, no absolute paths; code, comments and commits in English.
 
-## 6. Acknowledgements
+## 7. Acknowledgements
 
 - Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
   Apache-2.0 (`models/robotis_tb3/LICENSE`); sensor poses from ROBOTIS `turtlebot3_waffle_pi.urdf`.

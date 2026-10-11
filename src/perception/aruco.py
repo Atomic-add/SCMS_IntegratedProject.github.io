@@ -104,6 +104,31 @@ def sigma_range_model(Z, f_px, side=MARKER_SIDE, sigma_px=0.3):
     return np.asarray(Z) ** 2 * sigma_px / (f_px * side)
 
 
+def _label(img, text, org, scale=0.6):
+    """White text with a dark outline, readable on the light walls and the dark dock alike."""
+    cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, (0, 0, 0), 4, cv2.LINE_AA)
+    cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, (255, 255, 255), 1, cv2.LINE_AA)
+
+
+def draw_markers(rgb, K, dist, marker_ids, T_BC=T_BC, side=MARKER_SIDE):
+    """Copy of the frame with every listed marker that is seen: its outline, its ID and the
+    z = [range, bearing] in {B} that measure() hands to the EKF. Display only (main.py camera window)."""
+    bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    lines = []
+    for mid in marker_ids:
+        meas = measure(rgb, K, dist, T_BC=T_BC, side=side, marker_id=mid)
+        if meas is None:
+            continue
+        corners = meas["corners"]
+        cv2.polylines(bgr, [corners.astype(np.int32).reshape(-1, 1, 2)], True, (0, 255, 0), 2)
+        _label(bgr, f"ID {mid}", (int(corners[:, 0].min()), max(15, int(corners[:, 1].min()) - 8)), 0.5)
+        r, b = meas["z"]
+        lines.append(f"ID {mid}: range {r:.2f} m, bearing {np.degrees(b):+.1f} deg")
+    for i, text in enumerate(lines or ["no marker in view"]):
+        _label(bgr, text, (10, 25 + 24 * i))
+    return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+
+
 def draw_overlay(rgb, meas, K, dist, side=MARKER_SIDE):
     """Copy of the frame with the detected marker, its axes and the measurement written on it."""
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
