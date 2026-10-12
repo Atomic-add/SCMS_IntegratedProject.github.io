@@ -3,12 +3,13 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # project root, so "src" imports work even
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # project root, so "src" imports work even
                                                                 # when this file is run directly (VS Code Run)
-
+                                                                # N = 1
+                                                                                                                           
 from src.estimation.models import F_jac, H_rb, Qd_wheels, R_marker, h_rb, load_estimation_config  # noqa: E402
 from src.estimation.odometry import increments, move, wrap  # noqa: E402
-
+from src.estimation.ekf import EKF
 
 if __name__ == "__main__":
     # Run from the project root:  python -m src.estimation.ekf [none|left|centre|right]

@@ -13,3 +13,4 @@ Thumbs.db
 # MuJoCo viewer screenshots and scratch output
 screenshot*.png
 *.log
+MUJOCO_LOG.TXT
