@@ -74,8 +74,8 @@
       <geom name="dock_body" type="box" size="0.15 0.05 0.125" pos="0 0 0.125" material="dock"/>
       <geom name="aruco_marker" type="plane" size="0.0666667 0.0666667 0.001" pos="0 -0.051 0.12"
             xyaxes="1 0 0 0 0 1" material="aruco0" contype="0" conaffinity="0" group="2"/>
-      <geom name="dock_plate" type="box" size="0.2 0.2 0.002" pos="0 -0.3 0.002" material="dock_plate"
-            contype="0" conaffinity="0" group="2"/>
+      <geom name="dock_plate" type="box" size="0.2 0.2 0.002" pos="0 -0.467 0.002" material="dock_plate"
+      contype="0" conaffinity="0" group="2"/>
     </body>
 
     <!-- Movable obstacle (0.3 x 0.3 x 0.25 m). Default: parked under the floor = config "none". -->

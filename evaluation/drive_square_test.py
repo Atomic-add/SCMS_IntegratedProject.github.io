@@ -1,8 +1,11 @@
 """Drive the simulated Waffle Pi the same way as the real robot, around a 0.5 m square.
 
 Run from the project root:
-    python sim/drive_square.py              # with the MuJoCo viewer
-    python sim/drive_square.py --no-viewer  # numbers only
+    python evaluation/drive_square_test.py              # with the MuJoCo viewer
+    python evaluation/drive_square_test.py --no-viewer  # numbers only
+
+Lives in evaluation/ because it grades the odometry against the simulator's ground truth at the end
+(ground_truth() below); the robot itself only ever uses its encoders.
 
 What makes this "like the real robot":
   * commands are (v, w) like /cmd_vel, sent at 20 Hz, never wheel speeds directly
