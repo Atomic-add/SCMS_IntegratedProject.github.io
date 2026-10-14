@@ -4,7 +4,8 @@ It does not steer by itself. The states and who is in charge:
 
     TRACK  waypoints.py follows start -> W1 -> W2 -> W3 -> W4 (LQR + turn on the spot at corners)
     AVOID  avoidance.py shifts the path around the box and rejoins (waypoints paused meanwhile)
-    DOCK   docking.py drives from W4 onto the charger (marker ID 0) and confirms the dock
+    DOCK   docking.py drives from W4 onto the charger (marker ID 0) and confirms the dock; its last part
+           is image-based visual servoing (shown as IBVS) when config docking.servo = "ibvs"
     STOP   v = w = 0 for good; stop_reason says why ("docked", "no_passage", "marker_lost", ...)
 
 Transitions:
@@ -119,7 +120,12 @@ class NavigationController:
 
     def info(self):
         """The team's info fields, for main.py's log and run_demo.py."""
-        return dict(state=self.state if self.state != AVOID else self.avoid.phase,   # AVOID or REJOIN
+        state = self.state
+        if state == AVOID:
+            state = self.avoid.phase                                # AVOID or REJOIN
+        elif state == DOCK and self.dock.phase == "IBVS":
+            state = "IBVS"                                          # docking's visual-servoing phase
+        return dict(state=state,
                     waypoint_index=self.tracker.i,
                     pre_dock_reached=self.tracker.pre_dock_reached,
                     dock_complete=self.dock.dock_complete,
@@ -148,7 +154,7 @@ class DeadReckoning:
         return self.xh.copy(), self.P
 
 
-def _draw_scan(viewer, obs, xh):
+def _draw_overlay(viewer, obs, xh):
     """Display only: LiDAR returns as small red dots in the viewer, placed with the ESTIMATED pose xh
     (so you also see how good the estimate is: if xh drifts, the dots slide off the walls)."""
     import mujoco
@@ -162,8 +168,19 @@ def _draw_scan(viewer, obs, xh):
         scn.ngeom += 1
 
 
+def _panel(label, info, v, w, P, est):
+    """Top-left text: state, commands and the EKF's own uncertainty (sd from P, last NIS)."""
+    sd = np.sqrt(np.maximum(np.diag(np.asarray(P, float)), 0.0))
+    log = getattr(est, "log", None)                            # the EKF logs (t, id, NIS, used) per marker
+    nis = f"{log[-1][2]:.2f} (ID {log[-1][1]}{'' if log[-1][3] else ', gated'})" if log else "-"
+    left = "run\nstate\nwaypoint\nv, w\nsd x, y\nsd theta\nlast NIS"
+    right = (f"{label}\n{info['state']}\n{info['waypoint_index']}\n{v:.2f} m/s, {w:+.2f} rad/s\n"
+             f"{100 * sd[0]:.1f}, {100 * sd[1]:.1f} cm\n{np.degrees(sd[2]):.2f} deg\n{nis}")
+    return left, right
+
+
 def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None, view=False, on_step=None,
-                setup=None):
+                setup=None, task=None, label=None, cfg=None):
     """Start -> (avoid) -> W4 -> dock, in the corridor with the given obstacle case.
 
     Everything the robot uses comes from its sensors. marker_frame, obs and motion_feedback built here
@@ -174,6 +191,10 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     how evaluation/run_demo.py records the truth next to the estimate without src/ ever reading it.
     setup(robot) is called once before the loop: evaluation/ uses it for repeated trials (a random
     true start pose, encoder scale errors). The controller still starts from the config prior.
+    task: what the robot is told (start prior, waypoints, marker map, dock); default load_task(). A
+    randomised scenario (src/robot/scenario.py) passes its own task and a setup that changes the world.
+    label: the run's name on the viewer panel (default: the case).
+    cfg: controller config (default config/control.json), e.g. with docking servo "ibvs" or "pbvs".
     """
     import contextlib
     import time
@@ -182,8 +203,9 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     from src.robot.corridor import load_task, make_robot
     from src.robot.sim_robot import PROJECT_ROOT, WHEEL_RADIUS, WHEEL_SEPARATION
 
-    task = load_task()
-    nav = NavigationController(task)
+    task = task if task is not None else load_task()
+    label = label or case
+    nav = NavigationController(task, cfg=cfg)
     K_cam, dist, _ = camera.load_intrinsics(PROJECT_ROOT / "config" / "camera_sim.json")
     est = estimator or DeadReckoning(task["start"])           # start prior from the config, not the truth
     marker_ids = [0] if estimator is None else sorted(task["markers"])   # the EKF wants every known marker
@@ -212,7 +234,8 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
                         m = aruco.measure(rgb, K_cam, dist, marker_id=mid)
                         if m is not None:
                             markers[mid] = {"z": m["z"], "R": np.diag([0.005**2, np.deg2rad(1.0)**2]),
-                                            "yaw": m["yaw"], "ambiguous": m["ambiguous"]}
+                                            "yaw": m["yaw"], "ambiguous": m["ambiguous"],
+                                            "corners": m["corners"], "T_CM": m["T_CM"]}   # IBVS needs these
                     frame = {"t": t_frame, "markers": markers}
                     t_last_frame = t_frame
             encoders = robot.read_encoders()
@@ -237,15 +260,14 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
             if viewer is not None:
                 if not viewer.is_running():
                     break                                     # window closed: stop the run
-                _draw_scan(viewer, obs, xh)
+                _draw_overlay(viewer, obs, xh)
                 viewer.set_texts((mujoco.mjtFontScale.mjFONTSCALE_150, mujoco.mjtGridPos.mjGRID_TOPLEFT,
-                                  "case\nstate\nwaypoint\nv, w",
-                                  f"{case}\n{info['state']}\n{info['waypoint_index']}\n{v:.2f} m/s, {w:+.2f} rad/s"))
+                                  *_panel(label, info, v, w, P, est)))
                 viewer.sync()
                 time.sleep(max(0.0, TS - (time.time() - t_wall)))   # real time
         if viewer is not None and viewer.is_running():
             viewer.set_texts((mujoco.mjtFontScale.mjFONTSCALE_150, mujoco.mjtGridPos.mjGRID_TOPLEFT,
-                              "case\nresult\n", f"{case}\n{nav.stop_reason}\nclose the window to exit"))
+                              "run\nresult\n", f"{label}\n{nav.stop_reason}\nclose the window to exit"))
             while viewer.is_running():                        # keep the final pose on screen
                 viewer.sync()
                 time.sleep(0.05)

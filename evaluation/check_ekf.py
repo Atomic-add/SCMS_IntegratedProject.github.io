@@ -1,3 +1,11 @@
+"""Whole-mission check of the EKF against simulator truth (evaluation only).
+
+    python -m evaluation.check_ekf [none|left|centre|right]
+
+Drives the whole mission with the controller steering on the EKF, then prints how far the estimate
+was from the simulator's truth. Truth is read here, through evaluation/ground_truth.py, and nowhere
+in src/estimation or src/control.
+"""
 import sys
 from pathlib import Path
 
@@ -5,20 +13,13 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # project root, so "src" imports work even
                                                                 # when this file is run directly (VS Code Run)
-                                                                # N = 1
-                                                                                                                           
-from src.estimation.models import F_jac, H_rb, Qd_wheels, R_marker, h_rb, load_estimation_config  # noqa: E402
-from src.estimation.odometry import increments, move, wrap  # noqa: E402
-from src.estimation.ekf import EKF
+
+from evaluation.ground_truth import true_pose  # noqa: E402
+from src.control.behaviour import run_mission  # noqa: E402
+from src.estimation.ekf import EKF  # noqa: E402
+from src.robot.corridor import load_task  # noqa: E402
 
 if __name__ == "__main__":
-    # Run from the project root:  python -m src.estimation.ekf [none|left|centre|right]
-    # Drives the whole mission with the controller steering on THIS EKF, then prints how far the
-    # estimate was from the simulator's truth (read only here, through evaluation/, for the check).
-    from evaluation.ground_truth import true_pose
-    from src.control.behaviour import run_mission
-    from src.robot.corridor import load_task
-
     case = sys.argv[1] if len(sys.argv) > 1 else "centre"
     task = load_task()
     ekf = EKF(task["start"], marker_map=task["markers"])

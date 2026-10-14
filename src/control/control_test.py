@@ -169,6 +169,41 @@ d.step(np.array([goal[0], 3.9, np.pi / 2]), P_ok, marker_frame(0.0, 0.7), {"v": 
 v, w = d.step(np.array([goal[0], 3.9, np.pi / 2]), P_ok, None, {"v": 0, "w": 0, "t": 0.5}, 0.5)
 check("docking: marker briefly missing -> no forward motion (WAIT)", v == 0.0 and d.phase == docking.WAIT)
 
+# ---------------------------------------------------------------- docking: IBVS hand-over (Week 9)
+from spatialmath import SE3  # noqa: E402
+from src.control import visual_servo as vs  # noqa: E402
+CFG_IBVS = {**CFG, "docking": {**CFG["docking"], "servo": "ibvs"}}
+
+
+K_IBVS = docking.DockingController.from_task(TASK, cfg=CFG_IBVS).K
+
+
+def ibvs_frame(t, rng, shift_x=0.0):
+    """A frame with corners and PnP pose: the marker square on at base range rng, slid shift_x along x_C."""
+    T_CM = SE3(shift_x, 0, 0) * vs.desired_pose(rng, TASK["markers"][0][2])
+    p = (vs.aruco.T_BC * T_CM).t                                # marker centre in the base frame
+    z = np.array([np.hypot(p[0], p[1]), np.arctan2(p[1], p[0])])
+    corners = vs.project(K_IBVS, T_CM).T                        # 4 x 2, as aruco.detect returns them
+    return {"t": t, "markers": {0: {"z": z, "corners": corners, "T_CM": T_CM}}}
+
+
+xh_line = np.array([goal[0], TASK["markers"][0][1] - 0.50, np.pi / 2])
+d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
+d.start()
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.0, 0.50), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, 0.50), {"v": 0, "w": 0, "t": 0.1}, 0.1)
+check("docking: below ibvs_switch_range with corners -> IBVS, drives forward, does not turn",
+      d.phase == docking.IBVS and v > 0 and abs(w) < 1e-3, f"{d.phase}, v {v:.3f}, w {w:+.4f}")
+d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
+d.start()
+d.step(xh_line, P_ok, ibvs_frame(0.0, 0.50, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, 0.50, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.1}, 0.1)
+check("docking: IBVS turns LEFT (omega > 0) towards a marker left of the image centre", w > 0, f"w {w:+.3f}")
+d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
+d.start()
+v, w = d.step(xh_line, P_ok, marker_frame(0.0, 0.50), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+check("docking: frame without corners -> stays on the LQR approach (no IBVS)", d.phase == docking.APPROACH, d.phase)
+
 # ---------------------------------------------------------------- avoidance on its own
 a = avoidance.AvoidanceController(cfg=CFG)
 ok = a.start(box_obs(), np.array([0.0, 0.0, 0.0]), Segment([0, 0], [3, 0]))

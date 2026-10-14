@@ -14,7 +14,8 @@
     id 0  dock  on the charging station, facing -y
   Marker sheets are visual only (group 2): the camera sees them, the LiDAR hits the wall 1 mm behind.
 
-  The obstacle box is moved between trials by src/robot/corridor.py (configs none / left / right / centre).
+  The obstacle boxes are moved between trials by src/robot/corridor.py: "obstacle" for the fixed configs
+  none / left / right / centre, and both "obstacle" and "obstacle2" by src/robot/scenario.py (--randomise).
 -->
 <mujoco model="track_a_corridor">
   <include file="turtlebot3_waffle_pi.xml"/>
@@ -80,5 +81,7 @@
 
     <!-- Movable obstacle (0.3 x 0.3 x 0.25 m). Default: parked under the floor = config "none". -->
     <geom name="obstacle" type="box" size="0.15 0.15 0.125" pos="3.6 1.7 -1" material="obstacle"/>
+    <!-- Second movable box, same size, used only by randomised scenarios (leg 1). Parked by default. -->
+    <geom name="obstacle2" type="box" size="0.15 0.15 0.125" pos="1.5 0 -1" material="obstacle"/>
   </worldbody>
 </mujoco>

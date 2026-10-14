@@ -1,9 +1,9 @@
 {
   "_doc": "EKF tuning for src/estimation (Track A). Units: m, rad unless the key says deg.",
-  "P0_sd": [0.02, 0.02, 2.0],
-  "_P0_sd": "start uncertainty: x [m], y [m], heading [deg]; how carefully the robot is placed at corridor.json start",
+  "P0_sd": [0.05, 0.05, 5.0],
+  "_P0_sd": "start uncertainty (1 sigma): x [m], y [m], heading [deg] = how carefully the robot is placed by hand on the start spot (about +-10 cm, +-10 deg at 2 sigma). src/robot/scenario.py draws the true placement error from this same distribution, so the prior is honest by construction. Was 0.02 m / 2 deg: a start 11 cm off was then ~5 sigma out and the NIS gate rejected every correction (estimation_test).",
   "k_wheel": 0.06,
-  "_k_wheel": "wheel distance noise: sd = k_wheel * |distance that wheel travelled| (2 % here); tuned in the evaluation",
+  "_k_wheel": "wheel distance noise: sd = k_wheel * |distance that wheel travelled| (6 % of the distance rolled); tuned in the evaluation, to be replaced by the UMBmark residual on the real robot",
   "q_floor": 1e-8,
   "range_sd":  [0.003, 0.004],
   "_range_sd": "range sd = a + b * r^2 [m]: covers the ArUco range noise and bias in results/aruco_noise.csv",

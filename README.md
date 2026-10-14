@@ -70,7 +70,23 @@ python main.py --odometry           # steer on wheel odometry only (the baseline
 python main.py --seed 3             # another sensor-noise seed
 python main.py --no-camera          # MuJoCo viewer only
 python main.py --headless           # no windows, prints the result only
+python main.py --randomise --seed 7 # random scenario: route, start placement, boxes, noise, wheel error
+python main.py --dock pbvs          # dock on the LQR all the way instead of finishing with IBVS
 ```
+
+**Docking and visual servoing.** From W4 the LQR (EKF heading, camera position) puts the robot on the
+marker's normal; below 0.55 m the last part is **image-based visual servoing** (Week 9,
+`src/control/visual_servo.py`): (v, omega) = lambda J_mr^+ (p* - p) on the four marker corners, with the
+image Jacobian reduced to what the base can do and corrected for the camera sitting 7.6 cm ahead of the
+axle. In the camera window the docking marker (ID 0) is outlined in green with its axes and its
+position in the camera frame; the EKF's landmark markers are outlined in yellow. `python -m evaluation.check_ibvs` compares IBVS and
+PBVS docking on the same seeds -> `results/ibvs_docking.png`.
+
+`--randomise` (`src/robot/scenario.py`): the robot is **told** a new start spot (its EKF prior) and a new
+route; it is **not told** where it was really placed (drawn from N(0, P0)), where the one or two boxes
+are (always inside its lane), how noisy the LiDAR and camera are, or how wrong each wheel radius is.
+The terminal prints both halves. In the viewer the red dots are the LiDAR returns placed with the EKF
+estimate, and the panel shows the state, the commands, the sd from P and the last NIS.
 
 Linux without a display (SSH, CI): `MUJOCO_GL=egl python main.py --headless` (`--headless` sets
 `MUJOCO_GL=egl` itself when it is not set).
@@ -116,7 +132,8 @@ leave it free, so those cases drive the same path as `none`.
 Before every merge, from the project root:
 
 ```bash
-python -m evaluation.check_rules             # ground-truth rule + both unit checks, exit code 0 = all pass
+python -m evaluation.check_rules             # ground-truth rule + unit checks + IBVS checks, exit code 0 = all pass
+python -m src.control.visual_servo           # Week 9 image Jacobian vs finite differences, IBVS loop on geometry
 python -m src.estimation.estimation_test     # EKF and odometry unit checks
 python -m src.control.control_test           # controller, avoidance and docking unit checks
 ```
@@ -138,6 +155,9 @@ Headless Linux (no display): prefix with `MUJOCO_GL=egl`, e.g. `MUJOCO_GL=egl py
 ```bash
 python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
 python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
+python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
+python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
+python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
 ```
 
 Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,

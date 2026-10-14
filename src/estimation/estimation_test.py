@@ -17,7 +17,8 @@ from src.estimation.ekf import EKF  # noqa: E402
 from src.estimation.models import F_jac, H_rb, h_rb, increments, move, numerical_jacobian, wrap  # noqa: E402
 from src.robot.sim_robot import WHEEL_RADIUS, WHEEL_SEPARATION  # noqa: E402
 
-MAP = {"0": [3.6, 4.599, 0.12, -np.pi / 2], "1": [4.199, 0.0, 0.12, np.pi], "_doc": "comment"}
+MAP = {"0": [3.6, 4.599, 0.12, -np.pi / 2], "1": [4.199, 0.0, 0.12, np.pi], "2": [2.95, 4.699, 0.12, -np.pi / 2],
+       "_doc": "comment"}
 FAILS = []
 
 
@@ -83,11 +84,30 @@ ekf.step((1.5, 0.0, 0.0), frame(0.5, {0: z_true}))
 check("old frame (1 s behind the encoders): not fused", ekf.last_update_ids == [])
 
 # ---------------------------------------------------------------- the correction and the gate
-ekf = new_ekf((3.50, 3.85, np.pi / 2 - 0.05))       # 11 cm and 3 deg off
+# The robot stands in the dock area facing the charger, where the camera sees markers 0 and 2 (both
+# inside the +-31 deg horizontal field of view). The fake measurements read long by the same r^2 bias
+# the EKF subtracts (config range_bias_r2), as real ArUco ranges do. The start is 11 cm and 3 deg off,
+# about 2 sigma of P0: a placement error the prior admits. (The old version of this test started 5 sigma
+# outside a 2 cm / 2 deg P0, fed unbiased ranges, and used marker 1, which is BEHIND the robot here.)
+TRUE = np.array([3.6, 3.3, np.pi / 2])
+bias = EKF(TRUE, marker_map=MAP).p["range_bias_r2"]
+
+
+def seen(mid):
+    """[range, bearing] of a marker from TRUE, with the ArUco range bias added."""
+    z = h_rb(TRUE, MAP[mid])
+    return z + [bias * z[0] ** 2, 0.0]
+
+
+fov_ok = all(abs(np.degrees(h_rb(TRUE, MAP[m])[1])) < 31.0 for m in ("0", "2"))
+ekf = new_ekf((3.50, 3.25, np.pi / 2 - 0.05))       # 11 cm and 3 deg off
 for k in range(1, 30):
-    ekf.step((0.05 * k, 0.0, 0.0), frame(0.05 * k, {0: z_true, 1: h_rb([3.6, 3.9, np.pi / 2], MAP["1"])}))
-err = np.hypot(*(ekf.xh[:2] - [3.6, 3.9]))
-check("correction: 11 cm off, true markers 0 and 1 -> error below 1 cm", err < 0.01, f"{100 * err:.2f} cm")
+    ekf.step((0.05 * k, 0.0, 0.0), frame(0.05 * k, {0: seen("0"), 2: seen("2")}))
+err = np.hypot(*(ekf.xh[:2] - TRUE[:2]))
+err_th = np.degrees(abs(wrap(ekf.xh[2] - TRUE[2])))
+fused = sum(used for *_, used in ekf.log)
+check("correction: 11 cm / 3 deg off, markers 0 and 2 in view -> below 1 cm and 0.5 deg",
+      fov_ok and err < 0.01 and err_th < 0.5, f"{100 * err:.2f} cm, {err_th:.2f} deg, {fused}/{len(ekf.log)} fused")
 ekf = new_ekf()
 ekf.step((0.05, 0.0, 0.0), frame(0.05, {0: z_true + [1.0, 0.0]}))
 check("gate: a 1 m range outlier is rejected", ekf.last_update_ids == [] and ekf.log[-1][2] > ekf.p["nis_gate"],

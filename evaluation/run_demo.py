@@ -281,7 +281,7 @@ def plot_overview(logs, est="odometry"):
 def shade_states(ax, log, label=False):
     """Grey bands while avoiding, green while docking (same on every time plot, named on the first)."""
     t, s = log["t"], log["state"]
-    for name, color in [("AVOID", "#dddddd"), ("REJOIN", "#eeeeee"), ("DOCK", "#d9f0dc")]:
+    for name, color in [("AVOID", "#dddddd"), ("REJOIN", "#eeeeee"), ("DOCK", "#d9f0dc"), ("IBVS", "#bfe3c6")]:
         on = s == name
         if np.any(on):
             ax.axvspan(t[on][0], t[on][-1], color=color, lw=0, label=name if label else None)

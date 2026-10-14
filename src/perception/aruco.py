@@ -110,9 +110,14 @@ def _label(img, text, org, scale=0.6):
     cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, (255, 255, 255), 1, cv2.LINE_AA)
 
 
-def draw_markers(rgb, K, dist, marker_ids, T_BC=T_BC, side=MARKER_SIDE):
-    """Copy of the frame with every listed marker that is seen: its outline, its ID and the
-    z = [range, bearing] in {B} that measure() hands to the EKF. Display only (main.py camera window)."""
+def draw_markers(rgb, K, dist, marker_ids, dock_id=MARKER_ID, T_BC=T_BC, side=MARKER_SIDE):
+    """Copy of the frame with every listed marker that is seen. Display only (main.py camera window).
+
+    Top left, for every marker seen (ID 0, 1, 2): the z = [range, bearing] in {B} that measure() hands
+    to the EKF. The docking marker (dock_id): green outline, its axes (x red, y green, z blue) and its
+    position in the camera frame, "Id:0 x: y: z: cm", from the same PnP pose. The other markers (the
+    EKF's correction landmarks): yellow outline and their ID.
+    """
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     lines = []
     for mid in marker_ids:
@@ -120,10 +125,23 @@ def draw_markers(rgb, K, dist, marker_ids, T_BC=T_BC, side=MARKER_SIDE):
         if meas is None:
             continue
         corners = meas["corners"]
-        cv2.polylines(bgr, [corners.astype(np.int32).reshape(-1, 1, 2)], True, (0, 255, 0), 2)
-        _label(bgr, f"ID {mid}", (int(corners[:, 0].min()), max(15, int(corners[:, 1].min()) - 8)), 0.5)
         r, b = meas["z"]
-        lines.append(f"ID {mid}: range {r:.2f} m, bearing {np.degrees(b):+.1f} deg")
+        lines.append(f"ID {mid}: range {r:.2f} m, bearing {np.degrees(b):+.1f} deg" + ("  (dock)" if mid == dock_id else ""))
+        poly = [corners.astype(np.int32).reshape(-1, 1, 2)]
+        top = max(15, int(corners[:, 1].min()) - 10)
+        if mid != dock_id:
+            cv2.polylines(bgr, poly, True, (0, 255, 255), 3)               # yellow: EKF landmark
+            _label(bgr, f"ID {mid}", (int(corners[:, 0].min()), top), 0.5)
+            continue
+        cv2.polylines(bgr, poly, True, (0, 255, 0), 3)                     # green: docking marker
+        T_CM = meas["T_CM"]
+        rvec, _ = cv2.Rodrigues(T_CM.R)
+        cv2.drawFrameAxes(bgr, K, dist, rvec, T_CM.t, side * 0.5, 2)
+        x, y, z = 100 * T_CM.t
+        text = f"Id:{mid} x:{x:.1f} y:{y:.1f} z:{z:.2f}cm"
+        (tw, _), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 4)
+        left = int(np.clip(corners[:, 0].min(), 2, bgr.shape[1] - tw - 2))   # keep it in the frame
+        _label(bgr, text, (left, top), 0.5)
     for i, text in enumerate(lines or ["no marker in view"]):
         _label(bgr, text, (10, 25 + 24 * i))
     return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)

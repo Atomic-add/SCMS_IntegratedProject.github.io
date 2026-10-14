@@ -1,13 +1,20 @@
 """Docking: from the pre-dock point W4 onto the charger marked with ArUco ID 0, then stop and confirm.
 
-Kept deliberately small. Three ideas:
+Kept deliberately small. Four ideas:
 
 1. STEER along the approach line through goal_pose (corridor.json) with the same LQR as the rest of the
    path, redesigned for the slower docking speed. The robot POSITION comes from the camera and the
    HEADING from x_hat (_dock_pose): odometry can drift a few cm, the ID 0 range is good to < 1 mm.
-2. STOP on what the camera SEES: when the ID 0 range reaches stop_range_base = 0.356 m (0.28 m from the
-   camera, which still sees ID 0 reliably; checked in the sim from 0.16 to 1.36 m, error < 1 mm).
-3. CONFIRM (team plan "Docking completion"): dock_complete when, for dock_hold_sec without a break,
+   This brings the robot onto the marker's normal, which servoing alone cannot do (Week 9 D3/D4).
+2. SERVO the last part on the image (servo = "ibvs", Week 9): once the ID 0 range is below
+   ibvs_switch_range, (v, omega) = lam * J_mr^+ (p* - p) on the four marker corners, where p* is where the
+   corners appear when docked and J_mr is the image Jacobian reduced to what the base can do
+   (src/control/visual_servo.py). Saturated at v_dock and ibvs_w_max (Week 9 B3). It ends when the
+   feature error is below ibvs_e_tol_px, or the commands have died out (the residual the base cannot
+   remove), or the stop range is reached. servo = "pbvs" keeps idea 1 all the way to the stop.
+3. STOP on what the camera SEES: never closer than stop_range_base = 0.356 m (0.28 m from the camera,
+   which still sees ID 0 reliably; checked in the sim from 0.16 to 1.36 m, error < 1 mm).
+4. CONFIRM (team plan "Docking completion"): dock_complete when, for dock_hold_sec without a break,
    - range and bearing to ID 0 are within tolerance          (what the camera sees)
    - lateral and heading error to goal_pose are within tolerance   (lateral from _dock_pose, heading
      from x_hat; bearing ~ 0 alone cannot tell "sideways but pointing at the marker" from docked)
@@ -15,11 +22,14 @@ Kept deliberately small. Three ideas:
    - the encoders say the robot has really stopped
    Marker lost -> stop and wait (never drive in blind); still lost after marker_lost_timeout -> FAILED.
 
-Phases:  APPROACH -> SETTLE -> COMPLETE,  APPROACH <-> WAIT (marker lost),  WAIT / SETTLE -> FAILED
+Phases:  APPROACH -> (IBVS ->) SETTLE -> COMPLETE,  APPROACH / IBVS <-> WAIT (marker lost),
+         WAIT / SETTLE -> FAILED
 
 Inputs (team interface): x_hat from the EKF (odometry until it is ready); marker_frame from perception,
-{"t": t_frame, "markers": {id: {"z": [range, bearing], ...}}}; motion_feedback {v, w, t} = speeds
-measured by the encoders. Nothing here reads the simulator's ground truth.
+{"t": t_frame, "markers": {id: {"z": [range, bearing], "corners": 4 x 2 px, "T_CM": SE3, ...}}};
+motion_feedback {v, w, t} = speeds measured by the encoders. IBVS needs "corners" and "T_CM" (the PnP
+pose, for the corner depths); a frame without them keeps the LQR approach. Nothing here reads the
+simulator's ground truth.
 """
 import sys
 from pathlib import Path
@@ -29,42 +39,58 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # project root, so "src" imports work even
                                                                 # when this file is run directly (VS Code Run)
 
+from src.control import visual_servo as vs  # noqa: E402
 from src.control.lqr import PathLQR, design_lqr  # noqa: E402
 from src.control.models import TS, load_control_config  # noqa: E402
 from src.control.waypoints import Segment  # noqa: E402
+from src.robot.sim_robot import PROJECT_ROOT  # noqa: E402
 
-APPROACH, WAIT, SETTLE, COMPLETE, FAILED = "APPROACH", "WAIT", "SETTLE", "COMPLETE", "FAILED"
+APPROACH, IBVS, WAIT, SETTLE, COMPLETE, FAILED = "APPROACH", "IBVS", "WAIT", "SETTLE", "COMPLETE", "FAILED"
 
 
 class DockingController:
     """Call start() when waypoints.py reports pre_dock_reached, then step() every Ts."""
 
-    def __init__(self, dock, marker_xy, cfg=None):
+    def __init__(self, dock, marker, cfg=None, K=None, dist=None):
         cfg = cfg or load_control_config()
         self.p, self.Ts = cfg["docking"], cfg["Ts"]
         self.a_max = cfg["waypoints"]["a_max"]               # same acceleration limit as normal driving
         self.marker_id = dock["marker_id"]
         self.stop_range = dock["stop_range_base"]
-        self.marker_xy = np.asarray(marker_xy, float)[:2]   # known map position of ID 0 (corridor.json)
+        marker = np.asarray(marker, float)
+        self.marker_xy = marker[:2]                          # known map position of ID 0 (corridor.json)
         gx, gy, gth = dock["goal_pose"]
         # Approach line: from 1 m behind the goal up to the goal, along the goal heading.
         self.line = Segment(np.array([gx, gy]) - np.array([np.cos(gth), np.sin(gth)]), np.array([gx, gy]))
         # The cruise gain was designed at 0.20 m/s; docking is slower, so K is redesigned at v_dock on the
         # same model (the first step of gain scheduling, see lqr.py).
         self.lqr = PathLQR(K=design_lqr(v=self.p["v_dock"], cfg=cfg)[0], integral=False, cfg=cfg)
+        # IBVS (Week 9): calibrated intrinsics, p* from the docked geometry, (v, omega) -> camera twist.
+        self.servo = self.p.get("servo", "pbvs")
+        if self.servo == "ibvs":
+            if K is None:
+                from src.perception import camera
+                K, dist, _ = camera.load_intrinsics(PROJECT_ROOT / self.p["camera_intrinsics"])
+            self.K, self.dist = np.asarray(K, float), np.asarray(dist, float)
+            marker_height = marker[2] if marker.size > 2 else 0.12
+            self.p_star = vs.desired_features(self.K, self.stop_range, marker_height)
+            self.G = vs.robot_to_camera()
         self.phase, self.stop_reason = None, None
+        self.ibvs_log = []                                   # (t, corners 2x4, e_rms px, v, w) per IBVS step
 
     @classmethod
     def from_task(cls, task, **kw):
-        """Build from load_task(): marker id, its map position, stop range and goal pose."""
+        """Build from load_task(): marker id, its map position and height, stop range and goal pose."""
         return cls(task["dock"], task["markers"][task["dock"]["marker_id"]], **kw)
 
     def start(self):
         """Hand-over from waypoint tracking (pre_dock_reached)."""
         self.phase, self.stop_reason = APPROACH, None
+        self.resume = APPROACH                              # phase to go back to after a WAIT
         self.v_cmd = 0.0
         self.marker, self.t_marker = None, -np.inf          # last ID 0 measurement and its frame time
-        self.t_lost = self.t_settle = self.t_ok = None
+        self.t_lost = self.t_settle = self.t_ok = self.t_still = None
+        self.ibvs_log = []
         self.lqr.reset()
 
     @property
@@ -90,10 +116,36 @@ class DockingController:
         r, b = self.marker["z"]
         return np.array([self.marker_xy[0] - r * np.cos(th + b), self.marker_xy[1] - r * np.sin(th + b), th])
 
+    def _ibvs_ready(self, rng):
+        """Switch to IBVS: servo = ibvs, close enough, and the frame carries corners and the PnP pose."""
+        return (self.servo == "ibvs" and rng <= self.p["ibvs_switch_range"]
+                and "corners" in self.marker and "T_CM" in self.marker)
+
+    def _ibvs_step(self, rng, t):
+        """One IBVS command (Week 9 B1b / D4 with our camera), or None when IBVS has finished."""
+        if "corners" not in self.marker or "T_CM" not in self.marker:
+            self.phase = APPROACH                              # no corners in this frame: back to the LQR
+            return None
+        uv = vs.undistort(self.marker["corners"], self.K, self.dist)
+        Z = vs.corner_depths(self.marker["T_CM"])              # depth from this frame's PnP (Week 9 B4)
+        v, w, e, _ = vs.ibvs_command(uv, Z, self.p_star, self.K, self.G, self.p["ibvs_lambda"])
+        e_rms = float(np.sqrt(np.mean(e ** 2)))
+        # Saturate like Week 9 B3 (vmax), scaling v and omega together so the motion keeps its direction.
+        s = max(1.0, abs(v) / self.p["v_dock"], abs(w) / self.p["ibvs_w_max"])
+        v, w = v / s, w / s
+        self.ibvs_log.append((t, uv, e_rms, v, w))
+        still = abs(v) < self.p["ibvs_v_still"] and abs(w) < self.p["ibvs_w_still"]
+        self.t_still = (self.t_still if self.t_still is not None else t) if still else None
+        if (e_rms <= self.p["ibvs_e_tol_px"] or rng - self.stop_range <= self.p["stop_early"]
+                or (self.t_still is not None and t - self.t_still >= self.p["ibvs_still_sec"])):
+            return None                                        # converged, at the stop range, or stalled
+        self.v_cmd = min(v, self.v_cmd + self.a_max * self.Ts)  # gentle start (acceleration limit)
+        return self.v_cmd, w
+
     def step(self, x_hat, P, marker_frame, motion_feedback, t):
         """(v, omega) for this step. t = current time [s] (same clock as the camera timestamps).
         P = the estimate's covariance, used in the completion check."""
-        if self.phase not in (APPROACH, WAIT, SETTLE):
+        if self.phase not in (APPROACH, IBVS, WAIT, SETTLE):
             return 0.0, 0.0
         self._read_marker(marker_frame)
         fresh = t - self.t_marker <= self.p["marker_max_age"]
@@ -103,16 +155,26 @@ class DockingController:
             self.t_lost = t if self.t_lost is None else self.t_lost
             if t - self.t_lost > self.p["marker_lost_timeout"]:
                 self.phase, self.stop_reason = FAILED, "marker_lost"
-            elif self.phase == APPROACH:
-                self.phase = WAIT
+            elif self.phase in (APPROACH, IBVS):
+                self.resume, self.phase = self.phase, WAIT
             self.v_cmd = 0.0
             return 0.0, 0.0
         self.t_lost = None
         rng, brg = self.marker["z"]
+        if self.phase == WAIT:
+            self.phase = self.resume
 
-        # 2. APPROACH: steer along the line, slow down as the SEEN range closes in, stop when it is reached.
-        if self.phase in (APPROACH, WAIT):
-            self.phase = APPROACH
+        # 2. APPROACH: steer along the line, slow down as the SEEN range closes in. Hand over to IBVS
+        #    once close enough (servo = ibvs), otherwise stop when the stop range is reached.
+        if self.phase == APPROACH and self._ibvs_ready(rng):
+            self.phase = IBVS
+        if self.phase == IBVS:
+            cmd = self._ibvs_step(rng, t)
+            if cmd is not None:
+                return cmd
+            if self.phase == IBVS:                              # finished: stop at once and confirm
+                self.phase, self.t_settle, self.v_cmd = SETTLE, t, 0.0
+        if self.phase == APPROACH:
             to_go = rng - self.stop_range                       # metres left, from the camera
             if to_go > self.p["stop_early"]:
                 v = float(np.clip(self.p["v_dock"] * to_go / self.p["slow_down_dist"],
@@ -161,7 +223,7 @@ if __name__ == "__main__":
     from src.control.waypoints import _dead_reckoning
     from src.perception import aruco, camera
     from src.robot.corridor import load_task, make_robot
-    from src.robot.sim_robot import PROJECT_ROOT, WHEEL_RADIUS, WHEEL_SEPARATION
+    from src.robot.sim_robot import WHEEL_RADIUS, WHEEL_SEPARATION
 
     task = load_task()
     K_cam, dist, _ = camera.load_intrinsics(PROJECT_ROOT / "config" / "camera_sim.json")
@@ -175,11 +237,11 @@ if __name__ == "__main__":
         dock.start()
         phase = None
         while dock.phase not in (COMPLETE, FAILED) and robot.t < 60:
-            # stand-in perception: ID 0 range-bearing from the newest camera frame
+            # stand-in perception: ID 0 range-bearing, corners and PnP pose from the newest camera frame
             t_frame, rgb = robot.read_image()
             m = aruco.measure(rgb, K_cam, dist, marker_id=dock.marker_id)
             frame = {"t": t_frame, "markers": {} if m is None else {dock.marker_id: {
-                "z": m["z"], "R": np.diag([0.005**2, np.deg2rad(1.0)**2]), "yaw": m["yaw"], "ambiguous": m["ambiguous"]}}}
+                "z": m["z"], "corners": m["corners"], "T_CM": m["T_CM"], "yaw": m["yaw"], "ambiguous": m["ambiguous"]}}}
             # stand-in motion feedback: wheel speeds from the encoder increments
             t_now, *enc = robot.read_encoders()
             dl, dr = (np.array(enc) - np.array(enc_prev)) * WHEEL_RADIUS
@@ -197,6 +259,8 @@ if __name__ == "__main__":
             robot.step(TS)
         print(f"\ndock_complete = {dock.dock_complete}, stop_reason = {dock.stop_reason}")
         print("checks:", {k: bool(ok) for k, ok in getattr(dock, "checks", {}).items()})
+        if dock.ibvs_log:
+            print(f"IBVS: {len(dock.ibvs_log)} steps, feature error {dock.ibvs_log[0][2]:.1f} -> {dock.ibvs_log[-1][2]:.2f} px rms")
         e_y, e_theta, _ = dock.line.errors(pose)
         print(f"odometry vs goal: lateral {e_y * 100:+.1f} cm, heading {np.rad2deg(e_theta):+.1f} deg; "
               f"last marker range {dock.marker['z'][0]:.3f} m (stop range {dock.stop_range} m)")

@@ -28,13 +28,29 @@ def load_task(path=CONFIG):
                 dock=cfg["dock"])
 
 
+OBSTACLE_GEOMS = ("obstacle", "obstacle2")   # movable boxes in scene_corridor.xml
+
+
+def place_obstacles(robot, centres):
+    """Sim only: put the movable boxes at the given (x, y) centres, in order; boxes not given are parked.
+
+    Used by src/robot/scenario.py for randomised trials. The robot's software never sees these positions.
+    """
+    centres = list(centres)
+    if len(centres) > len(OBSTACLE_GEOMS):
+        raise ValueError(f"the scene has {len(OBSTACLE_GEOMS)} movable boxes, {len(centres)} requested")
+    for k, name in enumerate(OBSTACLE_GEOMS):
+        gid = robot.m.geom(name).id
+        half_h = robot.m.geom_size[gid][2]
+        xy = centres[k] if k < len(centres) else None
+        robot.m.geom_pos[gid] = PARKED if xy is None else (xy[0], xy[1], half_h)
+    mujoco.mj_forward(robot.m, robot.d)
+
+
 def set_obstacle(robot, name, path=CONFIG):
     """Sim only: put the obstacle box at one of the configs in corridor.json (none / left / right / centre)."""
     xy = load_config(path)["obstacles"][name]
-    gid = robot.m.geom("obstacle").id
-    half_h = robot.m.geom_size[gid][2]
-    robot.m.geom_pos[gid] = PARKED if xy is None else (xy[0], xy[1], half_h)
-    mujoco.mj_forward(robot.m, robot.d)
+    place_obstacles(robot, [] if xy is None else [xy])
 
 
 def make_robot(obstacle="none", seed=0, path=CONFIG, **kw):

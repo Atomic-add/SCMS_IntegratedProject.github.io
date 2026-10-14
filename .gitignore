@@ -1,16 +1,6 @@
-# Python
 __pycache__/
 *.pyc
-# Virtual environments (each member creates their own)
 .venv_mujoco/
-.venv*/
-venv/
-# Editors and OS
-.vscode/
-.idea/
 .DS_Store
-Thumbs.db
-# MuJoCo viewer screenshots and scratch output
-screenshot*.png
-*.log
 MUJOCO_LOG.TXT
+.vscode/
