@@ -190,6 +190,9 @@ class SimRobot:
         mujoco.mj_kinematics(self.m, self.d)                       # body and camera poses for the
         mujoco.mj_camlight(self.m, self.d)                         # current qpos (and mocap)
         self._renderer.update_scene(self.d, camera=self.camera.name)
+
+
+        #Adding Noise
         img = self._renderer.render().astype(np.float64)
         if self.camera.pixel_noise > 0:
             img += self.rng.normal(0.0, self.camera.pixel_noise, img.shape)
@@ -203,7 +206,9 @@ class SimRobot:
         vec = (self._dirs_S @ R_WS.T).ravel()                      # beam directions in the world
         mujoco.mj_multiRay(self.m, self.d, self.d.site_xpos[self._scan_site].copy(), vec, self.LIDAR_GEOMGROUP, 1,
                            self._robot_body, self._geomid, self._dist, None, L.n_beams, L.range_max)
-        hit = self._dist >= 0                                      # -1 means nothing within range_max
+        hit = self._dist >= 0          
+        
+        #Adding Noise sigma and lost random array
         rho = np.where(hit, self._dist, np.inf) + self.rng.normal(0.0, L.sigma, L.n_beams)
         lost = ~hit | (self.rng.random(L.n_beams) < L.dropout) | (rho < L.range_min) | (rho > L.range_max)
         return np.where(lost, L.no_return, rho)
