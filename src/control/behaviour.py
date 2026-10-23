@@ -180,7 +180,7 @@ def _panel(label, info, v, w, P, est):
 
 
 def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None, view=False, on_step=None,
-                setup=None, task=None, label=None, cfg=None):
+                setup=None, task=None, label=None, cfg=None, robot=None, intrinsics=None):
     """Start -> (avoid) -> W4 -> dock, in the corridor with the given obstacle case.
 
     Everything the robot uses comes from its sensors. marker_frame, obs and motion_feedback built here
@@ -195,6 +195,10 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     randomised scenario (src/robot/scenario.py) passes its own task and a setup that changes the world.
     label: the run's name on the viewer panel (default: the case).
     cfg: controller config (default config/control.json), e.g. with docking servo "ibvs" or "pbvs".
+    robot: the robot to drive, default the corridor SimRobot for the case; main.py --real passes a
+    RealRobot (src/robot/real_robot.py), which the with block connects and stops. view needs a SimRobot.
+    intrinsics: camera calibration for the ArUco measurements (default config/camera_sim.json); its
+    optional "T_BC" (the real camera's tilt, experiments/camera_pitch.py) replaces the URDF camera pose.
     """
     import contextlib
     import time
@@ -206,10 +210,11 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     task = task if task is not None else load_task()
     label = label or case
     nav = NavigationController(task, cfg=cfg)
-    K_cam, dist, _ = camera.load_intrinsics(PROJECT_ROOT / "config" / "camera_sim.json")
+    K_cam, dist, _ = camera.load_intrinsics(intrinsics or PROJECT_ROOT / "config" / "camera_sim.json")
+    T_BC = aruco.load_T_BC(intrinsics or PROJECT_ROOT / "config" / "camera_sim.json")   # real camera: with its tilt
     est = estimator or DeadReckoning(task["start"])           # start prior from the config, not the truth
     marker_ids = [0] if estimator is None else sorted(task["markers"])   # the EKF wants every known marker
-    with make_robot(case, seed=seed) as robot, contextlib.ExitStack() as stack:
+    with (robot if robot is not None else make_robot(case, seed=seed)) as robot, contextlib.ExitStack() as stack:
         if setup is not None:
             setup(robot)                                      # sim-side changes for a trial (evaluation/)
         viewer = None
@@ -231,7 +236,7 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
                 if t_frame != t_last_frame:                   # run ArUco once per NEW frame
                     markers = {}
                     for mid in marker_ids:
-                        m = aruco.measure(rgb, K_cam, dist, marker_id=mid)
+                        m = aruco.measure(rgb, K_cam, dist, T_BC=T_BC, marker_id=mid)
                         if m is not None:
                             markers[mid] = {"z": m["z"], "R": np.diag([0.005**2, np.deg2rad(1.0)**2]),
                                             "yaw": m["yaw"], "ambiguous": m["ambiguous"],

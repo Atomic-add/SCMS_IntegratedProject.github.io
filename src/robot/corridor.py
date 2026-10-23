@@ -5,19 +5,28 @@ about. The marker map and the waypoints in the same file are what the estimator 
 they get them from load_task(), never the obstacle positions.
 """
 import json
+from pathlib import Path
 
 import mujoco
 import numpy as np
 
-from src.robot.sim_robot import PROJECT_ROOT, SimRobot
+from src.robot.sim_robot import PROJECT_ROOT, LidarSpec, SimRobot
 
 CONFIG = PROJECT_ROOT / "config" / "corridor.json"
 PARKED = (3.6, 1.7, -1.0)          # obstacle hidden under the floor = config "none"
 
 
 def load_config(path=CONFIG):
-    """The whole corridor config as a dict."""
-    return json.loads(path.read_text())
+    """The whole corridor config as a dict.
+
+    A file with "extends": "<task file>" takes every top-level key it does not set from that file, so a
+    staged run (config/stage*.json) changes only its start and waypoints and keeps the arena's markers.
+    """
+    cfg = json.loads(Path(path).read_text())
+    base = cfg.pop("extends", None)
+    if base is not None:
+        cfg = {**load_config(PROJECT_ROOT / base), **cfg}
+    return cfg
 
 
 def load_task(path=CONFIG):
@@ -25,7 +34,22 @@ def load_task(path=CONFIG):
     cfg = load_config(path)
     markers = {int(k): np.array(v) for k, v in cfg["markers"].items() if not k.startswith("_")}
     return dict(start=np.array(cfg["start"]), waypoints=np.array(cfg["waypoints"]), markers=markers,
-                dock=cfg["dock"])
+                dock=cfg["dock"], control=cfg.get("control", {}))
+
+
+def apply_control_overrides(cfg, task):
+    """Controller config with the task file's "control" block on top (e.g. a wider avoidance clearance
+    for a smaller box). Nested dicts merge key by key; keys starting with "_" are comments."""
+    def merge(base, extra):
+        for k, v in extra.items():
+            if k.startswith("_"):
+                continue
+            if isinstance(v, dict) and isinstance(base.get(k), dict):
+                merge(base[k], v)
+            else:
+                base[k] = v
+    merge(cfg, task.get("control", {}))
+    return cfg
 
 
 OBSTACLE_GEOMS = ("obstacle", "obstacle2")   # movable boxes in scene_corridor.xml
@@ -54,8 +78,14 @@ def set_obstacle(robot, name, path=CONFIG):
 
 
 def make_robot(obstacle="none", seed=0, path=CONFIG, **kw):
-    """SimRobot in the corridor, obstacle placed, robot at the start pose."""
+    """SimRobot in the corridor, obstacle placed, robot at the start pose.
+
+    A task file may carry a "lidar" block (e.g. the lab's LDS-01 range in arena_lab.json); it sets the
+    sim LiDAR unless the caller passes its own lidar=.
+    """
     cfg = load_config(path)
+    if "lidar" in cfg and "lidar" not in kw:
+        kw["lidar"] = LidarSpec(**{k: v for k, v in cfg["lidar"].items() if not k.startswith("_")})
     robot = SimRobot(scene=PROJECT_ROOT / cfg["scene"], seed=seed, **kw)
     set_obstacle(robot, obstacle, path)
     robot.reset(*cfg["start"])

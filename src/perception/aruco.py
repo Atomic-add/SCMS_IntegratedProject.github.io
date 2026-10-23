@@ -26,6 +26,20 @@ MARKER_SIDE = 0.10          # m, side of the black square
 T_BC = SE3(0.076, 0.0, 0.103) * SE3.RPY(-np.pi / 2, 0.0, -np.pi / 2)
 
 
+def camera_pose(xyz=(0.076, 0.0, 0.103), pitch_deg=0.0):
+    """T_BC for a camera at xyz in {B}, tilted DOWN by pitch_deg about the base y axis (0 = the URDF)."""
+    return SE3(*xyz) * SE3.Ry(np.deg2rad(pitch_deg)) * SE3.RPY(-np.pi / 2, 0.0, -np.pi / 2)
+
+
+def load_T_BC(path):
+    """The camera extrinsic stored with the intrinsics ("T_BC": {"xyz", "pitch_deg"}, written by
+    experiments/camera_pitch.py for the real camera), or the URDF T_BC when the file has none (the sim)."""
+    import json
+    from pathlib import Path
+    data = json.loads(Path(path).read_text()).get("T_BC")
+    return T_BC if data is None else camera_pose(data["xyz"], data["pitch_deg"])
+
+
 def marker_image(marker_id=MARKER_ID, px=600, pad=60, dictionary=ARUCO_DICT):
     """An ArUco marker as a greyscale image with a white quiet zone (W3 Part E marker_image)."""
     tag = cv2.aruco.generateImageMarker(cv2.aruco.getPredefinedDictionary(dictionary), marker_id, px)

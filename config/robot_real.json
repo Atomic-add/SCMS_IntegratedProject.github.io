@@ -1,0 +1,24 @@
+{
+  "_doc": "Real TurtleBot3 Waffle Pi through rosbridge (src/robot/real_robot.py, UTS-RI/turtlebot_rosbridge). Check every value on the lab robot with python experiments/check_robot.py HOST before a mission.",
+  "host": "192.168.1.203",
+  "_host": "IP of the robot's rosbridge server, 192.168.1.2XX where XX is the TurtleBot ID (lab wifi turtlebot-MMR); main.py --real HOST and check_robot.py HOST override it",
+  "port": 9090,
+  "topics": {
+    "cmd_vel": "/cmd_vel",
+    "image": "/camera/image_raw/compressed",
+    "scan": "/scan",
+    "joint_states": "/joint_states"
+  },
+  "_topics": "rosbridge_api defaults; replace with the names from ros2 topic list on the robot if they differ",
+  "wheel_joints": ["wheel_left_joint", "wheel_right_joint"],
+  "_wheel_joints": "names in /joint_states, picked by name (ROBOTIS convention, not yet seen on the lab robot)",
+  "wheel_sign": [1, 1],
+  "_wheel_sign": "+1 when the joint position grows as the robot rolls forward; check_robot.py prints the wheel angles while you push the robot by hand",
+  "v_max": 0.10,
+  "w_max": 1.0,
+  "_v_max": "m/s and rad/s, first-run safety caps on top of the Waffle Pi limits (0.26, 1.82). Commands above a cap are scaled down together, so the turning radius v/w is kept. Raise them once the lab speed rule is known and the robot behaves",
+  "max_sensor_age": 1.0,
+  "_max_sensor_age": "s; step() stops the robot and raises if /joint_states or /scan is older than this (lost wifi, crashed driver)",
+  "connect_timeout": 10.0,
+  "_connect_timeout": "s to wait for the rosbridge connection and then for the first message on each sensor topic"
+}

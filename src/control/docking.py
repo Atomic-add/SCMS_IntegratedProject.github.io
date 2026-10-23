@@ -68,13 +68,15 @@ class DockingController:
         # IBVS (Week 9): calibrated intrinsics, p* from the docked geometry, (v, omega) -> camera twist.
         self.servo = self.p.get("servo", "pbvs")
         if self.servo == "ibvs":
+            T_BC = vs.aruco.T_BC                             # URDF camera pose, unless the file has one
             if K is None:
                 from src.perception import camera
                 K, dist, _ = camera.load_intrinsics(PROJECT_ROOT / self.p["camera_intrinsics"])
+                T_BC = vs.aruco.load_T_BC(PROJECT_ROOT / self.p["camera_intrinsics"])   # real camera: its tilt
             self.K, self.dist = np.asarray(K, float), np.asarray(dist, float)
             marker_height = marker[2] if marker.size > 2 else 0.12
-            self.p_star = vs.desired_features(self.K, self.stop_range, marker_height)
-            self.G = vs.robot_to_camera()
+            self.p_star = vs.desired_features(self.K, self.stop_range, marker_height, T_BC=T_BC)
+            self.G = vs.robot_to_camera(T_BC)
         self.phase, self.stop_reason = None, None
         self.ibvs_log = []                                   # (t, corners 2x4, e_rms px, v, w) per IBVS step
 
