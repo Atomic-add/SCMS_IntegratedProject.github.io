@@ -11,6 +11,7 @@
     python main.py --real 192.168.1.213  # the same mission on the real TurtleBot (src/robot/real_robot.py)
     python main.py --task config/arena_lab.json --case centre   # the lab track in the sim
     python main.py --real --task config/arena_lab.json   # real robot, host from config/robot_real.json
+    python main.py --task config/arena_lab.json --sim-camera lab   # sim with the lab robot's camera geometry
 
 The robot starts from the prior in config/corridor.json, follows the waypoints with the LQR, goes
 around the box with the LiDAR and docks at the ArUco station (marker ID 0). With --randomise every seed
@@ -24,6 +25,11 @@ Nothing here reads simulator ground truth; evaluation/ is the only place that do
 rosbridge. It needs config/camera_real.json (experiments/calibrate_camera.py --images ...) and a
 task file measured in the lab arena (--task, same layout as config/corridor.json); --case has no
 effect there, the boxes are wherever they were put. Run experiments/check_robot.py first.
+
+--sim-camera picks the simulated camera (SIM_CAMERAS in src/robot/sim_robot.py) and its calibration file:
+urdf (default) is the level URDF camera with the Pi Camera v2 datasheet field of view; lab is the lab
+robot's camera as measured on 23 Oct (49.7 x 38.2 deg, 6.3 deg down, 30 Hz), so a sim run sees what the
+real camera sees.
 
 Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the run.
 """
@@ -54,6 +60,9 @@ def parse_args(argv=None):
                     help="drive the real TurtleBot over rosbridge (HOST default: config/robot_real.json)")
     ap.add_argument("--task", type=Path, default=None,
                     help="start prior, waypoints, markers and dock (default config/corridor.json)")
+    ap.add_argument("--sim-camera", default="urdf", choices=("urdf", "lab"),
+                    help="simulated camera: urdf (level, fovy 48.8 deg, 15 Hz; default) or lab (the lab robot's "
+                         "camera measured on 23 Oct: fovy 38.2 deg, 6.3 deg down, 30 Hz)")
     return ap.parse_args(argv)
 
 
@@ -87,10 +96,16 @@ def main(argv=None):
     real = args.real is not None
     if real and args.randomise:
         sys.exit("--randomise changes the simulated world; it has no meaning with --real")
-    intrinsics = ROOT / "config" / ("camera_real.json" if real else "camera_sim.json")
+    if real and args.sim_camera != "urdf":
+        sys.exit("--sim-camera picks the simulated camera; the real robot uses config/camera_real.json")
+    from src.robot.sim_robot import SIM_CAMERAS
+    sim_camera, sim_intrinsics = SIM_CAMERAS[args.sim_camera]
+    intrinsics = ROOT / ("config/camera_real.json" if real else sim_intrinsics)
     if not intrinsics.exists():
+        how = ("--images DIR --out config/camera_real.json" if real else "" if args.sim_camera == "urdf" else
+               f"--camera {sim_camera.name} --pitch-deg 6.3 --out {sim_intrinsics}")
         sys.exit(f"{intrinsics.relative_to(ROOT)} is missing: calibrate the robot camera first with\n"
-                 "  python experiments/calibrate_camera.py --images DIR --out config/camera_real.json")
+                 f"  python experiments/calibrate_camera.py {how}")
     if args.headless and sys.platform.startswith("linux"):
         os.environ.setdefault("MUJOCO_GL", "egl")  # offscreen rendering without a display; set before mujoco loads
 
@@ -106,7 +121,7 @@ def main(argv=None):
     robot = None
     if args.task and not real:
         from src.robot.corridor import make_robot
-        robot = make_robot(case, seed=args.seed, path=args.task)   # the task file's scene, box and LiDAR
+        robot = make_robot(case, seed=args.seed, path=args.task, camera=sim_camera)   # the task file's scene, box, LiDAR
     if real:
         from src.robot.real_robot import RealRobot
         robot = RealRobot(args.real or None)
@@ -119,6 +134,9 @@ def main(argv=None):
         print(describe(sc))
         task, case, label = sc["task"], "none", f"random seed {args.seed}"   # boxes come from the scenario
         setup = lambda robot: apply_world(robot, sc["world"])              # noqa: E731  (sim side only)
+    if robot is None and not real:
+        from src.robot.corridor import make_robot
+        robot = make_robot(case, seed=args.seed, camera=sim_camera)    # the corridor, as run_mission would
     # the camera file decides the range model: the real one corrects its own bias (no sim range_bias_r2 on top)
     estimator = None if args.odometry else EKF(task["start"], marker_map=task["markers"],
                                                params=load_estimation_config(camera=intrinsics))
@@ -126,8 +144,7 @@ def main(argv=None):
     cfg = apply_control_overrides(load_control_config(), task)   # a task file may tune the controller
     if args.dock:
         cfg["docking"]["servo"] = args.dock
-    if real:
-        cfg["docking"]["camera_intrinsics"] = str(intrinsics.relative_to(ROOT))   # IBVS uses the real K
+    cfg["docking"]["camera_intrinsics"] = str(intrinsics.relative_to(ROOT))   # IBVS: the same K and T_BC as ArUco
     on_step = None
     if not args.headless and not args.no_camera:
         from src.perception import aruco
@@ -136,7 +153,7 @@ def main(argv=None):
                                 T_BC=aruco.load_T_BC(intrinsics), range_correction=aruco.load_range_correction(intrinsics))
 
     print(f"{label}, steering on {'odometry' if args.odometry else 'the EKF'}, docking {cfg['docking']['servo']}, "
-          f"seed {args.seed}{', headless' if args.headless else ''}")
+          f"seed {args.seed}{'' if real else f', camera {args.sim_camera}'}{', headless' if args.headless else ''}")
     info, t_end = run_mission(case, seed=args.seed, verbose=True, estimator=estimator,
                               view=not args.headless and not real, on_step=on_step, setup=setup, task=task,
                               label=label, cfg=cfg, robot=robot, intrinsics=intrinsics)

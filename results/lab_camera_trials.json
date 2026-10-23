@@ -1,0 +1,4865 @@
+{
+ "task": "config/arena_lab.json",
+ "trials": [
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.2,
+     "n_fused": 275,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 246,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.9,
+     "n_fused": 283,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.8,
+     "n_fused": 279,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.9,
+     "n_fused": 257,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.4,
+    "from_t": 18.8,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.0,
+     "n_fused": 274,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 246,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.0,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.0,
+     "n_fused": 273,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 241,
+     "n_gated": 2
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.2,
+     "n_fused": 272,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 247,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.7,
+     "first_range_m": 3.77,
+     "last_t": 38.2,
+     "n_fused": 281,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 269,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 244,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.5,
+     "first_range_m": 3.79,
+     "last_t": 38.4,
+     "n_fused": 286,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.4,
+     "n_fused": 274,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.4,
+     "n_fused": 249,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.4,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.6,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 38.0,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 241,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.68,
+     "last_t": 38.2,
+     "n_fused": 288,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 247,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "none",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 38.2,
+     "n_fused": 279,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 241,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 5.4,
+     "first_range_m": 3.24,
+     "last_t": 38.0,
+     "n_fused": 257,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.0,
+     "n_fused": 231,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     0.99,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.5,
+     "first_range_m": 3.41,
+     "last_t": 38.2,
+     "n_fused": 271,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.2,
+     "n_fused": 233,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 4.8,
+     "first_range_m": 3.36,
+     "last_t": 38.0,
+     "n_fused": 264,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.95,
+     "n_fused": 265,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.0,
+     "n_fused": 230,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.4,
+    "from_t": 17.95,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.0,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 5.15,
+     "first_range_m": 3.3,
+     "last_t": 38.0,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.95,
+     "n_fused": 265,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.0,
+     "n_fused": 228,
+     "n_gated": 2
+    }
+   },
+   "blind_gap": {
+    "s": 5.4,
+    "from_t": 17.95,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.75,
+     "first_range_m": 3.37,
+     "last_t": 38.0,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 26.0,
+     "n_fused": 229,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     0.99,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.63,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.4,
+     "first_range_m": 3.43,
+     "last_t": 38.0,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 26.0,
+     "n_fused": 229,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     0.99,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.63,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.3,
+     "first_range_m": 3.45,
+     "last_t": 38.2,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 271,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.2,
+     "n_fused": 235,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.63,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 4.8,
+     "first_range_m": 3.36,
+     "last_t": 38.0,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.0,
+     "n_fused": 228,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     0.99,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.0,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.95,
+     "first_range_m": 3.33,
+     "last_t": 38.0,
+     "n_fused": 259,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.95,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 26.0,
+     "n_fused": 231,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.4,
+    "from_t": 17.95,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "left",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.9,
+     "first_range_m": 3.34,
+     "last_t": 38.0,
+     "n_fused": 259,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 267,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.1,
+     "first_range_m": 4.47,
+     "last_t": 26.0,
+     "n_fused": 230,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     0.99,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 45.2,
+     "n_fused": 303,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.35,
+     "n_fused": 236,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.2,
+     "n_fused": 259,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.25,
+    "from_t": 25.35,
+    "at_xy": [
+     0.97,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.6,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 45.4,
+     "n_fused": 326,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.15,
+     "n_fused": 292,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.35,
+     "n_fused": 293,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.55,
+    "from_t": 25.15,
+    "at_xy": [
+     1.04,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.0,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 123,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.36,
+   "dock_along_cm": 0.49,
+   "dock_yaw_deg": -0.58,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 45.4,
+     "n_fused": 330,
+     "n_gated": 2
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.2,
+     "n_fused": 283,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 292,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.6,
+    "from_t": 25.2,
+    "at_xy": [
+     1.04,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.2,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 121,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.7,
+   "contacts": [],
+   "dock_lateral_cm": 0.37,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.58,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 45.6,
+     "n_fused": 323,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.35,
+     "n_fused": 294,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.6,
+     "n_fused": 294,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.6,
+    "from_t": 25.35,
+    "at_xy": [
+     1.04,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.4,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.63,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 45.4,
+     "n_fused": 306,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.55,
+     "n_fused": 220,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 258,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.2,
+    "from_t": 25.55,
+    "at_xy": [
+     0.97,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 123,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 45.4,
+     "n_fused": 328,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.2,
+     "n_fused": 294,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 293,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.6,
+    "from_t": 25.2,
+    "at_xy": [
+     1.04,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.37,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.59,
+   "dock_err_cm": 0.6,
+   "fused": {
+    "0": {
+     "first_t": 2.5,
+     "first_range_m": 3.79,
+     "last_t": 45.4,
+     "n_fused": 324,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.2,
+     "n_fused": 295,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 294,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.6,
+    "from_t": 25.2,
+    "at_xy": [
+     1.04,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 45.4,
+     "n_fused": 323,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.15,
+     "n_fused": 276,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 292,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.6,
+    "from_t": 25.15,
+    "at_xy": [
+     1.05,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.7,
+   "contacts": [],
+   "dock_lateral_cm": 0.36,
+   "dock_along_cm": 0.46,
+   "dock_yaw_deg": -0.58,
+   "dock_err_cm": 0.59,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.68,
+     "last_t": 45.6,
+     "n_fused": 316,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.35,
+     "n_fused": 296,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.55,
+     "n_fused": 295,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.55,
+    "from_t": 25.35,
+    "at_xy": [
+     1.03,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 150.8,
+     "bottom": 141.4,
+     "left": 226.2,
+     "right": 226.4
+    },
+    "dock_frames": 124,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "centre",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 45.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 3.35,
+     "first_range_m": 3.62,
+     "last_t": 45.4,
+     "n_fused": 301,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 25.55,
+     "n_fused": 214,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 33.4,
+     "n_fused": 254,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.25,
+    "from_t": 25.55,
+    "at_xy": [
+     0.97,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.2,
+     "n_fused": 275,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 246,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.9,
+     "n_fused": 283,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.8,
+     "n_fused": 279,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.9,
+     "n_fused": 257,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.4,
+    "from_t": 18.8,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.0,
+     "n_fused": 274,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 246,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.0,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.0,
+     "n_fused": 273,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 241,
+     "n_gated": 2
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.2,
+     "n_fused": 272,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 247,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.3,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.7,
+     "first_range_m": 3.77,
+     "last_t": 38.2,
+     "n_fused": 281,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 269,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 244,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.5,
+   "contacts": [],
+   "dock_lateral_cm": 0.39,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.62,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.5,
+     "first_range_m": 3.79,
+     "last_t": 38.4,
+     "n_fused": 286,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.4,
+     "n_fused": 274,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.4,
+     "n_fused": 249,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.4,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.47,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.6,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 38.0,
+     "n_fused": 266,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.0,
+     "n_fused": 268,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.0,
+     "n_fused": 241,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.0,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 14,
+    "detected": 14,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.61,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.68,
+     "last_t": 38.2,
+     "n_fused": 288,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 247,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "urdf",
+   "rate_hz": 15.0,
+   "case": "right",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.3,
+   "contacts": [],
+   "dock_lateral_cm": 0.38,
+   "dock_along_cm": 0.48,
+   "dock_yaw_deg": -0.6,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 38.2,
+     "n_fused": 279,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 18.2,
+     "n_fused": 270,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 26.2,
+     "n_fused": 241,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 5.35,
+    "from_t": 18.2,
+    "at_xy": [
+     1.0,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 15,
+    "detected": 15,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 151.1,
+     "bottom": 141.3,
+     "left": 226.2,
+     "right": 226.5
+    },
+    "dock_frames": 122,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 335,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 224,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 38.55,
+     "n_fused": 309,
+     "n_gated": 2
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 329,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 220,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.95,
+     "n_fused": 312,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.2,
+     "n_fused": 338,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.9,
+     "n_fused": 228,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.2,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.2,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 39.15,
+     "n_fused": 330,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.45,
+     "n_fused": 343,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 25.1,
+     "n_fused": 234,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.6,
+    "from_t": 17.45,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.75,
+     "n_fused": 318,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 334,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 225,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 333,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 220,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 332,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 227,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.85,
+     "first_range_m": 3.72,
+     "last_t": 38.55,
+     "n_fused": 311,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 327,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 218,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 38.55,
+     "n_fused": 306,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 329,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 220,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "none",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.05,
+     "first_range_m": 3.68,
+     "last_t": 38.55,
+     "n_fused": 304,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 330,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 217,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.9,
+     "first_range_m": 3.33,
+     "last_t": 38.75,
+     "n_fused": 301,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.05,
+     "n_fused": 337,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 24.7,
+     "n_fused": 202,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.6,
+    "from_t": 17.05,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.8,
+     "first_range_m": 3.35,
+     "last_t": 38.55,
+     "n_fused": 297,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 327,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 24.5,
+     "n_fused": 193,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 4.7,
+     "first_range_m": 3.37,
+     "last_t": 38.55,
+     "n_fused": 301,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 332,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.2,
+     "first_range_m": 4.45,
+     "last_t": 24.5,
+     "n_fused": 194,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.8,
+     "first_range_m": 3.35,
+     "last_t": 38.95,
+     "n_fused": 297,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.2,
+     "n_fused": 338,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.2,
+     "first_range_m": 4.45,
+     "last_t": 24.9,
+     "n_fused": 201,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.2,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.75,
+     "first_range_m": 3.36,
+     "last_t": 38.55,
+     "n_fused": 301,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 328,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.2,
+     "first_range_m": 4.45,
+     "last_t": 24.5,
+     "n_fused": 193,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 4.85,
+     "first_range_m": 3.34,
+     "last_t": 38.55,
+     "n_fused": 299,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.85,
+     "n_fused": 331,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 24.5,
+     "n_fused": 198,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.6,
+    "from_t": 16.85,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.3,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.65,
+     "first_range_m": 3.38,
+     "last_t": 38.75,
+     "n_fused": 299,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.05,
+     "n_fused": 338,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.2,
+     "first_range_m": 4.45,
+     "last_t": 24.7,
+     "n_fused": 205,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.6,
+    "from_t": 17.05,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.75,
+     "first_range_m": 3.36,
+     "last_t": 38.55,
+     "n_fused": 300,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 329,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.2,
+     "first_range_m": 4.45,
+     "last_t": 24.5,
+     "n_fused": 196,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.8,
+     "first_range_m": 3.35,
+     "last_t": 38.55,
+     "n_fused": 300,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 330,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 24.5,
+     "n_fused": 193,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "left",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 4.75,
+     "first_range_m": 3.36,
+     "last_t": 38.55,
+     "n_fused": 297,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 328,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 1.15,
+     "first_range_m": 4.46,
+     "last_t": 24.5,
+     "n_fused": 192,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 45.95,
+     "n_fused": 388,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.65,
+     "n_fused": 250,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 230,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.2,
+    "from_t": 24.65,
+    "at_xy": [
+     1.15,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 45.95,
+     "n_fused": 393,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.7,
+     "n_fused": 251,
+     "n_gated": 1
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 234,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.15,
+    "from_t": 24.7,
+    "at_xy": [
+     1.14,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 45.9,
+     "n_fused": 389,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.6,
+     "n_fused": 257,
+     "n_gated": 1
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.85,
+     "n_fused": 230,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.2,
+    "from_t": 24.6,
+    "at_xy": [
+     1.14,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 45.9,
+     "n_fused": 391,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.6,
+     "n_fused": 254,
+     "n_gated": 1
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.85,
+     "n_fused": 235,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.2,
+    "from_t": 24.6,
+    "at_xy": [
+     1.15,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 45.95,
+     "n_fused": 390,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.65,
+     "n_fused": 255,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 228,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.2,
+    "from_t": 24.65,
+    "at_xy": [
+     1.15,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.1,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 46.05,
+     "n_fused": 392,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.8,
+     "n_fused": 254,
+     "n_gated": 1
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 32.0,
+     "n_fused": 230,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.15,
+    "from_t": 24.8,
+    "at_xy": [
+     1.14,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.3,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.2,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 46.1,
+     "n_fused": 392,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.85,
+     "n_fused": 255,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 32.05,
+     "n_fused": 229,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.15,
+    "from_t": 24.85,
+    "at_xy": [
+     1.13,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.47,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.74,
+   "dock_err_cm": 0.61,
+   "fused": {
+    "0": {
+     "first_t": 2.85,
+     "first_range_m": 3.72,
+     "last_t": 45.95,
+     "n_fused": 393,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.6,
+     "n_fused": 247,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 228,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.25,
+    "from_t": 24.6,
+    "at_xy": [
+     1.15,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 45.95,
+     "n_fused": 393,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.7,
+     "n_fused": 245,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 230,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.15,
+    "from_t": 24.7,
+    "at_xy": [
+     1.14,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "centre",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 46.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.05,
+     "first_range_m": 3.68,
+     "last_t": 45.95,
+     "n_fused": 387,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 24.7,
+     "n_fused": 245,
+     "n_gated": 1
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 31.9,
+     "n_fused": 234,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.15,
+    "from_t": 24.7,
+    "at_xy": [
+     1.14,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 0,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.9,
+     "first_range_m": 3.71,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 335,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 224,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 1,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 38.55,
+     "n_fused": 309,
+     "n_gated": 2
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 329,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 220,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 2,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.0,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.75,
+     "first_range_m": 3.74,
+     "last_t": 38.95,
+     "n_fused": 312,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.2,
+     "n_fused": 338,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.9,
+     "n_fused": 228,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.2,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 3,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 39.2,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.39,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.8,
+     "first_range_m": 3.73,
+     "last_t": 39.15,
+     "n_fused": 330,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.45,
+     "n_fused": 343,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 25.1,
+     "n_fused": 234,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.6,
+    "from_t": 17.45,
+    "at_xy": [
+     1.23,
+     1.24
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 4,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.75,
+     "n_fused": 318,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 334,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 225,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 5,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 3.0,
+     "first_range_m": 3.69,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 1
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 333,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 220,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 6,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.8,
+   "contacts": [],
+   "dock_lateral_cm": 0.49,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.77,
+   "dock_err_cm": 0.63,
+   "fused": {
+    "0": {
+     "first_t": 2.55,
+     "first_range_m": 3.78,
+     "last_t": 38.75,
+     "n_fused": 305,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 17.0,
+     "n_fused": 332,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.7,
+     "n_fused": 227,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 17.0,
+    "at_xy": [
+     1.24,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.3,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 7,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 2.85,
+     "first_range_m": 3.72,
+     "last_t": 38.55,
+     "n_fused": 311,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 327,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 218,
+     "n_gated": 0
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 8,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.76,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.1,
+     "first_range_m": 3.67,
+     "last_t": 38.55,
+     "n_fused": 306,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 329,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 220,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  },
+  {
+   "camera": "lab",
+   "rate_hz": 30.0,
+   "case": "right",
+   "seed": 9,
+   "success": true,
+   "dock_complete": true,
+   "stop_reason": "docked",
+   "time_s": 38.6,
+   "contacts": [],
+   "dock_lateral_cm": 0.48,
+   "dock_along_cm": 0.4,
+   "dock_yaw_deg": -0.75,
+   "dock_err_cm": 0.62,
+   "fused": {
+    "0": {
+     "first_t": 3.05,
+     "first_range_m": 3.68,
+     "last_t": 38.55,
+     "n_fused": 304,
+     "n_gated": 0
+    },
+    "1": {
+     "first_t": 0.2,
+     "first_range_m": 4.53,
+     "last_t": 16.8,
+     "n_fused": 330,
+     "n_gated": 0
+    },
+    "2": {
+     "first_t": 0.2,
+     "first_range_m": 4.61,
+     "last_t": 24.5,
+     "n_fused": 217,
+     "n_gated": 1
+    }
+   },
+   "blind_gap": {
+    "s": 6.65,
+    "from_t": 16.8,
+    "at_xy": [
+     1.23,
+     1.25
+    ]
+   },
+   "marker0_at_stop": {
+    "frames": 19,
+    "detected": 19,
+    "last_detected": true,
+    "min_margin_px": {
+     "top": 49.2,
+     "bottom": 182.4,
+     "left": 176.6,
+     "right": 211.6
+    },
+    "dock_frames": 173,
+    "dock_lost": 0
+   }
+  }
+ ],
+ "summary": {
+  "urdf": {
+   "n": 40,
+   "docked": 40,
+   "success": 40,
+   "per_case": {
+    "none": "10/10",
+    "left": "10/10",
+    "centre": "10/10",
+    "right": "10/10"
+   },
+   "failures": [],
+   "dock_err_cm": {
+    "mean": 0.61,
+    "max": 0.62
+   },
+   "dock_yaw_deg": {
+    "mean": 0.61,
+    "max": 0.63
+   },
+   "time_s": 40.1,
+   "marker0_first_fused": {
+    "runs": "40/40",
+    "t_median": 3.0,
+    "t_range": [
+     2.5,
+     5.4
+    ],
+    "range_m_median": 3.69,
+    "last_t_median": 38.2,
+    "n_fused_median": 277.0,
+    "n_gated_total": 10
+   },
+   "marker1_first_fused": {
+    "runs": "40/40",
+    "t_median": 0.2,
+    "t_range": [
+     0.2,
+     0.2
+    ],
+    "range_m_median": 4.53,
+    "last_t_median": 18.2,
+    "n_fused_median": 270.0,
+    "n_gated_total": 0
+   },
+   "marker2_first_fused": {
+    "runs": "40/40",
+    "t_median": 0.2,
+    "t_range": [
+     0.2,
+     1.15
+    ],
+    "range_m_median": 4.61,
+    "last_t_median": 26.2,
+    "n_fused_median": 246.0,
+    "n_gated_total": 11
+   },
+   "blind_gap_s": {
+    "median": 5.35,
+    "max": 5.6,
+    "worst": "centre s2 from t 25.2 at [1.04, 1.25]"
+   },
+   "marker0_at_stop": {
+    "last_frame_detected": "40/40",
+    "all_last_1s_detected": "40/40",
+    "min_top_margin_px": 150.8,
+    "min_bottom_margin_px": 141.3,
+    "dock_frames_lost": "0/4883"
+   }
+  },
+  "lab": {
+   "n": 40,
+   "docked": 40,
+   "success": 40,
+   "per_case": {
+    "none": "10/10",
+    "left": "10/10",
+    "centre": "10/10",
+    "right": "10/10"
+   },
+   "failures": [],
+   "dock_err_cm": {
+    "mean": 0.62,
+    "max": 0.63
+   },
+   "dock_yaw_deg": {
+    "mean": 0.76,
+    "max": 0.77
+   },
+   "time_s": 40.6,
+   "marker0_first_fused": {
+    "runs": "40/40",
+    "t_median": 2.9,
+    "t_range": [
+     2.55,
+     4.9
+    ],
+    "range_m_median": 3.71,
+    "last_t_median": 38.75,
+    "n_fused_median": 307.5,
+    "n_gated_total": 10
+   },
+   "marker1_first_fused": {
+    "runs": "40/40",
+    "t_median": 0.2,
+    "t_range": [
+     0.2,
+     0.2
+    ],
+    "range_m_median": 4.53,
+    "last_t_median": 17.0,
+    "n_fused_median": 329.5,
+    "n_gated_total": 5
+   },
+   "marker2_first_fused": {
+    "runs": "40/40",
+    "t_median": 0.2,
+    "t_range": [
+     0.2,
+     1.2
+    ],
+    "range_m_median": 4.61,
+    "last_t_median": 24.7,
+    "n_fused_median": 222.0,
+    "n_gated_total": 22
+   },
+   "blind_gap_s": {
+    "median": 6.65,
+    "max": 6.65,
+    "worst": "none s0 from t 17.0 at [1.24, 1.25]"
+   },
+   "marker0_at_stop": {
+    "last_frame_detected": "40/40",
+    "all_last_1s_detected": "40/40",
+    "min_top_margin_px": 49.2,
+    "min_bottom_margin_px": 182.3,
+    "dock_frames_lost": "0/6920"
+   }
+  }
+ }
+}

@@ -59,6 +59,16 @@ class CameraSpec:
     pixel_noise: float = 2.0   # sd of additive grey-level noise per pixel channel
 
 
+# Sim cameras for main.py --sim-camera: the MJCF camera and its frame rate, and the calibration file that
+# experiments/calibrate_camera.py wrote for that camera (the robot's software uses the file, never the MJCF).
+#   urdf  the URDF pose, level, fovy 48.8 deg (Pi Camera v2 datasheet), 15 Hz: the default
+#   lab   the lab robot's camera measured on 23 Oct: f 692 px, 49.7 x 38.2 deg, 6.3 deg down, 30 Hz
+SIM_CAMERAS = {
+    "urdf": (CameraSpec(), "config/camera_sim.json"),
+    "lab": (CameraSpec(name="rgb_lab", rate_hz=30.0), "config/camera_sim_lab.json"),
+}
+
+
 class SimRobot:
     """TurtleBot3 Waffle Pi in MuJoCo, with wheel encoders, a 2D LiDAR and an RGB camera."""
 
