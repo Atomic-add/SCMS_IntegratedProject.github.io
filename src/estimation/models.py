@@ -44,9 +44,19 @@ from src.robot.sim_robot import PROJECT_ROOT, WHEEL_SEPARATION  # noqa: E402
 ESTIMATION_CONFIG = PROJECT_ROOT / "config" / "estimation.json"
 
 
-def load_estimation_config(path=ESTIMATION_CONFIG):
-    """The EKF tuning as a dict (config/estimation.json)."""
-    return json.loads(Path(path).read_text())
+def load_estimation_config(path=ESTIMATION_CONFIG, camera=None):
+    """The EKF tuning as a dict (config/estimation.json).
+
+    camera: the intrinsics file the ArUco ranges come from. When it has its own "range_correction" (the
+    real camera, experiments/aruco_real_noise.py), aruco.measure has already removed that bias, so
+    range_bias_r2 (the sim camera's bias) becomes 0, not subtracted twice, and range_sd is the camera's.
+    The sim file has none: the config is returned unchanged.
+    """
+    cfg = json.loads(Path(path).read_text())
+    corr = None if camera is None else json.loads(Path(camera).read_text()).get("range_correction")
+    if corr is not None:
+        cfg["range_bias_r2"], cfg["range_sd"] = 0.0, list(corr["range_sd"])
+    return cfg
 
 
 # ---------------------------------------------------------------- motion

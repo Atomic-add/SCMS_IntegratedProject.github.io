@@ -57,7 +57,7 @@ def parse_args(argv=None):
     return ap.parse_args(argv)
 
 
-def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None):
+def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None, range_correction=None):
     """on_step hook for run_mission: show the robot camera with the markers it sees.
 
     It only calls robot.read_image(), the same sensor read the robot's own code uses. The docking
@@ -74,7 +74,8 @@ def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None):
         if t_frame == last["t"]:
             return
         last["t"] = t_frame
-        img = aruco.draw_markers(rgb, K, dist, marker_ids, dock_id=dock_id, T_BC=T_BC if T_BC is not None else aruco.T_BC)
+        img = aruco.draw_markers(rgb, K, dist, marker_ids, dock_id=dock_id, T_BC=T_BC if T_BC is not None else aruco.T_BC,
+                                 range_correction=range_correction)
         cv2.imshow("robot camera", cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
         cv2.waitKey(1)
 
@@ -96,6 +97,7 @@ def main(argv=None):
     from src.control.behaviour import run_mission
     from src.control.models import load_control_config
     from src.estimation.ekf import EKF
+    from src.estimation.models import load_estimation_config
     from src.perception import camera
     from src.robot.corridor import load_task
 
@@ -117,7 +119,9 @@ def main(argv=None):
         print(describe(sc))
         task, case, label = sc["task"], "none", f"random seed {args.seed}"   # boxes come from the scenario
         setup = lambda robot: apply_world(robot, sc["world"])              # noqa: E731  (sim side only)
-    estimator = None if args.odometry else EKF(task["start"], marker_map=task["markers"])
+    # the camera file decides the range model: the real one corrects its own bias (no sim range_bias_r2 on top)
+    estimator = None if args.odometry else EKF(task["start"], marker_map=task["markers"],
+                                               params=load_estimation_config(camera=intrinsics))
     from src.robot.corridor import apply_control_overrides
     cfg = apply_control_overrides(load_control_config(), task)   # a task file may tune the controller
     if args.dock:
@@ -129,7 +133,7 @@ def main(argv=None):
         from src.perception import aruco
         K, dist, _ = camera.load_intrinsics(intrinsics)
         on_step = camera_window(K, dist, sorted(task["markers"]), task["dock"]["marker_id"],
-                                T_BC=aruco.load_T_BC(intrinsics))
+                                T_BC=aruco.load_T_BC(intrinsics), range_correction=aruco.load_range_correction(intrinsics))
 
     print(f"{label}, steering on {'odometry' if args.odometry else 'the EKF'}, docking {cfg['docking']['servo']}, "
           f"seed {args.seed}{', headless' if args.headless else ''}")

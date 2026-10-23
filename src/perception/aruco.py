@@ -40,6 +40,15 @@ def load_T_BC(path):
     return T_BC if data is None else camera_pose(data["xyz"], data["pitch_deg"])
 
 
+def load_range_correction(path):
+    """The camera's ArUco range bias stored with the intrinsics ("range_correction": {"bias_m", "bias_per_m",
+    "range_sd"}, written by experiments/aruco_real_noise.py --write for the real camera), for measure();
+    None when the file has none (the sim: the range stays as PnP gives it)."""
+    import json
+    from pathlib import Path
+    return json.loads(Path(path).read_text()).get("range_correction")
+
+
 def marker_image(marker_id=MARKER_ID, px=600, pad=60, dictionary=ARUCO_DICT):
     """An ArUco marker as a greyscale image with a white quiet zone (W3 Part E marker_image)."""
     tag = cv2.aruco.generateImageMarker(cv2.aruco.getPredefinedDictionary(dictionary), marker_id, px)
@@ -83,7 +92,8 @@ def marker_pose(corners, K, dist, side=MARKER_SIDE):
     return [(SE3.Rt(cv2.Rodrigues(r)[0], t.ravel()), float(e)) for e, r, t in sols]
 
 
-def measure(rgb, K, dist, T_BC=T_BC, side=MARKER_SIDE, marker_id=MARKER_ID, ambiguity_ratio=0.1):
+def measure(rgb, K, dist, T_BC=T_BC, side=MARKER_SIDE, marker_id=MARKER_ID, ambiguity_ratio=0.1,
+            range_correction=None):
     """The marker measurement for the EKF, or None when the marker is not seen.
 
     z = [range, bearing]: from the base origin to the marker centre, in the floor plane of {B}.
@@ -96,6 +106,9 @@ def measure(rgb, K, dist, T_BC=T_BC, side=MARKER_SIDE, marker_id=MARKER_ID, ambi
     With 0.1, trusted yaws were within 0.5 deg (95th percentile) and flagged ones off by up to 16 deg
     in the sweep of evaluation/check_camera.py. Seen square on, it was flagged at most distances beyond
     0.25 m; seen 30 deg off the normal, it was trusted at every distance tested (0.3-1.4 m).
+    range_correction (load_range_correction, the real camera): the PnP range reads r_true + bias_m +
+    bias_per_m * r_true, so the range in z is (r - bias_m) / (1 + bias_per_m). Only z[0] changes: T_BM
+    and T_CM stay the PnP pose, the bearing and yaw are not affected. None (the sim) = no change.
     """
     corners = detect(rgb, marker_id)
     if corners is None:
@@ -105,7 +118,10 @@ def measure(rgb, K, dist, T_BC=T_BC, side=MARKER_SIDE, marker_id=MARKER_ID, ambi
     e2 = sols[1][1] if len(sols) > 1 else np.inf
     T_BM = T_BC * T_CM
     p, n = T_BM.t, T_BM.R[:, 2]
-    return dict(z=np.array([np.hypot(p[0], p[1]), np.arctan2(p[1], p[0])]),
+    r = np.hypot(p[0], p[1])
+    if range_correction is not None:                 # real camera: remove its measured range bias
+        r = (r - range_correction["bias_m"]) / (1 + range_correction["bias_per_m"])
+    return dict(z=np.array([r, np.arctan2(p[1], p[0])]),
                 yaw=float(np.arctan2(n[1], n[0])),
                 ambiguous=bool(e1 > ambiguity_ratio * e2),
                 T_BM=T_BM, T_CM=T_CM, T_CM_alt=sols[1][0] if len(sols) > 1 else None,
@@ -124,7 +140,7 @@ def _label(img, text, org, scale=0.6):
     cv2.putText(img, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, (255, 255, 255), 1, cv2.LINE_AA)
 
 
-def draw_markers(rgb, K, dist, marker_ids, dock_id=MARKER_ID, T_BC=T_BC, side=MARKER_SIDE):
+def draw_markers(rgb, K, dist, marker_ids, dock_id=MARKER_ID, T_BC=T_BC, side=MARKER_SIDE, range_correction=None):
     """Copy of the frame with every listed marker that is seen. Display only (main.py camera window).
 
     Top left, for every marker seen (ID 0, 1, 2): the z = [range, bearing] in {B} that measure() hands
@@ -135,7 +151,7 @@ def draw_markers(rgb, K, dist, marker_ids, dock_id=MARKER_ID, T_BC=T_BC, side=MA
     bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
     lines = []
     for mid in marker_ids:
-        meas = measure(rgb, K, dist, T_BC=T_BC, side=side, marker_id=mid)
+        meas = measure(rgb, K, dist, T_BC=T_BC, side=side, marker_id=mid, range_correction=range_correction)
         if meas is None:
             continue
         corners = meas["corners"]

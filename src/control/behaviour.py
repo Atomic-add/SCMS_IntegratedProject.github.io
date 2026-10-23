@@ -198,7 +198,9 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     robot: the robot to drive, default the corridor SimRobot for the case; main.py --real passes a
     RealRobot (src/robot/real_robot.py), which the with block connects and stops. view needs a SimRobot.
     intrinsics: camera calibration for the ArUco measurements (default config/camera_sim.json); its
-    optional "T_BC" (the real camera's tilt, experiments/camera_pitch.py) replaces the URDF camera pose.
+    optional "T_BC" (the real camera's tilt, experiments/camera_pitch.py) replaces the URDF camera pose,
+    and its optional "range_correction" (the real camera's range bias, experiments/aruco_real_noise.py)
+    is removed from every ArUco range, so the EKF and docking both get corrected ranges.
     """
     import contextlib
     import time
@@ -210,8 +212,10 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     task = task if task is not None else load_task()
     label = label or case
     nav = NavigationController(task, cfg=cfg)
-    K_cam, dist, _ = camera.load_intrinsics(intrinsics or PROJECT_ROOT / "config" / "camera_sim.json")
-    T_BC = aruco.load_T_BC(intrinsics or PROJECT_ROOT / "config" / "camera_sim.json")   # real camera: with its tilt
+    intrinsics = intrinsics or PROJECT_ROOT / "config" / "camera_sim.json"
+    K_cam, dist, _ = camera.load_intrinsics(intrinsics)
+    T_BC = aruco.load_T_BC(intrinsics)                        # real camera: with its tilt
+    range_corr = aruco.load_range_correction(intrinsics)      # real camera: its range bias; sim: None
     est = estimator or DeadReckoning(task["start"])           # start prior from the config, not the truth
     marker_ids = [0] if estimator is None else sorted(task["markers"])   # the EKF wants every known marker
     with (robot if robot is not None else make_robot(case, seed=seed)) as robot, contextlib.ExitStack() as stack:
@@ -236,7 +240,7 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
                 if t_frame != t_last_frame:                   # run ArUco once per NEW frame
                     markers = {}
                     for mid in marker_ids:
-                        m = aruco.measure(rgb, K_cam, dist, T_BC=T_BC, marker_id=mid)
+                        m = aruco.measure(rgb, K_cam, dist, T_BC=T_BC, marker_id=mid, range_correction=range_corr)
                         if m is not None:
                             markers[mid] = {"z": m["z"], "R": np.diag([0.005**2, np.deg2rad(1.0)**2]),
                                             "yaw": m["yaw"], "ambiguous": m["ambiguous"],

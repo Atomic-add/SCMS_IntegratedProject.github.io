@@ -87,5 +87,14 @@
     ],
     "pitch_deg": 6.3,
     "_doc": "camera pose in base_footprint: URDF position, tilted down by pitch_deg; fitted by experiments/camera_pitch.py from 50 frames (aruco_cam*m*), residual rms 0.7 mm"
+  },
+  "range_correction": {
+    "bias_m": 0.0144,
+    "bias_per_m": 0.0239,
+    "range_sd": [
+      0.0099,
+      0.0043
+    ],
+    "_doc": "ArUco range bias of this camera, base origin to marker centre: r_meas = r_true + bias_m + bias_per_m * r_true; aruco.measure returns r_true. range_sd = [a, b]: EKF range sd a + b r^2 [m] for the corrected range (a = fit residual rms, b = W3 model at 0.3 px); it replaces range_sd, and range_bias_r2 becomes 0, in config/estimation.json. Fitted by experiments/aruco_real_noise.py from 7 tape distances 0.38-2.08 m with this file's K and T_BC, residual rms 9.9 mm"
   }
 }

@@ -69,13 +69,18 @@ class DockingController:
         self.servo = self.p.get("servo", "pbvs")
         if self.servo == "ibvs":
             T_BC = vs.aruco.T_BC                             # URDF camera pose, unless the file has one
+            p_star_range = self.stop_range
             if K is None:
                 from src.perception import camera
                 K, dist, _ = camera.load_intrinsics(PROJECT_ROOT / self.p["camera_intrinsics"])
                 T_BC = vs.aruco.load_T_BC(PROJECT_ROOT / self.p["camera_intrinsics"])   # real camera: its tilt
+                corr = vs.aruco.load_range_correction(PROJECT_ROOT / self.p["camera_intrinsics"])
+                if corr is not None:   # real camera: the ranges here are corrected, but the corners are raw, so
+                    # p* is drawn at the range PnP reads at the true stop range (else IBVS aims ~2 cm closer)
+                    p_star_range = corr["bias_m"] + (1 + corr["bias_per_m"]) * self.stop_range
             self.K, self.dist = np.asarray(K, float), np.asarray(dist, float)
             marker_height = marker[2] if marker.size > 2 else 0.12
-            self.p_star = vs.desired_features(self.K, self.stop_range, marker_height, T_BC=T_BC)
+            self.p_star = vs.desired_features(self.K, p_star_range, marker_height, T_BC=T_BC)
             self.G = vs.robot_to_camera(T_BC)
         self.phase, self.stop_reason = None, None
         self.ibvs_log = []                                   # (t, corners 2x4, e_rms px, v, w) per IBVS step
