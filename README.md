@@ -1,7 +1,8 @@
 # 41014 Sensors and Control: Integrated Project, Track A
 
-TurtleBot3 **Waffle Pi** in **MuJoCo**: follow waypoints along an L-shaped corridor, avoid an obstacle
-with the 2D LiDAR, and dock at a charging station marked with an ArUco marker. The estimator fuses
+TurtleBot3 **Waffle Pi** in **MuJoCo** and on the lab robot: follow waypoints across the lab floor (or the
+original L-shaped corridor), avoid an obstacle with the 2D LiDAR, and dock at a charging station marked
+with an ArUco marker. The estimator fuses
 wheel-encoder odometry with camera range-bearing measurements to known ArUco markers (EKF); a
 state-feedback (LQR) controller tracks the waypoints on the EKF estimate.
 
@@ -64,13 +65,14 @@ install line again.
 The same commands work in a Linux terminal and in Windows PowerShell:
 
 ```bash
-python main.py                      # centre box, EKF, MuJoCo viewer + camera window, real time
+python main.py                      # the lab track as built in the lab: centre box, EKF, lab camera, viewer
 python main.py --case none          # obstacle case: none | left | centre | right
+python main.py --task config/corridor.json   # the original L corridor (level URDF camera)
 python main.py --odometry           # steer on wheel odometry only (the baseline, no EKF)
 python main.py --seed 3             # another sensor-noise seed
 python main.py --no-camera          # MuJoCo viewer only
 python main.py --headless           # no windows, prints the result only
-python main.py --randomise --seed 7 # random scenario: route, start placement, boxes, noise, wheel error
+python main.py --randomise --seed 7 # random corridor scenario: route, start placement, boxes, noise, wheel error
 python main.py --dock pbvs          # dock on the LQR all the way instead of finishing with IBVS
 ```
 
@@ -91,13 +93,19 @@ estimate, and the panel shows the state, the commands, the sd from P and the las
 Linux without a display (SSH, CI): `MUJOCO_GL=egl python main.py --headless` (`--headless` sets
 `MUJOCO_GL=egl` itself when it is not set).
 
-What happens: the robot starts from the prior in `config/corridor.json`, follows start -> W1 -> W2 -> W3
--> W4 with the LQR, goes around the box with the LiDAR, then docks at the charging station (marker ID 0).
-The terminal prints each state change (TRACK, AVOID, REJOIN, DOCK, STOP) and finally, for example:
+What happens: without `--task` the sim is `config/arena_lab.json`, the lab floor as the robot will meet
+it (0.5 m tiles, panels, the 20 cm box, three markers, the LDS-01 range and the lab robot's camera, whose
+choice the task file's `sim_camera` makes). The robot starts from the task file's prior, follows the
+waypoints with the LQR, goes around the box with the LiDAR, turns left at the far end and docks at the
+charging station (marker ID 0). The terminal prints each state change (TRACK, AVOID, REJOIN, DOCK, STOP)
+and finally, for example:
 
 ```
-result: docked after 57.1 s of sim time, dock_complete = True
+result: docked after 46.0 s of sim time, dock_complete = True
 ```
+
+`--task config/corridor.json` runs the original corridor instead (57.1 s on seed 0), with the level URDF
+camera its 0.12 m markers were designed for; `--sim-camera lab|urdf` overrides the task file's camera.
 
 The exit code is 0 when the robot docked and 1 otherwise. In the viewer the red dots are the LiDAR
 returns placed with the EKF estimate (if the estimate drifts, the dots slide off the walls) and the
@@ -134,8 +142,8 @@ The lab floor (10 x 4 tiles of 0.5 m) has its own task file, `config/arena_lab.j
 (left turn + dock) reuse it through `"extends"`. The same file runs in the sim and on the robot:
 
 ```bash
-python main.py --task config/arena_lab.json --case centre     # the lab track in the sim
-python main.py --task config/arena_lab.json --sim-camera lab  # ... with the lab robot's camera (f 692 px, 6.3 deg down, 30 Hz)
+python main.py                                                # the lab track in the sim, lab robot's camera (f 692 px, 6.3 deg down, 30 Hz)
+python main.py --sim-camera urdf                              # ... with the level URDF camera instead
 python -m evaluation.lab_camera_trials                        # 4 box cases x 10 seeds per sim camera -> results/lab_camera_trials.json
 python experiments/plot_setup.py                              # layout sheet -> results/setup_arena_lab.png
 ```
@@ -179,6 +187,8 @@ python -m src.control.visual_servo           # Week 9 image Jacobian vs finite d
 python -m src.estimation.estimation_test     # EKF and odometry unit checks
 python -m src.control.control_test           # controller, avoidance and docking unit checks
 python -m src.robot.real_robot_test          # RealRobot on a fake rosbridge link (no robot needed)
+python main.py --headless                    # the lab track must dock (exit code 0)
+python main.py --headless --task config/corridor.json   # and so must the corridor
 ```
 
 After changing anything in `models/`, `src/robot/` or `src/perception/`:

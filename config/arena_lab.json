@@ -1,6 +1,8 @@
 {
   "_doc": "Lab track on the 10 x 4 grid of 0.5 m floor tiles (5.0 x 2.0 m; models/robotis_tb3/scene_lab.xml). World frame {W}: origin at the outer corner of the bottom-left tile, x along the 10 tiles, y along the 4 tiles (left of x), z up. The tiles x 2.0-4.0, y 0-0.5 are taken by furniture; the tiles x 4.0-5.0, y 0-0.5 are left outside. Route: start near the right end facing -x, drive the 1.5 m band past the box, turn LEFT at the far end into the bottom-left pocket and dock on its bottom panel. Every point sits on a tile centre or a tile edge so the track can be laid out by counting tiles. Walls are 57 x 20 cm panels standing with their inner face on the outline. Units m and rad. 'markers' is the EKF's known map. 'obstacles', 'outline' and 'lidar' describe the world: only src/robot/corridor.py and evaluation/ may read them. All marker and start numbers are the DESIGN: measure where the panels and markers really ended up and update them before a real run.",
   "scene": "models/robotis_tb3/scene_lab.xml",
+  "sim_camera": "lab",
+  "_sim_camera": "the sim camera main.py uses for this task (SIM_CAMERAS in src/robot/sim_robot.py): the lab robot's camera as measured on 23 Oct (fovy 38.2 deg, 6.3 deg down, 30 Hz, config/camera_sim_lab.json), so the sim sees what the real camera will; main.py --sim-camera overrides it",
   "start": [4.5, 1.25, 3.1415927],
   "waypoints": [[4.0, 1.25], [0.5, 1.25], [0.5, 0.7]],
   "waypoint_names": ["W1", "W2 corner (turn left)", "W3 pre-dock"],

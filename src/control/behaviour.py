@@ -235,9 +235,10 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
             import mujoco.viewer
             robot.read_image()                                # create the camera renderer before the viewer
             viewer = stack.enter_context(mujoco.viewer.launch_passive(robot.m, robot.d))
-            with viewer.lock():                               # top view over the corridor
-                viewer.cam.lookat[:] = [2.3, 2.1, 0.0]
-                viewer.cam.distance, viewer.cam.azimuth, viewer.cam.elevation = 7.5, 90.0, -65.0
+            with viewer.lock():                               # top view over the floor
+                cx, cy, _ = robot.m.stat.center                  # the scene's <statistic>: corridor or lab floor
+                viewer.cam.lookat[:] = [cx, cy, 0.0]
+                viewer.cam.distance, viewer.cam.azimuth, viewer.cam.elevation = 1.5 * robot.m.stat.extent, 90.0, -65.0
         t_enc, *enc_prev = robot.read_encoders()
         frame, t_last_frame, state = None, None, None
         while nav.state != STOP and robot.t < t_max:

@@ -1,6 +1,8 @@
 {
   "_doc": "L-corridor task (models/robotis_tb3/scene_corridor.xml). Units m and rad, world frame {W}. 'markers' is the EKF's known map. 'obstacles' and 'outline' describe the sim world: only src/robot/corridor.py and evaluation/ may read them, never src/estimation or src/control.",
   "scene": "models/robotis_tb3/scene_corridor.xml",
+  "sim_camera": "urdf",
+  "_sim_camera": "the sim camera main.py uses for this task: the level URDF camera (fovy 48.8 deg, config/camera_sim.json). The lab camera (6.3 deg down) loses this corridor's 0.12 m dock marker at the stop (marker_lost), so it is not the default here",
   "start": [0.5, 0.0, 0.0],
   "waypoints": [[2.0, 0.0], [3.6, 0.1], [3.6, 2.5], [3.6, 3.9]],
   "waypoint_names": ["W1", "W2 corner", "W3 after obstacle section", "W4 pre-dock"],
