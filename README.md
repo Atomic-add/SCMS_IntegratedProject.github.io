@@ -211,6 +211,9 @@ python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/de
 python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
 python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
 python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
+python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
+python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
+python -m evaluation.lab_camera_trials       # lab track, both sim cameras, 4 cases x 10 seeds -> results/lab_camera_trials.json
 ```
 
 Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,

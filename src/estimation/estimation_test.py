@@ -126,5 +126,20 @@ eig = np.linalg.eigvalsh(P)
 check("1000 random steps: x_hat finite, P symmetric, eigenvalues >= 0",
       np.all(np.isfinite(xh)) and np.allclose(P, P.T) and eig.min() >= -1e-12, f"min eig {eig.min():.1e}")
 
+# ---------------------------------------------------------------- the camera file picks the marker noise
+from src.estimation.models import load_estimation_config  # noqa: E402
+from src.robot.sim_robot import PROJECT_ROOT  # noqa: E402
+base = load_estimation_config()
+sim = load_estimation_config(camera=PROJECT_ROOT / "config" / "camera_sim.json")
+lab = load_estimation_config(camera=PROJECT_ROOT / "config" / "camera_sim_lab.json")
+real = load_estimation_config(camera=PROJECT_ROOT / "config" / "camera_real.json")
+check("config: the URDF sim camera keeps estimation.json", sim == base)
+noise = {k: v for k, v in __import__("json").loads((PROJECT_ROOT / "config" / "camera_sim_lab.json").read_text())
+         .get("ekf_noise", {}).items() if not k.startswith("_")}
+check("config: the lab sim camera's ekf_noise replaces range bias, range sd and bearing sd",
+      bool(noise) and all(lab[k] == v for k, v in noise.items()) and lab["k_wheel"] == base["k_wheel"], str(noise))
+check("config: the real camera's range_correction drops the sim bias (never subtracted twice)",
+      real["range_bias_r2"] == 0.0)
+
 print(f"\n{len(FAILS)} failed" + (": " + ", ".join(FAILS) if FAILS else " - all checks passed"))
 sys.exit(len(FAILS))

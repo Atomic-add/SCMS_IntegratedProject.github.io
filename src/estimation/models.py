@@ -50,12 +50,18 @@ def load_estimation_config(path=ESTIMATION_CONFIG, camera=None):
     camera: the intrinsics file the ArUco ranges come from. When it has its own "range_correction" (the
     real camera, experiments/aruco_real_noise.py), aruco.measure has already removed that bias, so
     range_bias_r2 (the sim camera's bias) becomes 0, not subtracted twice, and range_sd is the camera's.
-    The sim file has none: the config is returned unchanged.
+    When it has an "ekf_noise" block (range_bias_r2, range_sd, bearing_sd_deg measured for that camera by
+    evaluation/consistency_sweep.py --write-noise), those values replace the config's. A file with
+    neither (config/camera_sim.json) leaves the config unchanged.
     """
     cfg = json.loads(Path(path).read_text())
-    corr = None if camera is None else json.loads(Path(camera).read_text()).get("range_correction")
+    cam = {} if camera is None else json.loads(Path(camera).read_text())
+    corr = cam.get("range_correction")
     if corr is not None:
         cfg["range_bias_r2"], cfg["range_sd"] = 0.0, list(corr["range_sd"])
+    for k, v in cam.get("ekf_noise", {}).items():
+        if not k.startswith("_"):
+            cfg[k] = v
     return cfg
 
 

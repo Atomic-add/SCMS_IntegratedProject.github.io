@@ -67,5 +67,14 @@
     ],
     "pitch_deg": 6.3,
     "_doc": "camera pose in base_footprint: URDF position, tilted down by pitch_deg as built into the MJCF camera rgb_lab (calibrate_camera.py --pitch-deg)"
+  },
+  "ekf_noise": {
+    "range_bias_r2": 0.0045,
+    "range_sd": [
+      0.00911,
+      0.00563
+    ],
+    "bearing_sd_deg": 0.0571,
+    "_doc": "EKF marker noise of this camera, fitted by evaluation/consistency_sweep.py on 40 recorded runs of config/arena_lab.json against the truth: range bias 4.50 mm * r^2; residual range sd 0.00 mm + 2.55 mm * r^2 plus 4.1 mm left by the bias model; bearing sd 0.0132 deg. Errors repeat over tau = 4.9 frames (range) and 18.6 frames (bearing), so the variances are multiplied by tau (sd by sqrt(tau))."
   }
 }
