@@ -2,11 +2,12 @@
 
     python -m evaluation.check_rules
 
-1. Ground truth: no file in src/estimation, src/control or main.py imports evaluation/ or names a
-   ground-truth helper (true_pose, ground_truth, ...). Comments count too: commented-out truth code
+1. Ground truth: no file in src/estimation, src/control, src/perception, src/robot/real_robot.py or
+   main.py imports evaluation/ or names a ground-truth helper (true_pose, ground_truth, ...). Comments count too: commented-out truth code
    looks like truth code to a reader, so it has to go.
-2. The unit checks pass: src/estimation/estimation_test.py, src/control/control_test.py and the
-   visual-servoing checks in src/control/visual_servo.py (Week 9 Jacobian against finite differences).
+2. The unit checks pass: src/estimation/estimation_test.py, src/control/control_test.py, the
+   visual-servoing checks in src/control/visual_servo.py (Week 9 Jacobian against finite differences)
+   and the real-robot adapter checks in src/robot/real_robot_test.py (fake rosbridge link, no robot).
 
 Exit code 0 = all pass. Pure Python, so it runs the same in PowerShell and in a Linux shell.
 """
@@ -16,7 +17,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-GUARDED = [ROOT / "src" / "estimation", ROOT / "src" / "control", ROOT / "main.py"]
+GUARDED = [ROOT / "src" / "estimation", ROOT / "src" / "control", ROOT / "src" / "perception",
+           ROOT / "src" / "robot" / "real_robot.py", ROOT / "main.py"]
 # Words that only appear when something reaches for the simulator's truth.
 FORBIDDEN = re.compile(r"\b(evaluation\.|from evaluation|import evaluation|ground_truth|true_pose|true_marker_pose|"
                        r"true_camera_pose|true_intrinsics|true_sensor_pose|\.qpos\b|\.xpos\b|\.xquat\b)")
@@ -54,8 +56,9 @@ if __name__ == "__main__":
         for f, n, line in bad:
             print(f"         {f}:{n}: {line}")
     else:
-        print("[PASS] no ground truth in src/estimation, src/control or main.py")
-    for module in ("src.estimation.estimation_test", "src.control.control_test", "src.control.visual_servo"):
+        print("[PASS] no ground truth in src/estimation, src/control, src/perception, real_robot.py or main.py")
+    for module in ("src.estimation.estimation_test", "src.control.control_test", "src.control.visual_servo",
+                   "src.robot.real_robot_test"):
         passed, last = run(module)
         ok &= passed
         print(f"[{'PASS' if passed else 'FAIL'}] {module}: {last}")

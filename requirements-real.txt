@@ -1,0 +1,10 @@
+# Only for the real TurtleBot (main.py --real, experiments/check_robot.py, capture_frames.py).
+# Install requirements.txt first, then:
+#     python -m pip install -r requirements-real.txt
+#     python -m pip install --no-deps "git+https://github.com/UTS-RI/turtlebot_rosbridge.git@8a6c481c506d1b817937d865af0d794ea0d45d51"
+# --no-deps matters: rosbridge_api asks for opencv-python, which overwrites opencv-contrib-python's cv2
+# and removes cv2.aruco. The commit is the one whose private callbacks src/robot/real_robot.py hooks
+# (_on_joint_state, _on_laser_scan, _on_image); check them before moving to a newer one.
+# roslibpy: rosbridge_api needs >=2.0,<3. If the lab laptop runs another 2.x, pin that one here
+# (python -m pip show roslibpy) so every teammate installs the version the robot runs were made with.
+roslibpy==2.1.0

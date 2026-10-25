@@ -4,6 +4,10 @@ numpy==2.2.6
 scipy==1.15.3
 matplotlib==3.10.9
 spatialmath-python==1.1.18
+# The tutorials' toolbox (Weeks 5-8): python-control (ct.ss, c2d, ctrb, obsv, dlqr, lqe) and SymPy Jacobians.
+# Pure Python; src/control/control_test.py checks the scipy-based models and gains against them.
+control==0.10.1
+sympy==1.14.0
 # OpenCV with the contrib modules, the W3 tutorial pin (cv2.aruco, calibration, solvePnP).
 # Do not install opencv-python next to it: both provide cv2 and break each other.
 opencv-contrib-python==4.10.0.84

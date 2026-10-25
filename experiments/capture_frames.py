@@ -8,6 +8,8 @@ The window shows the live camera with the checkerboard corners (green when all 9
 the ArUco IDs in view. Frames are saved untouched (PNG, no overlay) to --out, default
 results/hardware/calib. The robot never moves: this only reads the camera. For calibration, aim for
 20-25 frames with the board at 0.3-0.8 m, tilted different ways, covering the corners of the image too.
+Adapted from 41014 Week 3 Part B (the 9 x 6 internal-corner board, findChessboardCorners) and Part E
+(ArUco detection); the calibration itself is experiments/calibrate_camera.py (Week 3 Parts B and C).
 """
 import argparse
 import sys

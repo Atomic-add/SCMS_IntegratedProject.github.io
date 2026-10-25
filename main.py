@@ -8,10 +8,11 @@
     python main.py --headless            # no windows (Linux without a display: MUJOCO_GL=egl is set)
     python main.py --randomise --seed 7  # a random scenario: route, start, boxes, noise, wheel error
     python main.py --dock pbvs           # dock on the LQR all the way (default: ibvs for the last part)
-    python main.py --real 192.168.1.213  # the same mission on the real TurtleBot (src/robot/real_robot.py)
     python main.py --task config/arena_lab.json --case centre   # the lab track in the sim
-    python main.py --real --task config/arena_lab.json   # real robot, host from config/robot_real.json
     python main.py --task config/arena_lab.json --sim-camera lab   # sim with the lab robot's camera geometry
+    python main.py --real --task config/stage1_dock.json         # real robot, host from config/robot_real.json
+    python main.py --real 192.168.1.213 --task config/arena_lab.json   # another robot, the whole lab track
+    python main.py --headless --log results/run.npz              # also save the run log (always on with --real)
 
 The robot starts from the prior in config/corridor.json, follows the waypoints with the LQR, goes
 around the box with the LiDAR and docks at the ArUco station (marker ID 0). With --randomise every seed
@@ -23,8 +24,10 @@ Nothing here reads simulator ground truth; evaluation/ is the only place that do
 
 --real swaps only the robot: the same run_mission, estimator and controllers drive the TurtleBot over
 rosbridge. It needs config/camera_real.json (experiments/calibrate_camera.py --images ...) and a
-task file measured in the lab arena (--task, same layout as config/corridor.json); --case has no
-effect there, the boxes are wherever they were put. Run experiments/check_robot.py first.
+task file measured in the lab arena (--task is required, same layout as config/corridor.json): the
+corridor's waypoints are metres outside the lab floor. --case has no effect there, the boxes are
+wherever they were put. Run experiments/check_robot.py first. Every real run is logged (--log, default
+results/hardware/run_<time>.npz), also when it stops early, so a failure can be diagnosed afterwards.
 
 --sim-camera picks the simulated camera (SIM_CAMERAS in src/robot/sim_robot.py) and its calibration file:
 urdf (default) is the level URDF camera with the Pi Camera v2 datasheet field of view; lab is the lab
@@ -36,6 +39,7 @@ Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the
 import argparse
 import os
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -59,11 +63,40 @@ def parse_args(argv=None):
     ap.add_argument("--real", nargs="?", const="", metavar="HOST",
                     help="drive the real TurtleBot over rosbridge (HOST default: config/robot_real.json)")
     ap.add_argument("--task", type=Path, default=None,
-                    help="start prior, waypoints, markers and dock (default config/corridor.json)")
+                    help="start prior, waypoints, markers and dock (default config/corridor.json; required with --real)")
     ap.add_argument("--sim-camera", default="urdf", choices=("urdf", "lab"),
                     help="simulated camera: urdf (level, fovy 48.8 deg, 15 Hz; default) or lab (the lab robot's "
                          "camera measured on 23 Oct: fovy 38.2 deg, 6.3 deg down, 30 Hz)")
+    ap.add_argument("--log", type=Path, default=None,
+                    help="save the run (t, xh, P, v, w, state, EKF NIS) as .npz; default with --real: "
+                         "results/hardware/run_<time>.npz")
     return ap.parse_args(argv)
+
+
+def run_logger(estimator):
+    """on_step hook that keeps every step's row, and save(path, **extra) that writes them as .npz.
+
+    Only what the robot itself knows is logged (the estimate, its P, the commands, the state and the
+    EKF's NIS per marker), so the same log comes from the sim and from the real robot. On the real
+    robot the truth is measured by hand at the end (tape from the dock panel).
+    """
+    import numpy as np
+
+    rows = []
+
+    def on_step(robot, row):
+        rows.append(row)
+
+    def save(path, **extra):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        nis = np.array(getattr(estimator, "log", []), dtype=float).reshape(-1, 4)   # (t, id, NIS, used)
+        np.savez(path, t=np.array([r["t"] for r in rows]), xh=np.array([r["xh"] for r in rows]).reshape(-1, 3),
+                 P=np.array([r["P"] for r in rows]).reshape(-1, 3, 3), v=np.array([r["v"] for r in rows]),
+                 w=np.array([r["w"] for r in rows]), state=np.array([r["state"] for r in rows]),
+                 nis=nis, **extra)
+        print(f"log: {len(rows)} steps, {len(nis)} marker updates -> {path}")
+
+    return on_step, save
 
 
 def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None, range_correction=None):
@@ -98,6 +131,9 @@ def main(argv=None):
         sys.exit("--randomise changes the simulated world; it has no meaning with --real")
     if real and args.sim_camera != "urdf":
         sys.exit("--sim-camera picks the simulated camera; the real robot uses config/camera_real.json")
+    if real and args.task is None:
+        sys.exit("--real needs --task (e.g. config/stage1_dock.json): without it the robot would follow the "
+                 "simulated corridor's waypoints, which leave the lab floor")
     from src.robot.sim_robot import SIM_CAMERAS
     sim_camera, sim_intrinsics = SIM_CAMERAS[args.sim_camera]
     intrinsics = ROOT / ("config/camera_real.json" if real else sim_intrinsics)
@@ -126,8 +162,6 @@ def main(argv=None):
         from src.robot.real_robot import RealRobot
         robot = RealRobot(args.real or None)
         label = f"real robot {robot.host}"
-        if args.task is None:
-            print("warning: no --task, so the waypoints and marker map are the SIMULATED corridor's")
     if args.randomise:
         from src.robot.scenario import apply_world, describe, random_scenario
         sc = random_scenario(args.seed)
@@ -145,22 +179,53 @@ def main(argv=None):
     if args.dock:
         cfg["docking"]["servo"] = args.dock
     cfg["docking"]["camera_intrinsics"] = str(intrinsics.relative_to(ROOT))   # IBVS: the same K and T_BC as ArUco
-    on_step = None
+    if real:
+        # RealRobot scales any command above its caps down (v and w together, so the path keeps its shape).
+        # Say so: the gains were designed at v_nom, and a sim twin for comparison must use the same speeds.
+        fast = {k: s for k, s in (("v_nom", cfg["v_nom"]), ("avoidance.v_avoid", cfg["avoidance"]["v_avoid"]),
+                                  ("docking.v_dock", cfg["docking"]["v_dock"])) if s > robot.v_max}
+        if fast:
+            print(f"note: {', '.join(f'{k} = {s}' for k, s in fast.items())} m/s exceed the robot cap "
+                  f"v_max = {robot.v_max} m/s (config/robot_real.json): those commands are scaled down")
+    cameras = []
     if not args.headless and not args.no_camera:
         from src.perception import aruco
         K, dist, _ = camera.load_intrinsics(intrinsics)
-        on_step = camera_window(K, dist, sorted(task["markers"]), task["dock"]["marker_id"],
-                                T_BC=aruco.load_T_BC(intrinsics), range_correction=aruco.load_range_correction(intrinsics))
+        cameras.append(camera_window(K, dist, sorted(task["markers"]), task["dock"]["marker_id"],
+                                     T_BC=aruco.load_T_BC(intrinsics),
+                                     range_correction=aruco.load_range_correction(intrinsics)))
+    log_path = args.log or (ROOT / "results" / "hardware" / time.strftime("run_%Y%m%d_%H%M%S.npz") if real else None)
+    log_step, save_log = run_logger(estimator)
+    hooks = cameras + ([log_step] if log_path else [])
+
+    def on_step(robot, row):
+        for hook in hooks:
+            hook(robot, row)
 
     print(f"{label}, steering on {'odometry' if args.odometry else 'the EKF'}, docking {cfg['docking']['servo']}, "
           f"seed {args.seed}{'' if real else f', camera {args.sim_camera}'}{', headless' if args.headless else ''}")
-    info, t_end = run_mission(case, seed=args.seed, verbose=True, estimator=estimator,
-                              view=not args.headless and not real, on_step=on_step, setup=setup, task=task,
-                              label=label, cfg=cfg, robot=robot, intrinsics=intrinsics)
-    if on_step is not None:
-        import cv2
-        cv2.destroyAllWindows()
+    info, t_end, failure = None, 0.0, None
+    try:
+        info, t_end = run_mission(case, seed=args.seed, verbose=True, estimator=estimator,
+                                  view=not args.headless and not real, on_step=on_step if hooks else None,
+                                  setup=setup, task=task, label=label, cfg=cfg, robot=robot, intrinsics=intrinsics)
+    except (ConnectionError, TimeoutError, RuntimeError) as e:
+        if not real:
+            raise
+        failure = f"{type(e).__name__}: {e}"               # the robot was already stopped by RealRobot.close()
+    finally:
+        if cameras:
+            import cv2
+            cv2.destroyAllWindows()
+        if log_path:
+            save_log(Path(log_path), task=str(args.task or "config/corridor.json"),
+                     camera=str(intrinsics.relative_to(ROOT)),
+                     result=str(failure or (info["stop_reason"] if info else "interrupted")),
+                     overruns=getattr(robot, "overruns", -1))   # real robot: control steps that started late
 
+    if failure:
+        print(f"result: stopped, {failure}")
+        return 1
     reason = info["stop_reason"] or "stopped before the end (window closed or time limit)"
     print(f"result: {reason} after {t_end:.1f} s{'' if real else ' of sim time'}, "
           f"dock_complete = {info['dock_complete']}")

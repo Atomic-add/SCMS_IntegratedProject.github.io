@@ -51,7 +51,10 @@ APPROACH, IBVS, WAIT, SETTLE, COMPLETE, FAILED = "APPROACH", "IBVS", "WAIT", "SE
 class DockingController:
     """Call start() when waypoints.py reports pre_dock_reached, then step() every Ts."""
 
-    def __init__(self, dock, marker, cfg=None, K=None, dist=None):
+    def __init__(self, dock, marker, cfg=None, K=None, dist=None, T_BC=None):
+        """K, dist, T_BC: the camera model for IBVS. Left out, they come from the calibration file
+        cfg["docking"]["camera_intrinsics"], with its range_correction (run_mission points that key at the
+        file its ArUco uses), so K, the camera tilt and the range bias can never come from two cameras."""
         cfg = cfg or load_control_config()
         self.p, self.Ts = cfg["docking"], cfg["Ts"]
         self.a_max = cfg["waypoints"]["a_max"]               # same acceleration limit as normal driving
@@ -68,16 +71,17 @@ class DockingController:
         # IBVS (Week 9): calibrated intrinsics, p* from the docked geometry, (v, omega) -> camera twist.
         self.servo = self.p.get("servo", "pbvs")
         if self.servo == "ibvs":
-            T_BC = vs.aruco.T_BC                             # URDF camera pose, unless the file has one
-            p_star_range = self.stop_range
+            cam_file = PROJECT_ROOT / self.p["camera_intrinsics"]
             if K is None:
                 from src.perception import camera
-                K, dist, _ = camera.load_intrinsics(PROJECT_ROOT / self.p["camera_intrinsics"])
-                T_BC = vs.aruco.load_T_BC(PROJECT_ROOT / self.p["camera_intrinsics"])   # real camera: its tilt
-                corr = vs.aruco.load_range_correction(PROJECT_ROOT / self.p["camera_intrinsics"])
-                if corr is not None:   # real camera: the ranges here are corrected, but the corners are raw, so
-                    # p* is drawn at the range PnP reads at the true stop range (else IBVS aims ~2 cm closer)
-                    p_star_range = corr["bias_m"] + (1 + corr["bias_per_m"]) * self.stop_range
+                K, dist, _ = camera.load_intrinsics(cam_file)
+            if T_BC is None:
+                T_BC = vs.aruco.load_T_BC(cam_file)          # the file's tilt (real camera), else the URDF pose
+            p_star_range = self.stop_range
+            corr = vs.aruco.load_range_correction(cam_file)
+            if corr is not None:       # real camera: the ranges here are corrected, but the corners are raw, so
+                # p* is drawn at the range PnP reads at the true stop range (else IBVS aims short of the stop)
+                p_star_range = corr["bias_m"] + (1 + corr["bias_per_m"]) * self.stop_range
             self.K, self.dist = np.asarray(K, float), np.asarray(dist, float)
             marker_height = marker[2] if marker.size > 2 else 0.12
             self.p_star = vs.desired_features(self.K, p_star_range, marker_height, T_BC=T_BC)

@@ -11,7 +11,8 @@ fixed height difference dz from the camera reads
 so a straight-line fit of u against f gives theta from its slope, whatever the marker height (and a
 range scale error, e.g. the ~2 % ArUco bias, scales f and u together and leaves the slope alone).
 With --marker-height [m] (the centre's height above the floor) the intercept also gives the camera
-height. --write stores {"xyz", "pitch_deg"} as "T_BC" in config/camera_real.json; aruco.load_T_BC reads
+height. Adapted from 41014 Week 3 Part E (PnP marker pose C_T_M) and the frame chain of Week 2 Part C /
+Week 4 2.2 (T_BM = T_BC * T_CM); the fit is an ordinary least-squares line (np.polyfit). --write stores {"xyz", "pitch_deg"} as "T_BC" in config/camera_real.json; aruco.load_T_BC reads
 it there, so the real robot's ArUco measurements and IBVS use it (the sim file has none and keeps the
 URDF pose).
 """

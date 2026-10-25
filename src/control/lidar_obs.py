@@ -29,7 +29,6 @@ from src.perception import lidar  # noqa: E402
 
 
 def make_obs(t_scan, rho, range_min, range_max, cfg=None):
-
     """The plan's obs dict from one scan (t_scan, rho) as SimRobot.read_scan() or /scan gives it.
 
     Summarises 360 raw beams into what the avoidance controller needs:
@@ -44,8 +43,10 @@ def make_obs(t_scan, rho, range_min, range_max, cfg=None):
     ok = lidar.valid_beams(rho, range_min, range_max)                 # drop 0 / inf / nan / out of range
     P_B = np.asarray(lidar.to_base(lidar.scan_to_points(rho, alpha, ok)), float).reshape(2, -1)
 
-    # Coverage check: 
-    fwd = np.cos(alpha) >= 0.0                                        # beams pointing within +-90 deg
+    # Coverage check: "missing returns do not prove clearance". In the forward half (+-90 deg) at least
+    # min_coverage of the beams must return something, otherwise the scan is not trusted for moving
+    # (the LDS-01 in the lab reports 0 beyond 3.5 m, so this also needs walls within range ahead).
+    fwd = np.cos(alpha) >= 0.0                                       # beams pointing within +-90 deg
     coverage = float(np.mean(ok[fwd])) if np.any(fwd) else 0.0
 
     nearest = lidar.nearest_obstacle(P_B)                            # (inf, nan) when there is no return

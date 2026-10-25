@@ -59,6 +59,35 @@ check("model: NOT controllable at v = 0 (why corners turn on the spot)", control
 K, eig = design_lqr()
 check("LQR: closed loop stable at cruise speed", np.all(np.abs(eig) < 1), f"|eig| = {np.abs(eig).round(3)}")
 check("LQR: same gain still stable at 0.05 m/s", np.all(np.abs(np.linalg.eigvals(error_model(0.05, 0)[0] - error_model(0.05, 0)[1] @ K)) < 1))
+
+# ---------------------------------------------------------------- the tutorials' toolbox gives the same answers
+# models.py and lqr.py use scipy; Week 5 and Week 6 use SymPy and python-control. Same model, same gain.
+try:
+    import control as ct
+    import sympy as sp
+except ImportError as e:
+    check(f"toolbox: {e.name} is installed (python -m pip install -r requirements.txt)", False)
+else:
+    from src.control.lqr import design_weights
+    from src.control.models import continuous_error_model
+    e_y, e_th, d_om, v_s, k_s = sp.symbols("e_y e_theta d_omega v kappa")
+    f = sp.Matrix([v_s * sp.sin(e_th),                                         # full nonlinear error dynamics,
+                   v_s * k_s + d_om - v_s * k_s * sp.cos(e_th) / (1 - k_s * e_y)])   # omega = v kappa + d_omega
+    at = {e_y: 0, e_th: 0, d_om: 0, v_s: 0.2, k_s: 0.5}
+    A_sym = np.array(f.jacobian([e_y, e_th]).subs(at), dtype=float)
+    B_sym = np.array(f.jacobian([d_om]).subs(at), dtype=float)
+    A_num, B_num = continuous_error_model(0.2, 0.5)
+    check("toolbox: SymPy Jacobians of the nonlinear error model = continuous_error_model (W5)",
+          np.allclose(A_sym, A_num) and np.allclose(B_sym, B_num), f"A = {A_sym.round(3).tolist()}")
+    sysd = ct.c2d(ct.ss(*continuous_error_model(CFG["v_nom"], 0.0), np.eye(2), np.zeros((2, 1))), CFG["Ts"], method="zoh")
+    check("toolbox: ct.c2d ZOH = models.error_model (W5)", np.allclose(sysd.A, Ad) and np.allclose(sysd.B, Bd))
+    check("toolbox: ct.ctrb rank 2 at cruise speed, 1 at v = 0 (W5)",
+          np.linalg.matrix_rank(ct.ctrb(Ad, Bd)) == 2 and np.linalg.matrix_rank(ct.ctrb(*error_model(0.0, 0.0))) == 1)
+    K_ct, S_ct, _ = ct.dlqr(Ad, Bd, *design_weights(CFG))
+    Q_w, R_w = design_weights(CFG)
+    res = Ad.T @ S_ct @ Ad - S_ct - Ad.T @ S_ct @ Bd @ np.linalg.solve(R_w + Bd.T @ S_ct @ Bd, Bd.T @ S_ct @ Ad) + Q_w
+    check("toolbox: ct.dlqr gain = lqr.design_lqr, Riccati residual ~0 (W6)",
+          np.allclose(K_ct, K) and np.abs(res).max() < 1e-8, f"K = {np.ravel(K_ct).round(3)}, residual {np.abs(res).max():.1e}")
 seg = Segment([0, 0], [2, 0])
 e_y, e_th, _ = seg.errors([1.0, 0.1, 0.0])
 check("errors: robot LEFT of the path gives e_y > 0", e_y > 0, f"e_y = {e_y:.2f}")

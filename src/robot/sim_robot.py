@@ -1,12 +1,12 @@
 """Simulated TurtleBot3 Waffle Pi: the MuJoCo side of the hardware abstraction layer.
 
-Interface shared with the real robot (src/robot/real_robot.py on ROS 2, later):
+Interface shared with the real robot (src/robot/real_robot.py, ROS 2 topics over rosbridge):
 
     read_encoders() -> (t, phi_L, phi_R)   wheel angles [rad]       real robot: /joint_states
     read_scan()     -> (t, rho)            n_beams ranges [m]       real robot: /scan
     read_image()    -> (t, rgb)            H x W x 3 uint8, RGB     real robot: camera image topic
     send_cmd(v, w)                         body velocity command    real robot: /cmd_vel
-    step(dt)                               sim only: advance the physics by dt
+    step(dt)                               advance the physics by dt (real robot: wait until dt has passed)
 
 The camera intrinsics are deliberately not exposed: perception uses the calibrated K from config/,
 exactly as it will with the real camera (experiments/calibrate_camera.py).
@@ -200,11 +200,8 @@ class SimRobot:
         mujoco.mj_kinematics(self.m, self.d)                       # body and camera poses for the
         mujoco.mj_camlight(self.m, self.d)                         # current qpos (and mocap)
         self._renderer.update_scene(self.d, camera=self.camera.name)
-
-
-        #Adding Noise
         img = self._renderer.render().astype(np.float64)
-        if self.camera.pixel_noise > 0:
+        if self.camera.pixel_noise > 0:                            # sensor noise: Gaussian grey levels per pixel
             img += self.rng.normal(0.0, self.camera.pixel_noise, img.shape)
         return np.clip(np.round(img), 0, 255).astype(np.uint8)
 
@@ -216,9 +213,8 @@ class SimRobot:
         vec = (self._dirs_S @ R_WS.T).ravel()                      # beam directions in the world
         mujoco.mj_multiRay(self.m, self.d, self.d.site_xpos[self._scan_site].copy(), vec, self.LIDAR_GEOMGROUP, 1,
                            self._robot_body, self._geomid, self._dist, None, L.n_beams, L.range_max)
-        hit = self._dist >= 0          
-        
-        #Adding Noise sigma and lost random array
+        hit = self._dist >= 0                                      # -1 means nothing within range_max
+        # Sensor model: Gaussian range noise (sigma), random lost beams (dropout), then the range limits
         rho = np.where(hit, self._dist, np.inf) + self.rng.normal(0.0, L.sigma, L.n_beams)
         lost = ~hit | (self.rng.random(L.n_beams) < L.dropout) | (rho < L.range_min) | (rho > L.range_max)
         return np.where(lost, L.no_return, rho)

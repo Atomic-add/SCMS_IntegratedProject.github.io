@@ -11,9 +11,10 @@ Same interface as SimRobot, so the mission code runs unchanged:
 
 The link is UTS-RI/turtlebot_rosbridge (rosbridge_api 0.1.0, roslibpy over WebSocket port 9090).
 Install it without its dependencies: it asks for opencv-python, which breaks opencv-contrib-python.
+The pinned commit and roslibpy version are in requirements-real.txt:
 
-    python -m pip install --no-deps git+https://github.com/UTS-RI/turtlebot_rosbridge.git
-    python -m pip install "roslibpy>=2.0,<3"
+    python -m pip install -r requirements-real.txt
+    python -m pip install --no-deps "git+https://github.com/UTS-RI/turtlebot_rosbridge.git@8a6c481c506d1b817937d865af0d794ea0d45d51"
 
 Clock: every t is the time the message reached this computer (time.monotonic, 0 at construction).
 rosbridge_api drops the ROS header of images and scans, and the robot's clock is not synchronised
@@ -22,6 +23,12 @@ measurement by the wifi and JPEG latency; measure that on the robot before tight
 
 Settings (topics, joint names, speed caps) are in config/robot_real.json. Like SimRobot, this class
 never returns the robot's pose, and the camera intrinsics come from config/camera_real.json.
+
+Sources: the hardware abstraction layer of the Module 3 slides (one robot interface, sim or real);
+encoder angles as in 41014 Week 2 Part A WheelEncoder (the wheel angle is what the counter gives; r
+and L are assumed, Week 2 Part B, so they are calibrated separately); the 360-beam scan layout of
+Week 2 Part C; the speed limits of the ROBOTIS e-Manual. The rosbridge link is UTS-RI/turtlebot_rosbridge.
+Offline checks with a fake link: python -m src.robot.real_robot_test
 """
 import json
 import threading

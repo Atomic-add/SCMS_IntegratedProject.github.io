@@ -127,6 +127,48 @@ id 2 on the dock-area wall, id 0 on the charging station. All ranges are measure
 base origin (`base_footprint`). Only the centre box blocks the robot's lane; the left and right boxes
 leave it free, so those cases drive the same path as `none`.
 
+### The lab track and the real TurtleBot
+
+The lab floor (10 x 4 tiles of 0.5 m) has its own task file, `config/arena_lab.json`, and scene,
+`models/robotis_tb3/scene_lab.xml`; `config/stage1_dock.json` (dock only) and `config/stage2_corner.json`
+(left turn + dock) reuse it through `"extends"`. The same file runs in the sim and on the robot:
+
+```bash
+python main.py --task config/arena_lab.json --case centre     # the lab track in the sim
+python main.py --task config/arena_lab.json --sim-camera lab  # ... with the lab robot's camera (f 692 px, 6.3 deg down, 30 Hz)
+python -m evaluation.lab_camera_trials                        # 4 box cases x 10 seeds per sim camera -> results/lab_camera_trials.json
+python experiments/plot_setup.py                              # layout sheet -> results/setup_arena_lab.png
+```
+
+`--sim-camera lab` uses the MJCF camera `rgb_lab` and its own calibration `config/camera_sim_lab.json`
+(`python experiments/calibrate_camera.py --camera rgb_lab --pitch-deg 6.3 --out config/camera_sim_lab.json`).
+It has no lens distortion and no range bias, and its pixel noise is still the 2.0 grey-level placeholder.
+
+The real robot uses `src/robot/real_robot.py` (`RealRobot`, the same interface as `SimRobot`) over the
+lab's rosbridge (UTS-RI/turtlebot_rosbridge). Install it once, after `requirements.txt`:
+
+```bash
+python -m pip install -r requirements-real.txt
+python -m pip install --no-deps "git+https://github.com/UTS-RI/turtlebot_rosbridge.git@8a6c481c506d1b817937d865af0d794ea0d45d51"
+```
+
+`--no-deps` matters: the package asks for `opencv-python`, which would remove `cv2.aruco`. In the lab
+(laptop on the `turtlebot-MMR` wifi, robot IP `192.168.1.2XX`, default in `config/robot_real.json`):
+
+```bash
+python experiments/check_robot.py 192.168.1.2XX --drive          # topics, joint names, scan layout, 10 cm drive
+python experiments/capture_frames.py 192.168.1.2XX               # checkerboard frames -> results/hardware/calib
+python experiments/calibrate_camera.py --images results/hardware/calib --out config/camera_real.json
+python experiments/camera_pitch.py --write                       # camera tilt from ArUco frames -> camera_real.json
+python experiments/aruco_real_noise.py --write                   # ArUco range bias + sd vs tape -> camera_real.json range_correction
+python main.py --real --task config/stage1_dock.json             # then stage2_corner.json, then arena_lab.json
+```
+
+`--real` requires `--task`, caps the speed at `v_max` / `w_max` from `config/robot_real.json`, stops the
+robot when `/joint_states` or `/scan` goes quiet, when the link drops, on Ctrl+C, or when a second robot
+publishes on the same topics, and saves the run to `results/hardware/run_<time>.npz` (estimate, P,
+commands, NIS). The robot's true end pose is measured by hand (tape from the dock panel).
+
 ## 3. Checks
 
 Before every merge, from the project root:
@@ -136,6 +178,7 @@ python -m evaluation.check_rules             # ground-truth rule + unit checks +
 python -m src.control.visual_servo           # Week 9 image Jacobian vs finite differences, IBVS loop on geometry
 python -m src.estimation.estimation_test     # EKF and odometry unit checks
 python -m src.control.control_test           # controller, avoidance and docking unit checks
+python -m src.robot.real_robot_test          # RealRobot on a fake rosbridge link (no robot needed)
 ```
 
 After changing anything in `models/`, `src/robot/` or `src/perception/`:
@@ -170,7 +213,8 @@ camera dominates; odometry-only runs take about 20 s.
 main.py                 the demo: python main.py (section 2)
 config/                 corridor task, camera calibration, EKF and controller tuning
 models/robotis_tb3/     Waffle Pi model (ROBOTIS, fixed), scenes, textures
-src/robot/              SimRobot: read_encoders(), read_scan(), read_image(), send_cmd(v, w), step()
+src/robot/              SimRobot and RealRobot (rosbridge), one interface: read_encoders(), read_scan(),
+                        read_image(), send_cmd(v, w), step(); task files and scenes (corridor.py)
 src/perception/         camera calibration (W3 B/C), ArUco range-bearing (W3 E), LiDAR (W2 C, W4 P5)
 src/estimation/         wheel odometry, EKF with ArUco range-bearing (W7)
 src/control/            error model + LQR (W5, W6), waypoints, LiDAR avoidance, docking, mission loop
@@ -196,6 +240,8 @@ mujoco_installation_guide/   step-by-step setup for Windows
 
 - Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
   Apache-2.0 (`models/robotis_tb3/LICENSE`); sensor poses from ROBOTIS `turtlebot3_waffle_pi.urdf`.
-- Code adapted from the 41014 Week 2-8 tutorial solutions (cited in each module's docstring).
+- Code adapted from the 41014 Week 2-9 tutorial solutions (cited in each module's docstring).
+- Real-robot link: [UTS-RI/turtlebot_rosbridge](https://github.com/UTS-RI/turtlebot_rosbridge) (`rosbridge_api`,
+  MIT), used unmodified; `src/robot/real_robot.py` hooks its message callbacks to keep arrival times.
 - Generative AI: Claude (Anthropic) was used to scaffold the simulation environment, the sensor
   models and their checks; see the project page's GenAI declaration.

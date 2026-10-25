@@ -10,7 +10,14 @@ src/robot/sim_robot.py and config/ need from the lab robot: topic rates, joint n
 layout and how its missing returns are coded, the forward coverage the mission waits on (stand the
 robot on the track's start pose to check it), the image size, and the ArUco IDs in view.
 --drive checks /cmd_vel and the wheel signs together: the encoders should measure about 10 cm.
-Everything it sees is saved under results/hardware/<time>/ (image.png, scan.npz, report.json).
+Everything it sees is saved under results/hardware/<time>/ (image.png, scan.npz, report.json); scan.npz
+also keeps every scan of the listening period (ranges_all). Run it once more without touching the
+robot (--seconds 20, about 100 scans) and the spread per beam is the LiDAR noise for the sim's
+LidarSpec.sigma and dropout (Week 4 Part 5: sd from repeated returns of a static scene).
+
+The drive distance is Delta s = r/2 (Delta phi_R + Delta phi_L) with the URDF r (41014 Week 2 Part B):
+the encoders do not measure r, so compare --distance runs with a tape to calibrate it (and UMBmark,
+Week 2 B.3-B.4, for the track width L).
 """
 import argparse
 import json
@@ -31,18 +38,27 @@ from src.robot.sim_robot import PROJECT_ROOT, WHEEL_RADIUS, WHEEL_SEPARATION   #
 
 
 def listen(robot, seconds):
-    """Print the wheel angles while the user pushes the robot; return the topic rates [Hz]."""
+    """Print the wheel angles while the user pushes the robot.
+
+    Returns the topic rates [Hz] and every raw /scan range array received meanwhile (n_scans x n_beams):
+    with the robot left still, their spread per beam is the LiDAR noise.
+    """
     print(f"\nlistening {seconds:.0f} s: push the robot FORWARD by hand, both wheel angles should grow")
     c0, t0 = robot.message_counts(), robot.t
-    t_print = 0.0
+    t_print, t_scan, scans = 0.0, None, []
     while robot.t - t0 < seconds:
         if robot.t >= t_print:
             _, phi_l, phi_r = robot.read_encoders()
             print(f"  t = {robot.t - t0:4.1f} s   phi_L = {phi_l:8.3f} rad   phi_R = {phi_r:8.3f} rad")
             t_print = robot.t + 0.5
+        t, scan = robot.latest("scan")
+        if t != t_scan:
+            t_scan = t
+            scans.append(np.array(scan.ranges, dtype=float))
         time.sleep(0.02)
     c1, dt = robot.message_counts(), robot.t - t0
-    return {k: (c1[k] - c0.get(k, 0)) / dt for k in c1}
+    same = [s for s in scans if s.size == scans[-1].size] if scans else []
+    return {k: (c1[k] - c0.get(k, 0)) / dt for k in c1}, np.array(same)
 
 
 def scan_report(robot):
@@ -107,7 +123,7 @@ def main(argv=None):
         names = list(robot.latest("joint_states")[1]["name"])
         print(f"/joint_states joints: {names}  (config wheel_joints {robot.wheel_joints})")
 
-        rates = listen(robot, args.seconds)
+        rates, scans_all = listen(robot, args.seconds)
         scan_rep, scan = scan_report(robot)
         t_img, rgb = robot.read_image()
         report = dict(host=robot.host, joints=names, rates_hz=rates, scan=scan_rep,
@@ -121,7 +137,8 @@ def main(argv=None):
 
         out.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(str(out / "image.png"), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
-        np.savez(out / "scan.npz", angles=scan.angles, ranges=scan.ranges, intensities=scan.intensities)
+        np.savez(out / "scan.npz", angles=scan.angles, ranges=scan.ranges, intensities=scan.intensities,
+                 ranges_all=scans_all)
         (out / "report.json").write_text(json.dumps(report, indent=2))
 
     print("\nrates [Hz]: " + ", ".join(f"{k} {v:.1f}" for k, v in rates.items()) +
