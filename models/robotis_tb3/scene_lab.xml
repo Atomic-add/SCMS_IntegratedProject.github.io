@@ -12,7 +12,7 @@
 
   Three ArUco markers (DICT_4X4_50, 0.10 m on 0.1333 m sheets, centre 0.10 m up), the EKF's map:
     id 1  on the left end panel (x = 0) at y = 1.75, facing +x: seen along leg 1, above the box
-    id 2  on the left end panel (x = 0) at y = 0.25, facing +x: seen along leg 1, below the box
+    id 2  on the left end panel (x = 0) at y = 0.75, facing +x: seen along leg 1, below the box
     id 0  dock, on the pocket's bottom panel (y = 0) at x = 0.5, facing +y
   Marker sheets and tile lines are visual only (group 2): the LiDAR does not see them.
 
@@ -98,7 +98,7 @@
     <!-- Landmarks: the plane frame is the marker frame {M}, normal = z out of the panel -->
     <geom name="aruco_dock" type="plane" size="0.0666667 0.0666667 0.001" pos="0.5 0.001 0.10"
           xyaxes="-1 0 0 0 0 1" material="aruco0" contype="0" conaffinity="0" group="2"/>
-    <geom name="aruco_L2" type="plane" size="0.0666667 0.0666667 0.001" pos="0.001 0.25 0.10"
+    <geom name="aruco_L2" type="plane" size="0.0666667 0.0666667 0.001" pos="0.001 0.75 0.10"
           xyaxes="0 1 0 0 0 1" material="aruco2" contype="0" conaffinity="0" group="2"/>
     <geom name="aruco_L1" type="plane" size="0.0666667 0.0666667 0.001" pos="0.001 1.75 0.10"
           xyaxes="0 1 0 0 0 1" material="aruco1" contype="0" conaffinity="0" group="2"/>

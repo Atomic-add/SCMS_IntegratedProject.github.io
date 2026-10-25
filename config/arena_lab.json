@@ -7,10 +7,10 @@
   "waypoints": [[4.0, 1.25], [0.5, 1.25], [0.5, 0.7]],
   "waypoint_names": ["W1", "W2 corner (turn left)", "W3 pre-dock"],
   "markers": {
-    "_doc": "id -> [x, y, z, theta_M]: centre of the 0.10 m marker; theta_M = world heading of its normal (z axis, out of the panel). Centres 0.10 m up (sheet 0.033-0.167 m on the 0.20 m panel): at the dock stop (0.28 m from the camera) the whole marker stays in the real camera's 38 deg vertical view even with the ~6 deg downward tilt measured on 23 Oct; at 0.12 m its top edge would leave the image. IBVS takes z from here, so z must match the panel. Landmarks 1 and 2 are on the left end panel (x = 0) at tile-row centres, 1.5 m apart on either side of the lane (y = 1.75: row 4; y = 0.25: row 1), so the centre box does not hide them from the lane: from the start the sight lines pass the box by about 9 cm and 19 cm, narrowing to 0.8 cm (marker 1) and 11.6 cm (marker 2) where avoidance starts. On y = 1.25 the box hid marker 1 all along leg 1",
+    "_doc": "id -> [x, y, z, theta_M]: centre of the 0.10 m marker; theta_M = world heading of its normal (z axis, out of the panel). Centres 0.10 m up (sheet 0.033-0.167 m on the 0.20 m panel): at the dock stop (0.28 m from the camera) the whole marker stays in the real camera's 38 deg vertical view even with the ~6 deg downward tilt measured on 23 Oct; at 0.12 m its top edge would leave the image. IBVS takes z from here, so z must match the panel. Landmarks 1 and 2 are on the left end panel (x = 0) at tile-row centres, 1.0 m apart and 0.5 m either side of the lane (y = 1.75: row 4; y = 0.75: row 2). Chosen by evaluation/marker_layout.py (results/marker_layout.json): with the real camera they are both in view 26 % of the run (y = 0.25 for marker 2: 14 %), and in an EKF replay (20 seeds x 2 cases) the error after the first fix is 1.12 cm rms (1.23), ANEES 4.8 (8.0) and 0.25 cm at the dock handover (0.60). Spots nearer the lane (y 1.0-1.5) are hidden by the centre box early on (whole-run error 4.0 cm instead of 3.0); a fourth marker gained under 1 mm, so none was added",
     "0": [0.5, 0.0, 0.10, 1.5707963],
     "1": [0.0, 1.75, 0.10, 0.0],
-    "2": [0.0, 0.25, 0.10, 0.0]
+    "2": [0.0, 0.75, 0.10, 0.0]
   },
   "dock": {
     "_doc": "Ranges from the robot base origin (base_footprint), as aruco.measure() returns them. The dock is marker 0 on the bottom panel of the left pocket (y = 0); the robot stops facing -y with its base 0.356 m from the marker (0.28 m from the camera).",
