@@ -1,7 +1,6 @@
 """Top-view plan of a task file, to lay the track out on the floor.
 
     python experiments/plot_track.py                          # config/arena_lab.json -> results/track_arena_lab.png
-    python experiments/plot_track.py config/corridor.json
 
 Draws the 0.5 m tiles, the walls on the outline (with the number of 57 cm panels per edge), the start
 pose, the waypoint path, the obstacle positions, the dock goal and every marker with the direction it

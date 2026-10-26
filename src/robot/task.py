@@ -1,4 +1,4 @@
-"""The L-corridor task: load config/corridor.json and set up a trial in the simulator.
+"""The lab task: load config/arena_lab.json (or a stage file that extends it) and set up a sim trial.
 
 Sim side only (like SimRobot.reset): it moves the obstacle box, which the robot's software must not know
 about. The marker map and the waypoints in the same file are what the estimator and controller may use;
@@ -12,12 +12,12 @@ import numpy as np
 
 from src.robot.sim_robot import PROJECT_ROOT, LidarSpec, SimRobot
 
-CONFIG = PROJECT_ROOT / "config" / "corridor.json"
-PARKED = (3.6, 1.7, -1.0)          # obstacle hidden under the floor = config "none"
+CONFIG = PROJECT_ROOT / "config" / "arena_lab.json"
+PARKED = (2.75, 1.25, -1.0)        # obstacle hidden under the floor = config "none"
 
 
 def load_config(path=CONFIG):
-    """The whole corridor config as a dict.
+    """The whole task config as a dict.
 
     A file with "extends": "<task file>" takes every top-level key it does not set from that file, so a
     staged run (config/stage*.json) changes only its start and waypoints and keeps the arena's markers.
@@ -52,7 +52,7 @@ def apply_control_overrides(cfg, task):
     return cfg
 
 
-OBSTACLE_GEOMS = ("obstacle", "obstacle2")   # movable boxes in scene_corridor.xml
+OBSTACLE_GEOMS = ("obstacle", "obstacle2")   # movable boxes in scene_lab.xml
 
 
 def place_obstacles(robot, centres):
@@ -72,16 +72,16 @@ def place_obstacles(robot, centres):
 
 
 def set_obstacle(robot, name, path=CONFIG):
-    """Sim only: put the obstacle box at one of the configs in corridor.json (none / left / right / centre)."""
+    """Sim only: put the obstacle box at one of the task file's cases (none / left / centre / right)."""
     xy = load_config(path)["obstacles"][name]
     place_obstacles(robot, [] if xy is None else [xy])
 
 
 def make_robot(obstacle="none", seed=0, path=CONFIG, **kw):
-    """SimRobot in the corridor, obstacle placed, robot at the start pose.
+    """SimRobot on the task file's floor, obstacle placed, robot at the start pose, lab camera.
 
-    A task file may carry a "lidar" block (e.g. the lab's LDS-01 range in arena_lab.json); it sets the
-    sim LiDAR unless the caller passes its own lidar=.
+    The task file's "lidar" block (the lab's LDS-01 range in arena_lab.json) sets the sim LiDAR unless
+    the caller passes its own lidar=.
     """
     cfg = load_config(path)
     if "lidar" in cfg and "lidar" not in kw:

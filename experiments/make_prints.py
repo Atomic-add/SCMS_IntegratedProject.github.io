@@ -4,8 +4,8 @@
 
 Page 1 (landscape): the W3 board, 9 x 6 internal corners of SQUARESIZE (25 mm) -> 250 x 175 mm.
 Pages 2-4 (portrait): DICT_4X4_50 IDs 0 (dock), 1 and 2, black square MARKER_SIDE (100 mm) with a
-one-cell white quiet zone inside the cut line, and a cross at the marker centre (config/corridor.json
-gives the centre height, 0.12 m in the sim).
+one-cell white quiet zone inside the cut line, and a cross at the marker centre (config/arena_lab.json
+gives the centre height, 0.10 m above the floor).
 Every page has a 100 mm scale bar: print at 100 % / "Actual size" (not "Fit to page") and measure it.
 The squares are drawn as vector rectangles, so the PDF is exact at any printer resolution. Sizes come
 from src/perception, so the print always matches what calibrate_camera.py and aruco.measure assume.

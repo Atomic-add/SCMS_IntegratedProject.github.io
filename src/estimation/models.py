@@ -3,7 +3,7 @@
 Adapted from Week 7 C.4 (F_uni, h_rb, H_rb) and Assessment 3 Part B (Qd reasoning). The motion model
 itself, f = odometry.move(), is in odometry.py; this file holds what the EKF needs AROUND it.
 
-State x = [x, y, theta] in the world frame {W} (corridor.json), theta wrapped to (-pi, pi].
+State x = [x, y, theta] in the world frame {W} (config/arena_lab.json), theta wrapped to (-pi, pi].
 
 Motion Jacobian F = df/dx, with m = theta + dth/2 the midpoint heading:
 
@@ -39,20 +39,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))   # project root, s
                                                                 # when this file is run directly (VS Code Run)
 
 from src.estimation.odometry import increments, move, wrap  # noqa: E402
-from src.robot.sim_robot import PROJECT_ROOT, WHEEL_SEPARATION  # noqa: E402
+from src.robot.sim_robot import PROJECT_ROOT, SIM_INTRINSICS, WHEEL_SEPARATION  # noqa: E402
 
 ESTIMATION_CONFIG = PROJECT_ROOT / "config" / "estimation.json"
 
 
-def load_estimation_config(path=ESTIMATION_CONFIG, camera=None):
+def load_estimation_config(path=ESTIMATION_CONFIG, camera=SIM_INTRINSICS):
     """The EKF tuning as a dict (config/estimation.json).
 
-    camera: the intrinsics file the ArUco ranges come from. When it has its own "range_correction" (the
+    camera: the intrinsics file the ArUco ranges come from (default the sim camera, config/camera_sim.json;
+    None = estimation.json alone). When it has its own "range_correction" (the
     real camera, experiments/aruco_real_noise.py), aruco.measure has already removed that bias, so
     range_bias_r2 (the sim camera's bias) becomes 0, not subtracted twice, and range_sd is the camera's.
     When it has an "ekf_noise" block (range_bias_r2, range_sd, bearing_sd_deg measured for that camera by
-    evaluation/consistency_sweep.py --write-noise), those values replace the config's. A file with
-    neither (config/camera_sim.json) leaves the config unchanged.
+    evaluation/consistency_sweep.py --write-noise), those values replace the config's.
     """
     cfg = json.loads(Path(path).read_text())
     cam = {} if camera is None else json.loads(Path(camera).read_text())

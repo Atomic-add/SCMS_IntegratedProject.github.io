@@ -1,8 +1,9 @@
 # 41014 Sensors and Control: Integrated Project, Track A
 
-TurtleBot3 **Waffle Pi** in **MuJoCo** and on the lab robot: follow waypoints across the lab floor (or the
-original L-shaped corridor), avoid an obstacle with the 2D LiDAR, and dock at a charging station marked
-with an ArUco marker. The estimator fuses
+TurtleBot3 **Waffle Pi** in **MuJoCo** and on the lab robot: follow waypoints across the lab floor, avoid
+an obstacle with the 2D LiDAR, and dock at a charging station marked with an ArUco marker. There is one
+simulated world, the lab track as built in the lab, seen through one simulated camera, the lab robot's.
+(The original L-shaped corridor and its level URDF camera live on the branch `feature/induction-ibvs`.) The estimator fuses
 wheel-encoder odometry with camera range-bearing measurements to known ArUco markers (EKF); a
 state-feedback (LQR) controller tracks the waypoints on the EKF estimate.
 
@@ -67,16 +68,15 @@ The same commands work in a Linux terminal and in Windows PowerShell:
 ```bash
 python main.py                      # the lab track as built in the lab: centre box, EKF, lab camera, viewer
 python main.py --case none          # obstacle case: none | left | centre | right
-python main.py --task config/corridor.json   # the original L corridor (level URDF camera)
 python main.py --odometry           # steer on wheel odometry only (the baseline, no EKF)
 python main.py --seed 3             # another sensor-noise seed
 python main.py --no-camera          # MuJoCo viewer only
 python main.py --headless           # no windows, prints the result only
-python main.py --randomise --seed 7 # random corridor scenario: route, start placement, boxes, noise, wheel error
+python main.py --randomise --seed 7 # random lab scenario: route, start placement, box, noise, wheel error
 python main.py --dock pbvs          # dock on the LQR all the way instead of finishing with IBVS
 ```
 
-**Docking and visual servoing.** From W4 the LQR (EKF heading, camera position) puts the robot on the
+**Docking and visual servoing.** From W3 (the pre-dock point) the LQR (EKF heading, camera position) puts the robot on the
 marker's normal; below 0.55 m the last part is **image-based visual servoing** (Week 9,
 `src/control/visual_servo.py`): (v, omega) = lambda J_mr^+ (p* - p) on the four marker corners, with the
 image Jacobian reduced to what the base can do and corrected for the camera sitting 7.6 cm ahead of the
@@ -85,8 +85,9 @@ position in the camera frame; the EKF's landmark markers are outlined in yellow.
 PBVS docking on the same seeds -> `results/ibvs_docking.png`.
 
 `--randomise` (`src/robot/scenario.py`): the robot is **told** a new start spot (its EKF prior) and a new
-route; it is **not told** where it was really placed (drawn from N(0, P0)), where the one or two boxes
-are (always inside its lane), how noisy the LiDAR and camera are, or how wrong each wheel radius is.
+route (the start spot within 0.15 m and 15 deg of the red dot, W1 and the corner W2 within 0.15 m and
+0.1 m); it is **not told** where it was really placed (drawn from N(0, P0)), where the box is (always
+inside its lane on the long leg, x 1.75-3.0 m, with one side at least 0.7 m wide), how noisy the LiDAR and camera are, or how wrong each wheel radius is.
 The terminal prints both halves. In the viewer the red dots are the LiDAR returns placed with the EKF
 estimate, and the panel shows the state, the commands, the sd from P and the last NIS.
 
@@ -94,8 +95,8 @@ Linux without a display (SSH, CI): `MUJOCO_GL=egl python main.py --headless` (`-
 `MUJOCO_GL=egl` itself when it is not set).
 
 What happens: without `--task` the sim is `config/arena_lab.json`, the lab floor as the robot will meet
-it (0.5 m tiles, panels, the 20 cm box, three markers, the LDS-01 range and the lab robot's camera, whose
-choice the task file's `sim_camera` makes). The robot starts from the task file's prior, follows the
+it (0.5 m tiles, panels, the 20 cm box, three markers, the LDS-01 range and the lab robot's camera:
+f 692 px, 49.7 x 38.2 deg, 6.3 deg down, 30 Hz, calibrated into `config/camera_sim.json`). The robot starts from the task file's prior, follows the
 waypoints with the LQR, goes around the box with the LiDAR, turns left at the far end and docks at the
 charging station (marker ID 0). The terminal prints each state change (TRACK, AVOID, REJOIN, DOCK, STOP)
 and finally, for example:
@@ -104,36 +105,11 @@ and finally, for example:
 result: docked after 46.0 s of sim time, dock_complete = True
 ```
 
-`--task config/corridor.json` runs the original corridor instead (57.1 s on seed 0), with the level URDF
-camera its 0.12 m markers were designed for; `--sim-camera lab|urdf` overrides the task file's camera.
-
 The exit code is 0 when the robot docked and 1 otherwise. In the viewer the red dots are the LiDAR
 returns placed with the EKF estimate (if the estimate drifts, the dots slide off the walls) and the
 top-left panel shows the state and the commands. The **robot camera** window outlines every ArUco
 marker it sees, with the range and bearing that perception hands to the EKF. Close the viewer to exit.
 Viewer: left-drag rotates, right-drag pans, scroll zooms, Tab / Shift+Tab hide the panels.
-
-Drive the robot by hand instead (wheel sliders under **Control** in the viewer's right panel; LiDAR
-drawn with wheel odometry):
-
-```bash
-python experiments/view_corridor.py --obstacle centre    # none / left / right / centre
-```
-
-### The corridor (`models/robotis_tb3/scene_corridor.xml`, numbers in `config/corridor.json`)
-
-| Part | Size | Notes |
-|---|---|---|
-| Leg 1 (+x) | 4.2 x 1.0 m | start (0.5, 0, 0 deg) -> W1 -> W2 |
-| Corner | 1.2 x 1.2 m | 90 deg turn at W2 |
-| Obstacle section (+y) | 1.5 m wide | one 0.3 x 0.3 x 0.25 m box: none / left / right / centre |
-| Dock area | 2.0 x 2.0 m | W4 pre-dock, 1.9 m straight approach, stop at 0.356 m base-to-marker |
-| Walls | 0.35 m high | LiDAR scan plane is 0.132 m above the floor |
-
-Three fixed ArUco markers (DICT_4X4_50, 0.10 m) form the EKF's map: id 1 at the end of leg 1,
-id 2 on the dock-area wall, id 0 on the charging station. All ranges are measured from the robot
-base origin (`base_footprint`). Only the centre box blocks the robot's lane; the left and right boxes
-leave it free, so those cases drive the same path as `none`.
 
 ### The lab track and the real TurtleBot
 
@@ -142,15 +118,15 @@ The lab floor (10 x 4 tiles of 0.5 m) has its own task file, `config/arena_lab.j
 (left turn + dock) reuse it through `"extends"`. The same file runs in the sim and on the robot:
 
 ```bash
-python main.py                                                # the lab track in the sim, lab robot's camera (f 692 px, 6.3 deg down, 30 Hz)
-python main.py --sim-camera urdf                              # ... with the level URDF camera instead
-python -m evaluation.lab_camera_trials                        # 4 box cases x 10 seeds per sim camera -> results/lab_camera_trials.json
+python main.py                                                # the lab track in the sim
+python main.py --task config/stage1_dock.json --case none     # one stage in the sim
 python experiments/plot_setup.py                              # layout sheet -> results/setup_arena_lab.png
 ```
 
-`--sim-camera lab` uses the MJCF camera `rgb_lab` and its own calibration `config/camera_sim_lab.json`
-(`python experiments/calibrate_camera.py --camera rgb_lab --pitch-deg 6.3 --out config/camera_sim_lab.json`).
-It has no lens distortion and no range bias, and its pixel noise is still the 2.0 grey-level placeholder.
+The sim camera is the MJCF camera `rgb`, calibrated into `config/camera_sim.json`
+(`python experiments/calibrate_camera.py`, which holds the board along the 6.3 deg tilt). It has no lens
+distortion and no range bias, and its pixel noise is still the 2.0 grey-level placeholder. Its marker
+noise for the EKF (`ekf_noise`) was fitted by `evaluation/consistency_sweep.py --write-noise`.
 
 The real robot uses `src/robot/real_robot.py` (`RealRobot`, the same interface as `SimRobot`) over the
 lab's rosbridge (UTS-RI/turtlebot_rosbridge). Install it once, after `requirements.txt`:
@@ -188,7 +164,7 @@ python -m src.estimation.estimation_test     # EKF and odometry unit checks
 python -m src.control.control_test           # controller, avoidance and docking unit checks
 python -m src.robot.real_robot_test          # RealRobot on a fake rosbridge link (no robot needed)
 python main.py --headless                    # the lab track must dock (exit code 0)
-python main.py --headless --task config/corridor.json   # and so must the corridor
+python main.py --headless --randomise --seed 7   # and so must a random lab scenario
 ```
 
 After changing anything in `models/`, `src/robot/` or `src/perception/`:
@@ -210,28 +186,37 @@ python -m evaluation.run_demo                # everything: 4 cases on odometry a
 python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
 python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
 python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
+python -m evaluation.random_trials --n 20 --two-boxes  # stress test: a second box on the long leg
 python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
 python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
 python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
-python -m evaluation.lab_camera_trials       # lab track, both sim cameras, 4 cases x 10 seeds -> results/lab_camera_trials.json
 ```
 
 Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
 `demo_compare.*`). An EKF run takes about 2 min on a machine without a GPU, because rendering the
-camera dominates; odometry-only runs take about 20 s.
+camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
+(`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
+
+Random lab scenarios (`random_trials`, seeds 1-20, 26 Oct):
+
+| Run | Docked | Contacts | Notes |
+|---|---|---|---|
+| EKF | 20 / 20 | 0 | 44.0 +- 2.3 s, dock lateral 0.26 +- 0.43 cm, yaw -0.41 +- 0.68 deg, ANEES 5.0 |
+| Odometry only | 7 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+| EKF, `--two-boxes` | 15 / 20 | 0 | 2 of the 7 two-box seeds dock; the other 5 stop safely with `too_close` (seeds 6, 9, 13 while going round the first box, 4 and 11 between the boxes). Cause not yet analysed; a stress test, not the default |
 
 ## 5. Repository layout
 
 ```
 main.py                 the demo: python main.py (section 2)
-config/                 corridor task, camera calibration, EKF and controller tuning
+config/                 lab task (and its stages), camera calibration, EKF and controller tuning
 models/robotis_tb3/     Waffle Pi model (ROBOTIS, fixed), scenes, textures
 src/robot/              SimRobot and RealRobot (rosbridge), one interface: read_encoders(), read_scan(),
-                        read_image(), send_cmd(v, w), step(); task files and scenes (corridor.py)
+                        read_image(), send_cmd(v, w), step(); task files and scenes (task.py)
 src/perception/         camera calibration (W3 B/C), ArUco range-bearing (W3 E), LiDAR (W2 C, W4 P5)
 src/estimation/         wheel odometry, EKF with ArUco range-bearing (W7)
 src/control/            error model + LQR (W5, W6), waypoints, LiDAR avoidance, docking, mission loop
-experiments/            textures, calibration, viewers, trial scripts
+experiments/            textures, calibration, lab tools (robot check, frames, prints, plans), viewers
 evaluation/             checks, metrics and trials: the ONLY place that reads simulator ground truth
 results/                generated figures and CSV
 mujoco_installation_guide/   step-by-step setup for Windows

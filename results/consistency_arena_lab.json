@@ -1,6 +1,5 @@
 {
  "task": "config/arena_lab.json",
- "camera": "lab",
  "cases": [
   "none",
   "centre"

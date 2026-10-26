@@ -19,7 +19,7 @@ from src.control.behaviour import AVOID, DOCK, STOP, TRACK, NavigationController
 from src.control.lqr import PathLQR, design_lqr  # noqa: E402
 from src.control.models import controllability_rank, error_model, load_control_config  # noqa: E402
 from src.control.waypoints import TURN, Segment, WaypointTracker  # noqa: E402
-from src.robot.corridor import load_task  # noqa: E402
+from src.robot.task import load_task  # noqa: E402
 from src.robot.sim_robot import MAX_V, MAX_W  # noqa: E402
 
 TASK, CFG = load_task(), load_control_config()
@@ -117,25 +117,31 @@ v, w, info = nav.step(start, np.eye(3) * 1e-4, None, None, 0.05, fb)
 check("sensor loss: no LiDAR scan at all -> robot waits", (v, w) == (0.0, 0.0))
 
 # ---------------------------------------------------------------- transitions
+# On the long leg W1 -> W2, 1 m past W1: the box 0.6 m ahead is far from the segment's end waypoint.
+LEG = 1
+wa, wb = np.asarray(TASK["waypoints"][LEG - 1], float), np.asarray(TASK["waypoints"][LEG], float)
+on_leg = np.r_[wa + (wb - wa) / np.linalg.norm(wb - wa), np.arctan2(*(wb - wa)[::-1])]
 nav = NavigationController(TASK, cfg=CFG)
-for k in range(10):                                         # build up some speed on the first segment
-    nav.step(start, np.eye(3) * 1e-4, clear_obs(t=0.05 * k), None, 0.05, {"v": 0, "w": 0, "t": 0.05 * k})
+nav.tracker.i = LEG
+for k in range(10):                                         # build up some speed on the long leg
+    nav.step(on_leg, np.eye(3) * 1e-4, clear_obs(t=0.05 * k), None, 0.05, {"v": 0, "w": 0, "t": 0.05 * k})
 check("transition: clear path stays in TRACK", nav.state == TRACK)
-_, _, info = nav.step(start, np.eye(3) * 1e-4, box_obs(t=0.5), None, 0.05, {"v": 0, "w": 0, "t": 0.5})
+_, _, info = nav.step(on_leg, np.eye(3) * 1e-4, box_obs(t=0.5), None, 0.05, {"v": 0, "w": 0, "t": 0.5})
 check("transition: box in the lane -> AVOID", nav.state == AVOID, f"state {info['state']}")
-check("pause: waypoints paused while avoiding, segment kept", nav.tracker.paused and nav.tracker.i == 0)
+check("pause: waypoints paused while avoiding, segment kept", nav.tracker.paused and nav.tracker.i == LEG)
 
 nav = NavigationController(TASK, cfg=CFG)
-nav.step(start, np.eye(3) * 1e-4, box_obs(t=0.0, walls=0.3), None, 0.05, {"v": 0, "w": 0, "t": 0.0})
+nav.tracker.i = LEG
+nav.step(on_leg, np.eye(3) * 1e-4, box_obs(t=0.0, walls=0.3), None, 0.05, {"v": 0, "w": 0, "t": 0.0})
 check("transition: box and no room on either side -> STOP no_passage",
       nav.state == STOP and nav.stop_reason == "no_passage", f"{nav.state}, {nav.stop_reason}")
 
 nav = NavigationController(TASK, cfg=CFG)
-w4 = TASK["waypoints"][-1]
-nav.tracker.i = len(nav.tracker.segments) - 1               # on the last segment, standing on W4
-nav.step(np.array([w4[0], w4[1], np.pi / 2]), np.eye(3) * 1e-4, clear_obs(), None, 0.05, {"v": 0, "w": 0, "t": 0.0})
-nav.step(np.array([w4[0], w4[1], np.pi / 2]), np.eye(3) * 1e-4, clear_obs(), None, 0.05, {"v": 0, "w": 0, "t": 0.05})
-check("transition: W4 reached -> pre_dock_reached and DOCK", nav.tracker.pre_dock_reached and nav.state == DOCK)
+w4, th4 = TASK["waypoints"][-1], TASK["dock"]["goal_pose"][2]
+nav.tracker.i = len(nav.tracker.segments) - 1               # on the last segment, standing on the pre-dock point
+nav.step(np.array([w4[0], w4[1], th4]), np.eye(3) * 1e-4, clear_obs(), None, 0.05, {"v": 0, "w": 0, "t": 0.0})
+nav.step(np.array([w4[0], w4[1], th4]), np.eye(3) * 1e-4, clear_obs(), None, 0.05, {"v": 0, "w": 0, "t": 0.05})
+check("transition: pre-dock point reached -> pre_dock_reached and DOCK", nav.tracker.pre_dock_reached and nav.state == DOCK)
 
 # ---------------------------------------------------------------- pause / resume
 tr = WaypointTracker.from_task(TASK, cfg=CFG)
@@ -151,6 +157,17 @@ check("resume: facing away from the path -> TURN on the spot first", tr.mode == 
 # ---------------------------------------------------------------- docking
 P_ok = np.diag([0.01**2, 0.01**2, np.deg2rad(1.0)**2])
 goal = np.array(TASK["dock"]["goal_pose"])
+U = np.array([np.cos(goal[2]), np.sin(goal[2])])            # approach direction (towards the marker)
+N = np.array([-U[1], U[0]])                                 # its left normal
+
+
+def on_approach(r, x_off=0.0, point_at_marker=True):
+    """Pose r from the dock marker on its approach line (x_off to the left of it), facing the marker
+    (or along the approach line)."""
+    m = np.asarray(TASK["markers"][0][:2], float)
+    xy = m - U * np.sqrt(r ** 2 - x_off ** 2) + N * x_off
+    th = np.arctan2(*(m - xy)[::-1]) if point_at_marker else goal[2]
+    return np.r_[xy, th]
 
 
 def run_dock(ranges, feedback_v=0.0, lose_marker_after=None, steps=200, P=P_ok, x_off=0.0):
@@ -158,14 +175,11 @@ def run_dock(ranges, feedback_v=0.0, lose_marker_after=None, steps=200, P=P_ok, 
     x_off: robot that far sideways of the approach line, but turned to point straight at the marker."""
     d = docking.DockingController.from_task(TASK, cfg=CFG)
     d.start()
-    m = TASK["markers"][0]
     for k in range(steps):
         t = 0.05 * k
         r = ranges[min(k, len(ranges) - 1)]
         frame = None if (lose_marker_after is not None and k >= lose_marker_after) else marker_frame(t, r)
-        # place x_hat consistently with the marker range (bearing 0 = pointing at the marker)
-        x, y = goal[0] + x_off, m[1] - np.sqrt(r**2 - x_off**2)
-        xh = np.array([x, y, np.arctan2(m[1] - y, m[0] - x)])
+        xh = on_approach(r, x_off)                              # consistent with the range, bearing 0
         d.step(xh, P, frame, {"v": feedback_v, "w": 0.0, "t": t}, t)
         if d.phase in (docking.COMPLETE, docking.FAILED):
             break
@@ -185,7 +199,7 @@ check("docking: estimate not confident (5 cm sd) -> NOT complete", not d.dock_co
       f"{d.phase}, {d.stop_reason}")
 d = docking.DockingController.from_task(TASK, cfg=CFG)
 d.start()
-xh_stop = np.array([goal[0], TASK["markers"][0][1] - 0.356, np.pi / 2])
+xh_stop = on_approach(0.356, point_at_marker=False)
 for k in range(4):                                          # range reached, all checks true for 0.15 s only
     d.step(xh_stop, P_ok, marker_frame(0.05 * k, 0.356), {"v": 0, "w": 0, "t": 0.05 * k}, 0.05 * k)
 check("docking: checks true for only 0.15 s -> not complete yet (dock_hold_sec)", d.phase == docking.SETTLE, d.phase)
@@ -194,8 +208,8 @@ check("docking: marker lost for good -> FAILED marker_lost (never drives in blin
       d.phase == docking.FAILED and d.stop_reason == "marker_lost", f"{d.phase}, {d.stop_reason}")
 d = docking.DockingController.from_task(TASK, cfg=CFG)
 d.start()
-d.step(np.array([goal[0], 3.9, np.pi / 2]), P_ok, marker_frame(0.0, 0.7), {"v": 0, "w": 0, "t": 0.0}, 0.0)
-v, w = d.step(np.array([goal[0], 3.9, np.pi / 2]), P_ok, None, {"v": 0, "w": 0, "t": 0.5}, 0.5)
+d.step(on_approach(0.7, point_at_marker=False), P_ok, marker_frame(0.0, 0.7), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(on_approach(0.7, point_at_marker=False), P_ok, None, {"v": 0, "w": 0, "t": 0.5}, 0.5)
 check("docking: marker briefly missing -> no forward motion (WAIT)", v == 0.0 and d.phase == docking.WAIT)
 
 # ---------------------------------------------------------------- docking: IBVS hand-over (Week 9)
@@ -216,7 +230,7 @@ def ibvs_frame(t, rng, shift_x=0.0):
     return {"t": t, "markers": {0: {"z": z, "corners": corners, "T_CM": T_CM}}}
 
 
-xh_line = np.array([goal[0], TASK["markers"][0][1] - 0.50, np.pi / 2])
+xh_line = on_approach(0.50, point_at_marker=False)
 d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
 d.start()
 v, w = d.step(xh_line, P_ok, ibvs_frame(0.0, 0.50), {"v": 0, "w": 0, "t": 0.0}, 0.0)

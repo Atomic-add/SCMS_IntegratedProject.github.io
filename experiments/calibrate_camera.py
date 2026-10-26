@@ -2,16 +2,14 @@
 
     python experiments/calibrate_camera.py                      # sim: board waved in front of the robot
     python experiments/calibrate_camera.py --images DIR --out config/camera_real.json   # real Pi camera
-    python experiments/calibrate_camera.py --camera rgb_lab --pitch-deg 6.3 --out config/camera_sim_lab.json
-                                                                # sim camera with the lab robot's geometry
 
 Sim mode places the 9 x 6, 25 mm board (models/robotis_tb3/scene_calib.xml) at random poses in front
 of the robot, keeps the frames where the board is found, and calibrates from those frames only. It
 never reads the camera's true intrinsics; evaluation/check_camera.py compares the result with them.
 Writes config/camera_sim.json and results/camera_calibration.png.
 
---camera picks another MJCF camera (rgb_lab: main.py --sim-camera lab). --pitch-deg is that camera's
-downward tilt as built into the MJCF: the board is held along it, and it is stored as "T_BC" (URDF
+The sim camera (MJCF camera rgb) has the lab robot's geometry, tilted 6.3 deg down. --pitch-deg is that
+tilt as built into the MJCF (default 6.3): the board is held along it, and it is stored as "T_BC" (URDF
 position, tilted) for aruco.load_T_BC, as experiments/camera_pitch.py does for the real camera.
 """
 import argparse
@@ -40,7 +38,7 @@ def sim_views(n_good=20, max_tries=200, seed=0, cam="rgb", pitch_deg=0.0):
 
     cam: the MJCF camera; pitch_deg: its downward tilt, so the board is held along the line of sight.
     A tilted camera sees the floor across the bottom of the image at these distances, so a board held
-    low is cut by the floor and rejected and the bottom rows get no corners (rgb_lab: principal point
+    low is cut by the floor and rejected and the bottom rows get no corners (lab camera: principal point
     8 px off, rms 0.4 px). For a tilted camera the floor is therefore hidden from the renderer (geom
     group 3); it still holds the robot up.
     """
@@ -105,8 +103,9 @@ def main():
     ap.add_argument("--images", help="folder of real checkerboard images; default: capture in the sim")
     ap.add_argument("--out", help="output JSON (default config/camera_sim.json, or camera_real.json with --images)")
     ap.add_argument("--camera", default="rgb", help="sim: the MJCF camera to calibrate (default rgb)")
-    ap.add_argument("--pitch-deg", type=float, default=None,
-                    help="sim: the camera's downward tilt in the MJCF [deg]; stored as T_BC in the output")
+    ap.add_argument("--pitch-deg", type=float, default=6.3,
+                    help="sim: the camera's downward tilt in the MJCF [deg] (default 6.3, the lab camera); "
+                         "stored as T_BC in the output")
     args = ap.parse_args()
 
     if args.images:
@@ -129,7 +128,7 @@ def main():
 
     out = Path(args.out) if args.out else PROJECT_ROOT / "config" / default_out
     camera.save_intrinsics(out, calib, source)
-    if args.pitch_deg is not None and not args.images:
+    if not args.images:
         data = json.loads(out.read_text())
         data["T_BC"] = {"xyz": aruco.T_BC.t.tolist(), "pitch_deg": args.pitch_deg,
                         "_doc": f"camera pose in base_footprint: URDF position, tilted down by pitch_deg as built "

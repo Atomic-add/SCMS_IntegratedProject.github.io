@@ -54,19 +54,15 @@
       <!-- camera housing (camera_link box in the URDF): still collides, but group 3 hides it from rendering
            so it can never cover the lens -->
       <geom size="0.0075 0.015 0.0135" pos="0.078 0 0.107" type="box" material="grey" group="3"/>
-      <!-- RGB camera = camera_rgb_optical_frame in turtlebot3_waffle_pi.urdf: optical centre (0.076, 0, 0.103)
-           in base_footprint, looking along +x. MuJoCo cameras look along their -z axis with +y up, hence
-           xyaxes. fovy 48.8 deg = Raspberry Pi Camera v2 vertical field of view at 640x480 (datasheet value;
-           the default sim camera). rgb_lab below is the lab robot's camera as calibrated. -->
-      <camera name="rgb" pos="0.076 0 0.103" xyaxes="0 -1 0 0 0 1" fovy="48.8" resolution="640 480"/>
-      <!-- The lab robot's camera as measured on 23 Oct (config/camera_real.json): f = 692 px, principal point
-           (302, 245), i.e. 49.7 x 38.2 deg, and tilted 6.3 deg DOWN (experiments/camera_pitch.py), so the
+      <!-- RGB camera: the lab robot's camera as measured on 23 Oct (config/camera_real.json). Optical centre
+           at camera_rgb_optical_frame of turtlebot3_waffle_pi.urdf, (0.076, 0, 0.103) in base_footprint, looking
+           along +x; MuJoCo cameras look along their -z axis with +y up, hence xyaxes. f = 692 px, principal
+           point (302, 245), i.e. 49.7 x 38.2 deg, and tilted 6.3 deg DOWN (experiments/camera_pitch.py), so the
            up axis leans forward: xyaxes "0 -1 0 sin 0 cos". sensorsize is in pixels (1 unit = 1 px), so
            focal and principal are given in pixels; principalpixel = (319.5 - cx, 239.5 - cy) (signs checked
            against projected marker corners; 0.2 px). No lens distortion (the real k1..k3 move the image
-           corners by about 1 %). Selected by main.py --sim-camera lab (SIM_CAMERAS in src/robot/sim_robot.py);
-           calibrated into config/camera_sim_lab.json. -->
-      <camera name="rgb_lab" pos="0.076 0 0.103" xyaxes="0 -1 0 0.10973 0 0.99396" resolution="640 480"
+           corners by about 1 %). Calibrated into config/camera_sim.json. -->
+      <camera name="rgb" pos="0.076 0 0.103" xyaxes="0 -1 0 0.10973 0 0.99396" resolution="640 480"
               sensorsize="640 480" focalpixel="692 692" principalpixel="17.35 -5.73"/>
       <body name="wheel_left" pos="0 0.144 0.033" quat="0.707388 -0.706825 0 0">
         <inertial pos="0 0 0" quat="-0.000890159 0.706886 0.000889646 0.707326" mass="0.0284989" diaginertia="2.07126e-05 1.11924e-05 1.11756e-05"/>

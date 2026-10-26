@@ -47,26 +47,21 @@ class LidarSpec:
 
 @dataclass
 class CameraSpec:
-    """RGB camera model (Raspberry Pi Camera v2 on the Waffle Pi).
+    """RGB camera model: the lab robot's camera (Raspberry Pi Camera v2 on the Waffle Pi).
 
-    width, height and the field of view live in the MJCF <camera>; rate_hz and pixel_noise are
-    placeholders until they are measured on the lab robot.
+    width, height, focal length and tilt live in the MJCF <camera> (measured on 23 Oct: f 692 px,
+    49.7 x 38.2 deg, 6.3 deg down); pixel_noise is a placeholder until it is measured on the lab robot.
     """
     name: str = "rgb"          # camera name in the MJCF
     width: int = 640
     height: int = 480
-    rate_hz: float = 15.0      # frames per second reaching the computer
+    rate_hz: float = 30.0      # frames per second reaching the computer (lab robot, check_robot.py)
     pixel_noise: float = 2.0   # sd of additive grey-level noise per pixel channel
 
 
-# Sim cameras for main.py --sim-camera: the MJCF camera and its frame rate, and the calibration file that
-# experiments/calibrate_camera.py wrote for that camera (the robot's software uses the file, never the MJCF).
-#   urdf  the URDF pose, level, fovy 48.8 deg (Pi Camera v2 datasheet), 15 Hz: the default
-#   lab   the lab robot's camera measured on 23 Oct: f 692 px, 49.7 x 38.2 deg, 6.3 deg down, 30 Hz
-SIM_CAMERAS = {
-    "urdf": (CameraSpec(), "config/camera_sim.json"),
-    "lab": (CameraSpec(name="rgb_lab", rate_hz=30.0), "config/camera_sim_lab.json"),
-}
+# The sim camera's calibration, written by experiments/calibrate_camera.py (the robot's software uses the
+# file, never the MJCF). The real robot uses config/camera_real.json instead.
+SIM_INTRINSICS = PROJECT_ROOT / "config" / "camera_sim.json"
 
 
 class SimRobot:

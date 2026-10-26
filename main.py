@@ -8,8 +8,7 @@
     python main.py --headless            # no windows (Linux without a display: MUJOCO_GL=egl is set)
     python main.py --dock pbvs           # dock on the LQR all the way (default: ibvs for the last part)
     python main.py --task config/stage1_dock.json --case none    # one stage of the lab track in the sim
-    python main.py --task config/corridor.json                   # the original L corridor (URDF camera)
-    python main.py --randomise --seed 7  # a random corridor scenario: route, start, boxes, noise, wheel error
+    python main.py --randomise --seed 7  # a random lab scenario: route, start, box, noise, wheel error
     python main.py --real --task config/stage1_dock.json         # real robot, host from config/robot_real.json
     python main.py --real 192.168.1.213 --task config/arena_lab.json   # another robot, the whole lab track
     python main.py --headless --log results/run.npz              # also save the run log (always on with --real)
@@ -17,25 +16,23 @@
 Without --task the sim runs config/arena_lab.json, the lab floor as the robot will meet it: the 0.5 m
 tiles, the panels, the 20 cm box and the three markers, the LDS-01 range, and the lab robot's camera.
 The robot starts from the task file's prior, follows the waypoints with the LQR, goes around the box with
-the LiDAR and docks at the ArUco station (marker ID 0). config/corridor.json is the original L corridor;
---randomise draws corridor scenarios (src/robot/scenario.py): the robot is TOLD a new start spot (its
-prior) and a new route; it is NOT told where it was really placed, where the boxes are, how noisy its
-sensors are or how wrong its wheel radii are. The terminal prints both halves. The estimator is the EKF in
+the LiDAR and docks at the ArUco station (marker ID 0). There is one simulated world, the lab track, and
+one simulated camera, the lab robot's (config/camera_sim.json). --randomise draws lab scenarios
+(src/robot/scenario.py): the robot is TOLD a new start spot (its prior) and a new route; it is NOT told
+where it was really placed, where the boxes are, how noisy its sensors are or how wrong its wheel radii
+are. The terminal prints both halves. The estimator is the EKF in
 src/estimation (wheel odometry + ArUco range-bearing) and the controller acts on its estimate xh only.
 Nothing here reads simulator ground truth; evaluation/ is the only place that does.
 
 --real swaps only the robot: the same run_mission, estimator and controllers drive the TurtleBot over
 rosbridge. It needs config/camera_real.json (experiments/calibrate_camera.py --images ...) and a
-task file measured in the lab arena (--task is required, same layout as config/corridor.json): the
-corridor's waypoints are metres outside the lab floor. --case has no effect there, the boxes are
-wherever they were put. Run experiments/check_robot.py first. Every real run is logged (--log, default
-results/hardware/run_<time>.npz), also when it stops early, so a failure can be diagnosed afterwards.
+task file measured in the lab arena (--task is required: config/arena_lab.json or a stage that
+extends it). --case has no effect there, the boxes are wherever they were put. Run
+experiments/check_robot.py first. Every real run is logged (--log, default results/hardware/run_<time>.npz),
+also when it stops early, so a failure can be diagnosed afterwards.
 
---sim-camera picks the simulated camera (SIM_CAMERAS in src/robot/sim_robot.py) and its calibration file;
-left out, the task file's "sim_camera" decides. lab (arena_lab.json and its stages) is the lab robot's
-camera as measured on 23 Oct (49.7 x 38.2 deg, 6.3 deg down, 30 Hz), so a sim run sees what the real
-camera sees; urdf (the corridor) is the level URDF camera with the Pi Camera v2 datasheet field of view
-(the lab camera loses the corridor's 0.12 m dock marker at the stop).
+The simulated camera is the lab robot's camera as measured on 23 Oct (49.7 x 38.2 deg, 6.3 deg down,
+30 Hz), so a sim run sees what the real camera sees.
 
 Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the run.
 """
@@ -47,7 +44,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 LAB_TASK = ROOT / "config" / "arena_lab.json"           # the default: the lab floor as built in the lab
-CORRIDOR_TASK = ROOT / "config" / "corridor.json"       # the original L corridor (and --randomise)
 sys.path.insert(0, str(ROOT))                      # project root, so "src" imports work from any folder
 
 CASES = ("none", "left", "centre", "right")
@@ -59,8 +55,8 @@ def parse_args(argv=None):
     ap.add_argument("--odometry", action="store_true", help="steer on wheel odometry only, without the EKF")
     ap.add_argument("--seed", type=int, default=0, help="sensor-noise seed, and the scenario with --randomise (default: 0)")
     ap.add_argument("--randomise", action="store_true",
-                    help="random corridor route, start placement, boxes, sensor noise and wheel error for this seed "
-                         "(ignores --case; runs the corridor)")
+                    help="random lab route, start placement, boxes, sensor noise and wheel error for this seed "
+                         "(ignores --case; runs config/arena_lab.json)")
     ap.add_argument("--dock", choices=("ibvs", "pbvs"), default=None,
                     help="docking: LQR then image-based visual servoing (ibvs), or the LQR all the way (pbvs); "
                          "default from config/control.json")
@@ -70,10 +66,7 @@ def parse_args(argv=None):
                     help="drive the real TurtleBot over rosbridge (HOST default: config/robot_real.json)")
     ap.add_argument("--task", type=Path, default=None,
                     help="start prior, waypoints, markers and dock (default config/arena_lab.json, the lab floor; "
-                         "config/corridor.json for the original corridor; required with --real)")
-    ap.add_argument("--sim-camera", default=None, choices=("urdf", "lab"),
-                    help="simulated camera: lab (the lab robot's camera measured on 23 Oct: fovy 38.2 deg, 6.3 deg "
-                         "down, 30 Hz) or urdf (level, fovy 48.8 deg, 15 Hz); default: the task file's sim_camera")
+                         "or a stage, e.g. config/stage1_dock.json; required with --real)")
     ap.add_argument("--log", type=Path, default=None,
                     help="save the run (t, xh, P, v, w, state, EKF NIS) as .npz; default with --real: "
                          "results/hardware/run_<time>.npz")
@@ -136,25 +129,19 @@ def main(argv=None):
     real = args.real is not None
     if real and args.randomise:
         sys.exit("--randomise changes the simulated world; it has no meaning with --real")
-    if real and args.sim_camera is not None:
-        sys.exit("--sim-camera picks the simulated camera; the real robot uses config/camera_real.json")
     if real and args.task is None:
         sys.exit("--real needs --task (e.g. config/stage1_dock.json): the task file is the measured lab floor "
                  "the robot will follow, so it is never assumed")
-    if args.randomise and args.task is not None and Path(args.task).resolve() != CORRIDOR_TASK:
-        sys.exit("--randomise draws corridor scenarios (src/robot/scenario.py): leave out --task")
+    if args.randomise and args.task is not None and Path(args.task).resolve() != LAB_TASK:
+        sys.exit("--randomise draws scenarios of the whole lab track (src/robot/scenario.py): leave out --task")
     if args.headless and sys.platform.startswith("linux"):
         os.environ.setdefault("MUJOCO_GL", "egl")  # offscreen rendering without a display; set before mujoco loads
 
-    from src.robot.corridor import load_config
-    from src.robot.sim_robot import SIM_CAMERAS
-    task_path = Path(args.task) if args.task else (CORRIDOR_TASK if args.randomise else LAB_TASK)
-    camera_name = args.sim_camera or load_config(task_path).get("sim_camera", "urdf")
-    sim_camera, sim_intrinsics = SIM_CAMERAS[camera_name]
-    intrinsics = ROOT / ("config/camera_real.json" if real else sim_intrinsics)
+    from src.robot.sim_robot import SIM_INTRINSICS
+    task_path = Path(args.task) if args.task else LAB_TASK
+    intrinsics = ROOT / "config" / "camera_real.json" if real else SIM_INTRINSICS
     if not intrinsics.exists():
-        how = ("--images DIR --out config/camera_real.json" if real else "" if camera_name == "urdf" else
-               f"--camera {sim_camera.name} --pitch-deg 6.3 --out {sim_intrinsics}")
+        how = "--images DIR --out config/camera_real.json" if real else "--pitch-deg 6.3"
         sys.exit(f"{intrinsics.relative_to(ROOT)} is missing: calibrate the robot camera first with\n"
                  f"  python experiments/calibrate_camera.py {how}")
 
@@ -163,31 +150,27 @@ def main(argv=None):
     from src.estimation.ekf import EKF
     from src.estimation.models import load_estimation_config
     from src.perception import camera
-    from src.robot.corridor import load_task
+    from src.robot.task import load_task
 
     task = load_task(task_path)                     # start prior, waypoints, marker map, dock goal
     case, setup, label = args.case, None, args.case
-    robot = None
-    if not real and not args.randomise:
-        from src.robot.corridor import make_robot
-        robot = make_robot(case, seed=args.seed, path=task_path, camera=sim_camera)   # the task file's scene, box, LiDAR
-    if real:
-        from src.robot.real_robot import RealRobot
-        robot = RealRobot(args.real or None)
-        label = f"real robot {robot.host}"
     if args.randomise:
         from src.robot.scenario import apply_world, describe, random_scenario
         sc = random_scenario(args.seed)
         print(describe(sc))
         task, case, label = sc["task"], "none", f"random seed {args.seed}"   # boxes come from the scenario
         setup = lambda robot: apply_world(robot, sc["world"])              # noqa: E731  (sim side only)
-    if robot is None and not real:
-        from src.robot.corridor import make_robot
-        robot = make_robot(case, seed=args.seed, camera=sim_camera)    # the corridor, for --randomise
+    if real:
+        from src.robot.real_robot import RealRobot
+        robot = RealRobot(args.real or None)
+        label = f"real robot {robot.host}"
+    else:
+        from src.robot.task import make_robot
+        robot = make_robot(case, seed=args.seed, path=task_path)   # the task file's scene, box, LiDAR
     # the camera file decides the range model: the real one corrects its own bias (no sim range_bias_r2 on top)
     estimator = None if args.odometry else EKF(task["start"], marker_map=task["markers"],
                                                params=load_estimation_config(camera=intrinsics))
-    from src.robot.corridor import apply_control_overrides
+    from src.robot.task import apply_control_overrides
     cfg = apply_control_overrides(load_control_config(), task)   # a task file may tune the controller
     if args.dock:
         cfg["docking"]["servo"] = args.dock
@@ -216,7 +199,7 @@ def main(argv=None):
             hook(robot, row)
 
     print(f"{task_path.name}: {label}, steering on {'odometry' if args.odometry else 'the EKF'}, docking {cfg['docking']['servo']}, "
-          f"seed {args.seed}{'' if real else f', camera {camera_name}'}{', headless' if args.headless else ''}")
+          f"seed {args.seed}{', headless' if args.headless else ''}")
     info, t_end, failure = None, 0.0, None
     try:
         info, t_end = run_mission(case, seed=args.seed, verbose=True, estimator=estimator,

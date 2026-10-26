@@ -3,7 +3,7 @@
     python experiments/make_textures.py
 
 Writes into models/robotis_tb3/assets/:
-  aruco_4x4_50_id{0,1,2}.png  dock marker (id 0) and corridor landmarks (ids 1, 2): W3 marker_image
+  aruco_4x4_50_id{0,1,2}.png  dock marker (id 0) and landmarks (ids 1, 2): W3 marker_image
                             with a 768 px marker (6 cells of 128 px) and a 128 px (one cell) white
                             quiet zone, 1024 x 1024 px in total, so each 0.1333 m sheet in the scenes
                             carries a 0.10 m marker.

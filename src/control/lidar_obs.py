@@ -73,10 +73,10 @@ def make_obs(t_scan, rho, range_min, range_max, cfg=None):
 if __name__ == "__main__":
     # Run from the project root:  python -m src.control.lidar_obs
     # Prints the obs fields at the start pose and just in front of the centre obstacle.
-    from src.robot.corridor import make_robot
+    from src.robot.task import make_robot
 
     with make_robot("centre", seed=0) as robot:
-        for x, y, yaw, where in [(0.5, 0.0, 0.0, "start, facing +x"), (3.6, 0.9, np.pi / 2, "0.65 m before the centre box")]:
+        for x, y, yaw, where in [(4.5, 1.25, np.pi, "start, facing -x"), (3.4, 1.25, np.pi, "0.65 m before the centre box")]:
             robot.reset(x, y, yaw)
             t, rho = robot.read_scan()
             o = make_obs(t, rho, robot.lidar.range_min, robot.lidar.range_max)

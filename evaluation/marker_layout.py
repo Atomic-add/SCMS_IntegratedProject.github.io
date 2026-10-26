@@ -48,7 +48,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                 # noqa: E402
 
 from src.perception import aruco, camera                        # noqa: E402
-from src.robot.corridor import load_config                      # noqa: E402
+from src.robot.task import load_config                      # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT                    # noqa: E402
 
 TASK = PROJECT_ROOT / "config" / "arena_lab.json"
@@ -155,23 +155,18 @@ def record_paths():
     """True base poses of the sim runs (lab camera), per case: dict(case -> dict(t, pose, state))."""
     from evaluation.ground_truth import true_pose
     from src.control.behaviour import run_mission
-    from src.control.models import load_control_config
     from src.estimation.ekf import EKF
     from src.estimation.models import load_estimation_config
-    from src.robot.corridor import apply_control_overrides, load_task, make_robot
-    from src.robot.sim_robot import SIM_CAMERAS
+    from src.robot.task import load_task, make_robot
 
-    cam_spec, cam_file = SIM_CAMERAS["lab"]
     task = load_task(TASK)
     paths = {}
     for case in CASES:
         rows = []
         info, t_end = run_mission(case, seed=SEED, verbose=False, task=task,
                                   estimator=EKF(task["start"], marker_map=task["markers"],
-                                                params=load_estimation_config(camera=PROJECT_ROOT / cam_file)),
-                                  robot=make_robot(case, seed=SEED, path=TASK, camera=cam_spec),
-                                  cfg=apply_control_overrides(load_control_config(), task),
-                                  intrinsics=PROJECT_ROOT / cam_file,
+                                                params=load_estimation_config()),
+                                  robot=make_robot(case, seed=SEED, path=TASK),
                                   on_step=lambda robot, row: rows.append((row["t"], *np.asarray(true_pose(robot), float),
                                                                           row["state"])))
         paths[case] = dict(t=[r[0] for r in rows], pose=[list(r[1:4]) for r in rows], state=[r[4] for r in rows],

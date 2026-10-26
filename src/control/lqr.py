@@ -54,8 +54,8 @@ def design_weights(cfg=None):
     """Q (2x2) and R (1x1) for the error model, from the limits in config/control.json.
 
     Why these limits (see the _doc in control.json too):
-      e_y_max     0.05 m   the narrowest corridor leg is 1.0 m and the robot is 0.31 m wide, so it has
-                           about 0.35 m each side. 0.10 m was tried first: it settled a 0.20 m offset only
+      e_y_max     0.05 m   the corridor this was tuned on was 1.0 m wide (the lab band is 1.5 m) and the robot
+                           is 0.31 m wide, so it had about 0.35 m each side. 0.10 m was tried first: it settled a 0.20 m offset only
                            after ~2.3 m of travel, longer than the 1.6 m between W1 and W2. 0.05 m halves
                            that (~1.2 m); 0.03 m is faster still but asks for > 35 deg of heading error.
       e_theta_max 10 deg   a noticeable misalignment; bigger and the camera starts to lose the markers.

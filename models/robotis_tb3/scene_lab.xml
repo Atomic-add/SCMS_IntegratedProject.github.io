@@ -16,7 +16,7 @@
     id 0  dock, on the pocket's bottom panel (y = 0) at x = 0.5, facing +y
   Marker sheets and tile lines are visual only (group 2): the LiDAR does not see them.
 
-  The printed obstacle box (0.20 x 0.20 x 0.20 m) is moved by src/robot/corridor.py ("obstacle"; a
+  The printed obstacle box (0.20 x 0.20 x 0.20 m) is moved by src/robot/task.py ("obstacle"; a
   second box "obstacle2" is parked for scenario code that expects it).
 -->
 <mujoco model="track_a_lab">

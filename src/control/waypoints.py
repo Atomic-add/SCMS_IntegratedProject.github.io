@@ -2,7 +2,7 @@
 
 lqr.py answers "how hard do I steer?"; this file answers "steer relative to WHAT?".
 
-The path is the polyline start -> W1 -> W2 -> W3 -> W4 from config/corridor.json (load_task()).
+The path is the polyline start -> W1 -> ... -> pre-dock point from config/arena_lab.json (load_task()).
 Every control step (every Ts) the tracker:
 
   1. takes the ESTIMATED pose x_hat = [x, y, theta] (odometry now, the EKF later; never the truth),
@@ -17,7 +17,7 @@ Two driving modes (a small state machine):
   TURN   at a sharp corner: v = 0 and rotate on the spot until the robot faces the next segment,
          then back to TRACK. Turning in place is used because the LQR loses its grip on e_y as v -> 0
          (models.py: the controllability rank drops to 1 at v = 0), so it cannot steer a slow corner.
-  DONE   the last waypoint (W4, the pre-dock point) is reached: stop and set pre_dock_reached.
+  DONE   the last waypoint (the pre-dock point) is reached: stop and set pre_dock_reached.
 
 pause() / resume() let behaviour.py hand control to avoidance or docking without the tracker
 skipping waypoints meanwhile.
@@ -87,7 +87,7 @@ class WaypointTracker:
 
     @classmethod
     def from_task(cls, task, **kw):
-        """Build from load_task() (src/robot/corridor.py): start prior and waypoints from the config."""
+        """Build from load_task() (src/robot/task.py): start prior and waypoints from the config."""
         return cls(task["waypoints"], task["start"][:2], **kw)
 
     def reset(self):
@@ -203,8 +203,8 @@ def _dead_reckoning(pose, enc, enc_prev):
 
 if __name__ == "__main__":
     # Run from the project root:  python -m src.control.waypoints      (or the VS Code Run button)
-    # Drives start -> W1 -> W2 -> W3 -> W4 in the corridor (no obstacle) on dead reckoning only.
-    from src.robot.corridor import load_task, make_robot
+    # Drives start -> W1 -> W2 -> W3 on the lab track (no obstacle) on dead reckoning only.
+    from src.robot.task import load_task, make_robot
 
     task = load_task()
     tracker = WaypointTracker.from_task(task)
@@ -224,4 +224,4 @@ if __name__ == "__main__":
             pose = _dead_reckoning(pose, enc, enc_prev)
             enc_prev = enc
         print(f"\npre-dock reached: {tracker.pre_dock_reached} at t = {robot.t:.1f} s, "
-              f"odometry says ({pose[0]:.3f}, {pose[1]:.3f}), W4 is {tuple(task['waypoints'][-1])}")
+              f"odometry says ({pose[0]:.3f}, {pose[1]:.3f}), the pre-dock point is {tuple(task['waypoints'][-1].tolist())}")

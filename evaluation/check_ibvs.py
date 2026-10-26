@@ -3,9 +3,9 @@
     python -m evaluation.check_ibvs              # 10 seeds per docking mode
     python -m evaluation.check_ibvs --n 20
 
-Each trial starts 0.35 m before the pre-dock point W4, on the approach line as far as the robot knows,
+Each trial starts 0.35 m before the pre-dock point W3, on the approach line as far as the robot knows,
 but with a random TRUE placement error it is not told about: sideways N(0, 2 cm), heading N(0, 3 deg).
-It drives to W4 on the EKF and docks. The same seeds run with docking servo "pbvs" (the LQR on the
+It drives to W3 on the EKF and docks. The same seeds run with docking servo "pbvs" (the LQR on the
 camera position all the way) and "ibvs" (the LQR onto the marker normal, then image-based visual
 servoing on the four corners). Truth is read here only, for the final dock error.
 
@@ -27,6 +27,7 @@ import numpy as np                                              # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                 # noqa: E402
 
+from evaluation import DEFAULT_WORKERS                          # noqa: E402
 from evaluation.ground_truth import true_pose                   # noqa: E402
 from src.control import visual_servo as vs                      # noqa: E402
 from src.control.behaviour import run_mission                   # noqa: E402
@@ -34,11 +35,11 @@ from src.control.models import load_control_config              # noqa: E402
 from src.estimation.ekf import EKF                              # noqa: E402
 from src.estimation.odometry import wrap                        # noqa: E402
 from src.perception import aruco, camera                        # noqa: E402
-from src.robot.corridor import load_task                        # noqa: E402
+from src.robot.task import load_task                        # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT                    # noqa: E402
 
 OUT = PROJECT_ROOT / "results"
-START = np.array([3.6, 3.55, np.pi / 2])        # 0.35 m before W4 (3.6, 3.9), on the approach line
+BACK_OFF = 0.35                                 # m: the start is this far before the pre-dock point
 LATERAL_SD, HEADING_SD_DEG = 0.02, 3.0          # true placement error, not told to the robot
 MODES = ("pbvs", "ibvs")
 COL = dict(pbvs="#2a78d6", ibvs="#eb6834")
@@ -49,7 +50,9 @@ def one_trial(job):
     rng = np.random.default_rng(2000 + seed)
     dx, dth = rng.normal(0.0, LATERAL_SD), np.deg2rad(rng.normal(0.0, HEADING_SD_DEG))
     task = load_task()
-    task["start"], task["waypoints"] = START.copy(), np.array([task["waypoints"][-1]])
+    pre, th = np.asarray(task["waypoints"][-1], float), task["dock"]["goal_pose"][2]
+    start = np.array([pre[0] - BACK_OFF * np.cos(th), pre[1] - BACK_OFF * np.sin(th), th])   # on the approach line
+    task["start"], task["waypoints"] = start, np.array([pre])
     cfg = load_control_config()
     cfg["docking"]["servo"] = mode
     K, dist, _ = camera.load_intrinsics(PROJECT_ROOT / cfg["docking"]["camera_intrinsics"])
@@ -67,7 +70,8 @@ def one_trial(job):
         rows.append(rec)
 
     def setup(robot):
-        robot.reset(START[0] + dx, START[1], START[2] + dth)  # where it really is (sim side only)
+        side = np.array([-np.sin(start[2]), np.cos(start[2])]) * dx           # sideways off the approach line
+        robot.reset(start[0] + side[0], start[1] + side[1], start[2] + dth)  # where it really is (sim side only)
 
     est = EKF(task["start"], marker_map=task["markers"])
     info, t_end = run_mission("none", seed=seed, verbose=False, estimator=est, on_step=on_step, setup=setup,
@@ -146,10 +150,12 @@ def plot(trials, path):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--n", type=int, default=10, help="seeds per docking mode (default 10)")
+    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
+                    help=f"sim runs in parallel (default {DEFAULT_WORKERS}; each renders the camera)")
     args = ap.parse_args()
     jobs = [(m, s) for s in range(1, args.n + 1) for m in MODES]
     trials = []
-    with Pool() as pool:
+    with Pool(args.workers) as pool:
         for r in pool.imap_unordered(one_trial, jobs):
             trials.append(r)
             print(f"  {r['mode']} seed {r['seed']:3d}: {'docked' if r['docked'] else 'FAILED ' + str(r['stop_reason'])}  "

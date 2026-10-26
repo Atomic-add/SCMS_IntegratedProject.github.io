@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # project root, s
 from evaluation.ground_truth import true_pose  # noqa: E402
 from src.control.behaviour import run_mission  # noqa: E402
 from src.estimation.ekf import EKF  # noqa: E402
-from src.robot.corridor import load_task  # noqa: E402
+from src.robot.task import load_task  # noqa: E402
 
 if __name__ == "__main__":
     case = sys.argv[1] if len(sys.argv) > 1 else "centre"

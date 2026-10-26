@@ -177,7 +177,7 @@ if __name__ == "__main__":
     # A minimal TRACK <-> AVOID loop on dead reckoning (behaviour.py will do this properly).
     from src.control.lidar_obs import make_obs
     from src.control.waypoints import WaypointTracker, _dead_reckoning
-    from src.robot.corridor import load_task, make_robot
+    from src.robot.task import load_task, make_robot
 
     case = sys.argv[1] if len(sys.argv) > 1 else "centre"
     task = load_task()

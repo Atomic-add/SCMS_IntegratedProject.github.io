@@ -11,7 +11,8 @@ Lives in evaluation/ because it reads the simulator's ground truth (evaluation.g
 which src/control must never do. The controller runs exactly as in behaviour.py; run_mission's on_step
 hook hands us each step's log row, and we read the true pose next to it.
 
-Repeated trials:            python -m evaluation.run_demo --trials 20   (20 random trials per case)
+Repeated trials:            python -m evaluation.run_demo --trials 20   (20 random trials per case; --workers N
+                            runs N at a time, default 4)
   Trial k uses seed k for: the LiDAR range noise and camera pixel noise already in the simulator, a
   random TRUE start pose (the controller still believes the config start, so it starts with an
   unknown error), and a random scale error on each wheel encoder (wheel radius / slip mismatch, so the
@@ -43,11 +44,12 @@ from scipy.stats import chi2  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # project root, for the VS Code Run button
 
+from evaluation import DEFAULT_WORKERS  # noqa: E402
 from evaluation.ground_truth import true_pose  # noqa: E402
 from src.control.behaviour import run_mission  # noqa: E402
 from src.estimation.ekf import EKF  # noqa: E402
 from src.estimation.odometry import wrap  # noqa: E402
-from src.robot.corridor import load_config  # noqa: E402
+from src.robot.task import load_config  # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT  # noqa: E402
 
 CASES = ["none", "left", "centre", "right"]
@@ -65,14 +67,14 @@ def bounds(dof, n=1):
     lo, hi = chi2.ppf([0.025, 0.975], dof * n) / n
     return [round(float(lo), 3), round(float(hi), 3)]
 TRUE_C, EST_C = "#2a78d6", "#eb6834"                                     # truth blue, estimate orange
-BOX_HALF, ROBOT_HALF_WIDTH, ROBOT_LENGTH = 0.15, 0.153, 0.28
+BOX_HALF, ROBOT_HALF_WIDTH, ROBOT_LENGTH = 0.10, 0.153, 0.28    # the printed 0.20 m box
 OUT = PROJECT_ROOT / "results"
 CFG = load_config()
 
 
 # ---------------------------------------------------------------- geometry helpers
 def reference_path():
-    """The path the controller is asked to follow: start -> W1..W4 -> dock goal."""
+    """The path the controller is asked to follow: start -> W1..W3 -> dock goal."""
     pts = [CFG["start"][:2]] + CFG["waypoints"] + [CFG["dock"]["goal_pose"][:2]]
     return np.array(pts, float)
 
@@ -89,18 +91,18 @@ def dist_to_polyline(p, poly, closed=False):
 
 
 def dist_to_box(p, c):
-    """Distance from point p to the 0.3 x 0.3 m box centred at c (0 inside)."""
+    """Distance from point p to the 0.2 x 0.2 m box centred at c (0 inside)."""
     d = np.maximum(np.abs(p - c) - BOX_HALF, 0.0)
     return float(np.hypot(*d))
 
 
 def wall_contacts(robot):
-    """Names of wall / box / dock geoms the robot is touching right now (floor contacts ignored)."""
+    """Names of panel / box / furniture / dock geoms the robot is touching right now (floor ignored)."""
     hit = set()
     for i in range(robot.d.ncon):
         c = robot.d.contact[i]
         names = [robot.m.geom(g).name for g in (c.geom1, c.geom2)]
-        world = [n for n in names if n.startswith("wall") or n in ("obstacle", "dock_body")]
+        world = [n for n in names if n.startswith(("panel", "obstacle", "furniture", "dock"))]
         if world and "floor" not in names:
             hit.update(world)
     return hit
@@ -225,11 +227,12 @@ def draw_map(ax, case=None):
     """Walls, the box (if any), the dock pad, waypoints and the reference path."""
     outline = np.array(CFG["outline"] + [CFG["outline"][0]], float)
     ax.plot(*outline.T, color="#555555", lw=1.2)
-    ax.add_patch(plt.Rectangle((3.4, 4.15), 0.4, 0.4, color="#9fd3a8", alpha=0.6, lw=0, label="dock pad"))
+    gx, gy, _ = CFG["dock"]["goal_pose"]
+    ax.add_patch(plt.Rectangle((gx - 0.2, gy - 0.2), 0.4, 0.4, color="#9fd3a8", alpha=0.6, lw=0, label="dock pad"))
     boxes = [CFG["obstacles"][case]] if case else [CFG["obstacles"][c] for c in CASES[1:]]
     for c in boxes:
         if c is not None:
-            ax.add_patch(plt.Rectangle((c[0] - BOX_HALF, c[1] - BOX_HALF), 0.3, 0.3, fc="#bbbbbb",
+            ax.add_patch(plt.Rectangle((c[0] - BOX_HALF, c[1] - BOX_HALF), 2 * BOX_HALF, 2 * BOX_HALF, fc="#bbbbbb",
                                        ec="#555555", lw=0.8))
     ref = reference_path()
     ax.plot(*ref.T, color="#999999", lw=1, ls=":", label="reference path")
@@ -254,7 +257,7 @@ def robot_box(ax, pose, color):
 
 
 def plot_overview(logs, est="odometry"):
-    fig, (ax, az) = plt.subplots(1, 2, figsize=(12, 6), gridspec_kw=dict(width_ratios=[1.6, 1]))
+    fig, (ax, az) = plt.subplots(1, 2, figsize=(14, 4.6), gridspec_kw=dict(width_ratios=[2.6, 1]))
     draw_map(ax)
     # none / left / right drive the same path (the box is not in the lane, avoidance is not needed), so
     # they would hide each other: draw them thick to thin so every case stays visible.
@@ -269,8 +272,8 @@ def plot_overview(logs, est="odometry"):
         az.plot(*log["truth"][-120:, :2].T, color=COLOR[case], lw=WIDTH[case], label=case)
     gx, gy, _ = CFG["dock"]["goal_pose"]
     az.plot(gx, gy, "+", color="#222222", ms=12, mew=1.5, label="goal pose")
-    az.set_xlim(3.25, 3.95)
-    az.set_ylim(3.75, 4.75)
+    az.set_xlim(gx - 0.35, gx + 0.35)
+    az.set_ylim(gy - 0.35, gy + 0.65)
     az.set_title("Docking: final true poses")
     az.legend(fontsize=8, loc="lower right")
     fig.tight_layout()
@@ -426,11 +429,11 @@ def plot_trials(results, est="odometry"):
     plt.close(fig)
 
 
-def run_trials(cases, n, est="odometry"):
+def run_trials(cases, n, est="odometry", workers=DEFAULT_WORKERS):
     from multiprocessing import Pool
     jobs = [(c, s, est) for c in cases for s in range(1, n + 1)]
     results = {c: [] for c in cases}
-    with Pool() as pool:                                       # one trial per CPU core at a time
+    with Pool(workers) as pool:                                # DEFAULT_WORKERS trials at a time
         for case, m in pool.imap_unordered(one_trial, jobs):
             results[case].append(m)
             print(f"  {case:7s} seed {m['seed']:3d}: {'docked' if m['success'] else 'FAILED ' + str(m['stop_reason'])}")
@@ -552,6 +555,7 @@ if __name__ == "__main__":
         sys.exit(0)
     if "--trials" in args:
         n = int(args[args.index("--trials") + 1])
-        run_trials([a for a in args if a in CASES] or CASES, n, est)
+        workers = int(args[args.index("--workers") + 1]) if "--workers" in args else DEFAULT_WORKERS
+        run_trials([a for a in args if a in CASES] or CASES, n, est, workers)
         sys.exit(0)
     run_single([a for a in args if a in CASES] or CASES, est)

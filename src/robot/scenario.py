@@ -1,21 +1,21 @@
-"""Randomised scenarios: a different route, start and obstacle layout for every seed.
+"""Randomised scenarios on the lab track: a different route, start and box layout for every seed.
 
     python main.py --randomise --seed 7          # the demo
     python -m evaluation.random_trials --n 20    # repeated trials
 
-Simulator side only, like corridor.py. Two kinds of randomness are kept apart on purpose:
+Simulator side only, like task.py. Two kinds of randomness are kept apart on purpose:
 
 KNOWN to the robot = the mission it is handed (a different start spot marked on the floor and a
 different route from the planner):
     start spot      x0 = the EKF prior, stated before the run
-    waypoints       W1, W2, W3 jittered inside the corridor; W4 (pre-dock) stays on the docking line
+    waypoints       W1 and the corner W2 jittered inside the 1.5 m band; W3 (pre-dock) stays on the docking line
 They go into `task`, the same dict load_task() returns, so the controller and the EKF need no change.
 
 UNKNOWN to the robot = the world it meets. Only the simulator changes (apply_world):
     placement error true start = start spot + e,  e ~ N(0, P0) clipped at 2 sigma, so the prior is
                     honest by construction (P0 from config/estimation.json)
-    obstacles       box A always, inside the lane of the obstacle section, one side >= 0.7 m wide;
-                    with leg1_box=True also box B (probability 0.6) inside the lane of leg 1 (stress test)
+    obstacles       box A always, inside the lane of the long leg, one side >= 0.7 m wide;
+                    with two_boxes=True also box B (probability 0.6) further along the same leg (stress test)
     sensor noise    LiDAR range sd and dropout, camera pixel noise
     wheel scale     per-wheel encoder scale error = a wheel-radius calibration error the odometry
                     model does not know about
@@ -25,57 +25,61 @@ LiDAR, the placement error is corrected by the EKF, the wheel error is absorbed 
 """
 import numpy as np
 
-from src.robot.corridor import load_config, load_task, place_obstacles
+from src.estimation.odometry import wrap
+from src.robot.task import load_config, load_task, place_obstacles
 
-# Ranges, all in the world frame of config/corridor.json [m, deg]. Why these numbers:
-START_X, START_Y, START_YAW_DEG = (0.25, 0.45), (-0.15, 0.15), (-15.0, 15.0)   # start spot inside leg 1
-W1_X, W1_Y = (2.5, 2.8), (-0.15, 0.15)       # leg 1 is 1.0 m wide: +-0.15 keeps 0.35 m to each wall
-W2_X, W2_Y = (3.5, 3.7), (0.0, 0.2)          # the corner square is x 3.0-4.2, y -0.5-0.7
-W3_X, W3_Y = (3.45, 3.75), (2.4, 2.55)       # obstacle section is x 2.85-4.35 (1.5 m wide)
-BOX_A_ALONG = (1.7, 1.95)    # box A: y range. Nearer the corner (1.4-1.6) the avoidance starts while the robot
-                             # is still in the corner square and its shifted lane hits the corner wall (seed 9)
-BOX_A_ACROSS = 0.25          # box A: max |x - lane| [m]
-SECTION_X = (2.85, 4.35)     # obstacle-section walls
-WIDE_GAP = 0.70              # box A leaves one side at least this wide (the robot needs 0.41 m). Two similar
-                             # ~0.6 m gaps made the avoidance pick the narrower side and stop too_close (seed 7)
-BOX_B_X = (1.55, 1.85)       # box B: x range in leg 1
-BOX_B_ACROSS = (0.22, 0.27)  # box B: |y| from the corridor axis. The far side keeps >= 0.57 m; 0.15-0.25 left
-                             # only 0.52 m, too tight with the pose uncertainty at the start (no_passage, seed 2)
-BOX_B_PROB = 0.6             # used only with leg1_box=True: a stress test, not the default. In the 1.0 m wide leg 1
-                             # the avoidance failed in 4 of 6 early trials (no_passage / too_close right after the
-                             # start, while the pose is still uncertain by P0); see evaluation/random_trials.py --leg1-box
-LANE_HALF = 0.153 + 0.05 + 0.15              # robot half width + side margin + box half: box overlaps the lane
+# Ranges, all in the world frame of config/arena_lab.json [m, deg]. The robot starts near the right end
+# facing -x, drives the long leg (the band y 0.5-2.0 m) to the corner W2 and turns left into the pocket.
+START_X, START_Y, START_YAW_DEG = (4.35, 4.65), (1.1, 1.4), (165.0, 195.0)   # start spot: the 0.5 m around
+                             # the red dot; x <= 4.65 keeps the robot's back 0.2 m off the right panel (x 5.0)
+W1_X, W1_Y = (3.8, 4.1), (1.1, 1.4)          # band 1.5 m wide: +-0.15 keeps 0.6 m to each panel
+W2_X, W2_Y = (0.4, 0.6), (1.15, 1.35)        # the corner: >= 0.4 m from the left panel (x 0) for the turn
+BOX_A_ALONG = (1.75, 3.0)    # box A: x range on the long leg. >= 0.8 m (trigger_dist) after W1 so the
+                             # avoidance starts on a straight lane, and >= 1.15 m before the corner W2
+BOX_A_ACROSS = 0.25          # box A: max |y - lane| [m]
+BAND_Y = (0.5, 2.0)          # long-leg panels (the pocket below y 0.5 only starts at x < 2.0)
+WIDE_GAP = 0.70              # box A leaves one side at least this wide (the robot needs 0.41 m), as in
+                             # the old corridor: two similar ~0.55 m gaps can make the avoidance pick the tight side
+BOX_B_GAP = 0.8              # box B (two_boxes=True): at least this far along x from box A, same lane rules
+BOX_B_PROB = 0.6             # used only with two_boxes=True: a stress test, not the default
+BOX_HALF = 0.10              # the printed 0.20 m box
+LANE_HALF = 0.153 + 0.05 + BOX_HALF          # robot half width + side margin + box half: box overlaps the lane
 LIDAR_SIGMA_SCALE, LIDAR_DROPOUT = (1.0, 2.0), (0.01, 0.05)
 PIXEL_NOISE = (2.0, 4.0)                     # grey levels
 WHEEL_SCALE_SD = 0.005                       # 0.5 % per wheel, clipped at 2 sigma
 
 
-def _lane_x(wa, wb, y):
-    """x of the straight segment wa -> wb at height y (segments in the obstacle section run along +y)."""
-    s = (y - wa[1]) / (wb[1] - wa[1])
-    return wa[0] + s * (wb[0] - wa[0])
-
-
 def _lane_y(wa, wb, x):
-    """y of the straight segment wa -> wb at x (leg 1 runs along +x)."""
+    """y of the straight segment wa -> wb at x (the long leg runs along -x)."""
     s = (x - wa[0]) / (wb[0] - wa[0])
     return wa[1] + s * (wb[1] - wa[1])
 
 
-def random_scenario(seed, p0_sd=None, leg1_box=False):
+def _box_in_lane(rng, x_range, w1, w2):
+    """A box centre inside the lane W1 -> W2 at a random x, with one side at least WIDE_GAP wide."""
+    bx = float(rng.uniform(*x_range))
+    lane = _lane_y(w1, w2, bx)
+    for _ in range(100):
+        by = lane + float(rng.uniform(-BOX_A_ACROSS, BOX_A_ACROSS))
+        if max(by - BOX_HALF - BAND_Y[0], BAND_Y[1] - by - BOX_HALF) >= WIDE_GAP:
+            break
+    return [bx, by]
+
+
+def random_scenario(seed, p0_sd=None, two_boxes=False):
     """Scenario for this seed: dict(task=..., world=...). Same seed, same scenario, on any computer.
 
-    leg1_box=True adds the second box in leg 1 with probability BOX_B_PROB (stress test).
+    two_boxes=True adds a second box on the long leg with probability BOX_B_PROB (stress test).
     """
     rng = np.random.default_rng(10_000 + seed)                  # separate stream from the sensor noise
     u = lambda lo_hi: float(rng.uniform(*lo_hi))               # noqa: E731
     task = load_task()                                         # marker map and dock stay the same
 
     # ---- KNOWN: start spot (the prior) and route
-    start = np.array([u(START_X), u(START_Y), np.deg2rad(u(START_YAW_DEG))])
-    w1, w2, w3 = [u(W1_X), u(W1_Y)], [u(W2_X), u(W2_Y)], [u(W3_X), u(W3_Y)]
-    w4 = list(task["waypoints"][-1])                           # pre-dock point: on the docking line
-    task["start"], task["waypoints"] = start, np.array([w1, w2, w3, w4])
+    start = np.array([u(START_X), u(START_Y), wrap(np.deg2rad(u(START_YAW_DEG)))])
+    w1, w2 = [u(W1_X), u(W1_Y)], [u(W2_X), u(W2_Y)]
+    w3 = list(task["waypoints"][-1])                           # pre-dock point: on the docking line
+    task["start"], task["waypoints"] = start, np.array([w1, w2, w3])
 
     # ---- UNKNOWN: where the robot really is, what is in the way, how noisy it is
     if p0_sd is None:
@@ -84,21 +88,14 @@ def random_scenario(seed, p0_sd=None, leg1_box=False):
     sd = np.array([p0_sd[0], p0_sd[1], np.deg2rad(p0_sd[2])])
     placement = np.clip(rng.normal(0.0, sd), -2 * sd, 2 * sd)
 
-    by = u(BOX_A_ALONG)
-    lane = _lane_x(w2, w3, by)
-    for _ in range(100):                                       # inside the lane, one side clearly passable
-        bx = lane + float(rng.uniform(-BOX_A_ACROSS, BOX_A_ACROSS))
-        if max(bx - 0.15 - SECTION_X[0], SECTION_X[1] - bx - 0.15) >= WIDE_GAP:
-            break
-    box_a = [bx, by]
+    box_a = _box_in_lane(rng, BOX_A_ALONG, w1, w2)
     boxes = [box_a]
-    if rng.random() < BOX_B_PROB and leg1_box:
-        bx = u(BOX_B_X)
-        lane = _lane_y(start, w1, bx)
-        side = np.sign(lane) if abs(lane) > 0.02 else (1.0 if rng.random() < 0.5 else -1.0)
-        b_y = side * u(BOX_B_ACROSS)                           # on the lane's side: it overlaps the lane by
-                                                               # >= 8 cm, so the robot must avoid it
-        boxes.append([bx, b_y])
+    if rng.random() < BOX_B_PROB and two_boxes:
+        free = [(lo, hi) for lo, hi in ((BOX_A_ALONG[0], box_a[0] - BOX_B_GAP), (box_a[0] + BOX_B_GAP, BOX_A_ALONG[1]))
+                if hi > lo]                                    # the parts of the leg >= BOX_B_GAP from box A
+        if free:
+            lo, hi = free[int(rng.integers(len(free)))]
+            boxes.append(_box_in_lane(rng, (lo, hi), w1, w2))
 
     world = dict(
         true_start=(start + placement).tolist(),

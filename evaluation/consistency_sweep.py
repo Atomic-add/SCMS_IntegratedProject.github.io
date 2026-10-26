@@ -1,9 +1,8 @@
 """EKF consistency: sweep the wheel noise Qd and the marker noise Rn on recorded sim data, score NEES and NIS.
 
-    python -m evaluation.consistency_sweep                       # lab track, lab camera: record 20 seeds x 2 cases, sweep
-    python -m evaluation.consistency_sweep --task config/corridor.json --sim-camera urdf
-    python -m evaluation.consistency_sweep --from-record results/consistency_record_arena_lab_lab.npz
-    python -m evaluation.consistency_sweep --from-record ... --write-noise   # store the fitted noise in the camera file
+    python -m evaluation.consistency_sweep                       # lab track: record 20 seeds x 2 cases, sweep
+    python -m evaluation.consistency_sweep --from-record results/consistency_record_arena_lab.npz
+    python -m evaluation.consistency_sweep --from-record ... --write-noise   # store the fitted noise in config/camera_sim.json
 
 Step 1 records what the EKF is handed in N_SEEDS sim runs per case (the encoder angles and every ArUco
 range-bearing measurement, rendered and detected as in a normal run) next to the true pose. Step 2 replays
@@ -48,7 +47,7 @@ import matplotlib.pyplot as plt                                 # noqa: E402
 from src.estimation.ekf import EKF                              # noqa: E402
 from src.estimation.models import load_estimation_config        # noqa: E402
 from src.estimation.odometry import wrap                        # noqa: E402
-from src.robot.sim_robot import PROJECT_ROOT, SIM_CAMERAS       # noqa: E402
+from src.robot.sim_robot import PROJECT_ROOT, SIM_INTRINSICS    # noqa: E402
 
 OUT = PROJECT_ROOT / "results"
 CASES = ("none", "centre")
@@ -71,28 +70,25 @@ class Recorder(EKF):
         return super().step(encoders, marker_frame)
 
 
-def record(task_path, camera_name):
+def record(task_path):
     """Run N_SEEDS x CASES missions; return a list of dict(case, seed, inputs, truth, start, markers)."""
     from evaluation.ground_truth import true_pose
     from src.control.behaviour import run_mission
-    from src.control.models import load_control_config
-    from src.robot.corridor import apply_control_overrides, load_task, make_robot
+    from src.robot.task import load_task, make_robot
 
-    cam_spec, cam_file = SIM_CAMERAS[camera_name]
     task = load_task(task_path)
-    params = load_estimation_config(camera=PROJECT_ROOT / cam_file)
+    params = load_estimation_config(camera=SIM_INTRINSICS)
     runs = []
     for case in CASES:
         for seed in range(N_SEEDS):
             est, truth = Recorder(task["start"], marker_map=task["markers"], params=params), []
             info, _ = run_mission(case, seed=seed, verbose=False, task=task, estimator=est,
-                                  robot=make_robot(case, seed=seed, path=task_path, camera=cam_spec),
-                                  cfg=apply_control_overrides(load_control_config(), task),
-                                  intrinsics=PROJECT_ROOT / cam_file,
+                                  robot=make_robot(case, seed=seed, path=task_path),
+                                  intrinsics=SIM_INTRINSICS,
                                   on_step=lambda robot, row: truth.append(np.asarray(true_pose(robot), float).tolist()))
             runs.append(dict(case=case, seed=seed, inputs=est.inputs, truth=truth, result=info["stop_reason"]))
             print(f"  {case} seed {seed}: {info['stop_reason']}, {len(truth)} steps")
-    return dict(task=str(Path(task_path).resolve().relative_to(PROJECT_ROOT)), camera=camera_name,
+    return dict(task=str(Path(task_path).resolve().relative_to(PROJECT_ROOT)),
                 start=np.asarray(task["start"], float).tolist(),
                 markers={int(k): np.asarray(v, float).tolist() for k, v in task["markers"].items()},
                 params=params, runs=runs)
@@ -175,26 +171,22 @@ def badness(s):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--task", type=Path, default=PROJECT_ROOT / "config" / "arena_lab.json")
-    ap.add_argument("--sim-camera", default=None, choices=list(SIM_CAMERAS),
-                    help="default: the task file's sim_camera")
     ap.add_argument("--from-record", type=Path, help="replay a saved record instead of simulating")
     ap.add_argument("--write-noise", action="store_true",
-                    help="store the fitted marker noise as ekf_noise in the record camera's calibration file")
+                    help="store the fitted marker noise as ekf_noise in config/camera_sim.json")
     args = ap.parse_args()
 
     if args.from_record:
         data = np.load(args.from_record, allow_pickle=True)
         rec = data["record"].item()
     else:
-        from src.robot.corridor import load_config
-        cam = args.sim_camera or load_config(args.task).get("sim_camera", "urdf")
-        print(f"recording {N_SEEDS} seeds x {len(CASES)} cases on {args.task.name}, camera {cam}")
-        rec = record(args.task, cam)
-        path = OUT / f"consistency_record_{Path(rec['task']).stem}_{cam}.npz"
+        print(f"recording {N_SEEDS} seeds x {len(CASES)} cases on {args.task.name}")
+        rec = record(args.task)
+        path = OUT / f"consistency_record_{Path(rec['task']).stem}.npz"
         np.savez_compressed(path, record=np.array(rec, dtype=object))
         print(f"wrote {path.relative_to(PROJECT_ROOT)}")
 
-    name = f"consistency_{Path(rec['task']).stem}_{rec['camera']}"
+    name = f"consistency_{Path(rec['task']).stem}"
     grid = [replay(rec, q, r) for q in SCALES for r in SCALES]
     best = min(grid, key=badness)
     now = next(s for s in grid if s["q_scale"] == 1.0 and s["r_scale"] == 1.0)
@@ -220,18 +212,18 @@ def main():
           f"{scored['coverage']:.3f}, rms {scored['rms_cm']:.2f} cm (current: ANEES {now['anees']:.2f}, coverage "
           f"{now['coverage']:.3f}, rms {now['rms_cm']:.2f} cm)")
     if args.write_noise:
-        cam_file = PROJECT_ROOT / SIM_CAMERAS[rec["camera"]][1]
+        cam_file = SIM_INTRINSICS
         data = json.loads(cam_file.read_text())
         data["ekf_noise"] = noise
         cam_file.write_text(json.dumps(data, indent=2))
         print(f"wrote ekf_noise into {cam_file.relative_to(PROJECT_ROOT)}")
-    summary = dict(task=rec["task"], camera=rec["camera"], cases=list(CASES), seeds=list(range(N_SEEDS)),
+    summary = dict(task=rec["task"], cases=list(CASES), seeds=list(range(N_SEEDS)),
                    fitted_noise=noise, fitted_scores=scored,
                    scales=list(SCALES), current_params={k: p[k] for k in ("k_wheel", "range_sd", "bearing_sd_deg")},
                    grid=grid, current=now, best=best, suggestion=suggestion,
                    results=[r["result"] for r in rec["runs"]], script="evaluation/consistency_sweep.py")
     (OUT / f"{name}.json").write_text(json.dumps(summary, indent=1))
-    plot(grid, OUT / f"{name}.png", f"{rec['task']}, {rec['camera']} camera, {len(rec['runs'])} runs")
+    plot(grid, OUT / f"{name}.png", f"{rec['task']}, {len(rec['runs'])} runs")
     print(f"wrote results/{name}.json and .png")
 
 

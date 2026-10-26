@@ -1,8 +1,8 @@
-"""Docking: from the pre-dock point W4 onto the charger marked with ArUco ID 0, then stop and confirm.
+"""Docking: from the pre-dock point (the last waypoint) onto the charger marked with ArUco ID 0, then stop and confirm.
 
 Kept deliberately small. Four ideas:
 
-1. STEER along the approach line through goal_pose (corridor.json) with the same LQR as the rest of the
+1. STEER along the approach line through goal_pose (the task file) with the same LQR as the rest of the
    path, redesigned for the slower docking speed. The robot POSITION comes from the camera and the
    HEADING from x_hat (_dock_pose): odometry can drift a few cm, the ID 0 range is good to < 1 mm.
    This brings the robot onto the marker's normal, which servoing alone cannot do (Week 9 D3/D4).
@@ -61,7 +61,7 @@ class DockingController:
         self.marker_id = dock["marker_id"]
         self.stop_range = dock["stop_range_base"]
         marker = np.asarray(marker, float)
-        self.marker_xy = marker[:2]                          # known map position of ID 0 (corridor.json)
+        self.marker_xy = marker[:2]                          # known map position of ID 0 (the task file)
         gx, gy, gth = dock["goal_pose"]
         # Approach line: from 1 m behind the goal up to the goal, along the goal heading.
         self.line = Segment(np.array([gx, gy]) - np.array([np.cos(gth), np.sin(gth)]), np.array([gx, gy]))
@@ -228,21 +228,21 @@ class DockingController:
 # ---------------------------------------------------------------- try it on the robot
 if __name__ == "__main__":
     # Run from the project root:  python -m src.control.docking      (or the VS Code Run button)
-    # Starts at W4 (the pre-dock point, the prior from the config) and docks on dead reckoning plus the
+    # Starts at the pre-dock point (the last waypoint, the prior from the config) and docks on dead reckoning plus the
     # camera. The marker_frame, P and motion_feedback built here are STAND-INS for the perception glue
     # and the EKF, which other teammates own; main.py will pass the real ones.
     from src.control.waypoints import _dead_reckoning
     from src.perception import aruco, camera
-    from src.robot.corridor import load_task, make_robot
-    from src.robot.sim_robot import WHEEL_RADIUS, WHEEL_SEPARATION
+    from src.robot.task import load_task, make_robot
+    from src.robot.sim_robot import SIM_INTRINSICS, WHEEL_RADIUS, WHEEL_SEPARATION
 
     task = load_task()
-    K_cam, dist, _ = camera.load_intrinsics(PROJECT_ROOT / "config" / "camera_sim.json")
+    K_cam, dist, _ = camera.load_intrinsics(SIM_INTRINSICS)
     dock = DockingController.from_task(task)
-    w4 = task["waypoints"][-1]
+    w4, th0 = task["waypoints"][-1], task["dock"]["goal_pose"][2]
     with make_robot("none", seed=0) as robot:
-        robot.reset(w4[0], w4[1], np.pi / 2)            # sim setup: put the robot at the pre-dock point
-        pose = np.array([w4[0], w4[1], np.pi / 2])      # odometry starts from the same prior
+        robot.reset(w4[0], w4[1], th0)                  # sim setup: put the robot at the pre-dock point
+        pose = np.array([w4[0], w4[1], th0])            # odometry starts from the same prior
         P = np.diag([0.02**2, 0.02**2, np.deg2rad(2.0)**2])   # stand-in covariance until the EKF exists
         t_enc, *enc_prev = robot.read_encoders()
         dock.start()

@@ -33,12 +33,21 @@ def true_marker_pose(robot, geom="aruco_marker"):
 
 
 def true_intrinsics(robot, cam="rgb"):
-    """The sim camera's exact K, from the MJCF fovy and resolution (pinhole, no distortion).
+    """The sim camera's exact K from the MJCF (pinhole, no distortion).
 
-    OpenCV puts pixel centres at integer coordinates, so the principal point is ((W-1)/2, (H-1)/2).
+    A camera with a sensorsize (the lab camera) gives focal length and principal-point offset in
+    cam_intrinsic, in sensor units; otherwise K follows from fovy with the principal point at the centre.
+    OpenCV puts pixel centres at integer coordinates, so the image centre is ((W-1)/2, (H-1)/2), and MuJoCo's
+    principal offset is measured from it the other way (principalpixel = centre - c, scene_lab camera note).
     """
     cid = robot.m.camera(cam).id
     w, h = robot.m.cam_resolution[cid]
+    sw, sh = robot.m.cam_sensorsize[cid]
+    if sw > 0 and sh > 0:
+        fx_s, fy_s, px_s, py_s = robot.m.cam_intrinsic[cid]
+        fx, fy = fx_s * w / sw, fy_s * h / sh
+        cx, cy = (w - 1) / 2 - px_s * w / sw, (h - 1) / 2 - py_s * h / sh
+        return np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1.0]])
     f = (h / 2) / np.tan(np.deg2rad(robot.m.cam_fovy[cid]) / 2)
     return np.array([[f, 0, (w - 1) / 2], [0, f, (h - 1) / 2], [0, 0, 1.0]])
 

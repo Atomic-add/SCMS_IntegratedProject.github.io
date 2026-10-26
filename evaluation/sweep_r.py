@@ -26,12 +26,13 @@ import numpy as np                                              # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                 # noqa: E402
 
+from evaluation import DEFAULT_WORKERS                          # noqa: E402
 from evaluation.ground_truth import true_pose                   # noqa: E402
 from src.control.behaviour import run_mission                   # noqa: E402
 from src.estimation.ekf import EKF                              # noqa: E402
 from src.estimation.models import load_estimation_config        # noqa: E402
 from src.estimation.odometry import wrap                        # noqa: E402
-from src.robot.corridor import load_task                        # noqa: E402
+from src.robot.task import load_task                        # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT                    # noqa: E402
 
 OUT = PROJECT_ROOT / "results"
@@ -102,9 +103,11 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--n", type=int, default=20, help="seeds per condition (default 20)")
     ap.add_argument("--case", default="centre", choices=("none", "left", "centre", "right"))
+    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
+                    help=f"sim runs in parallel (default {DEFAULT_WORKERS}; each renders the camera)")
     args = ap.parse_args()
     jobs = [(lab, sc, b, args.case, seed) for lab, sc, b in CONDITIONS for seed in range(1, args.n + 1)]
-    with Pool() as pool:
+    with Pool(args.workers) as pool:
         runs = []
         for r in pool.imap_unordered(one_run, jobs):
             runs.append(r)

@@ -2,16 +2,16 @@
 
 It does not steer by itself. The states and who is in charge:
 
-    TRACK  waypoints.py follows start -> W1 -> W2 -> W3 -> W4 (LQR + turn on the spot at corners)
+    TRACK  waypoints.py follows start -> W1 -> W2 -> W3 (LQR + turn on the spot at corners)
     AVOID  avoidance.py shifts the path around the box and rejoins (waypoints paused meanwhile)
-    DOCK   docking.py drives from W4 onto the charger (marker ID 0) and confirms the dock; its last part
+    DOCK   docking.py drives from W3 onto the charger (marker ID 0) and confirms the dock; its last part
            is image-based visual servoing (shown as IBVS) when config docking.servo = "ibvs"
     STOP   v = w = 0 for good; stop_reason says why ("docked", "no_passage", "marker_lost", ...)
 
 Transitions:
     TRACK -> AVOID   the LiDAR sees the box in the robot's lane before the next waypoint
     AVOID -> TRACK   avoidance finished rejoining (waypoints resume where they were)
-    TRACK -> DOCK    the pre-dock point W4 is reached
+    TRACK -> DOCK    the pre-dock point W3 is reached
     DOCK  -> STOP    dock_complete ("docked") or docking failed (its stop_reason)
     AVOID -> STOP    no side of the box has room for the robot ("no_passage")
 
@@ -181,7 +181,7 @@ def _panel(label, info, v, w, P, est):
 
 def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None, view=False, on_step=None,
                 setup=None, task=None, label=None, cfg=None, robot=None, intrinsics=None):
-    """Start -> (avoid) -> W4 -> dock, in the corridor with the given obstacle case.
+    """Start -> (avoid) -> W3 -> dock, on the lab track with the given obstacle case.
 
     Everything the robot uses comes from its sensors. marker_frame, obs and motion_feedback built here
     are STAND-INS for the perception glue; the estimator defaults to DeadReckoning (odometry only).
@@ -195,7 +195,7 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     randomised scenario (src/robot/scenario.py) passes its own task and a setup that changes the world.
     label: the run's name on the viewer panel (default: the case).
     cfg: controller config (default config/control.json), e.g. with docking servo "ibvs" or "pbvs".
-    robot: the robot to drive, default the corridor SimRobot for the case; main.py --real passes a
+    robot: the robot to drive, default the lab SimRobot for the case; main.py --real passes a
     RealRobot (src/robot/real_robot.py), which the with block connects and stops. view needs a SimRobot.
     intrinsics: camera calibration for the ArUco measurements (default config/camera_sim.json); its
     optional "T_BC" (the real camera's tilt, experiments/camera_pitch.py) replaces the URDF camera pose,
@@ -208,16 +208,16 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
     import time
     from src.control.lidar_obs import make_obs
     from src.perception import aruco, camera
-    from src.robot.corridor import load_task, make_robot
-    from src.robot.sim_robot import PROJECT_ROOT, WHEEL_RADIUS, WHEEL_SEPARATION
+    from src.robot.task import apply_control_overrides, load_task, make_robot
+    from src.robot.sim_robot import SIM_INTRINSICS, WHEEL_RADIUS, WHEEL_SEPARATION
 
     task = task if task is not None else load_task()
     label = label or case
+    cfg = apply_control_overrides(copy.deepcopy(cfg or load_control_config()), task)   # the task's own tuning
     if intrinsics is not None:                                # one camera file for ArUco AND the IBVS docking
-        cfg = copy.deepcopy(cfg or load_control_config())
         cfg["docking"]["camera_intrinsics"] = str(Path(intrinsics).resolve())
     nav = NavigationController(task, cfg=cfg)
-    intrinsics = intrinsics or PROJECT_ROOT / "config" / "camera_sim.json"
+    intrinsics = intrinsics or SIM_INTRINSICS
     K_cam, dist, _ = camera.load_intrinsics(intrinsics)
     T_BC = aruco.load_T_BC(intrinsics)                        # real camera: with its tilt
     range_corr = aruco.load_range_correction(intrinsics)      # real camera: its range bias; sim: None
@@ -236,7 +236,7 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
             robot.read_image()                                # create the camera renderer before the viewer
             viewer = stack.enter_context(mujoco.viewer.launch_passive(robot.m, robot.d))
             with viewer.lock():                               # top view over the floor
-                cx, cy, _ = robot.m.stat.center                  # the scene's <statistic>: corridor or lab floor
+                cx, cy, _ = robot.m.stat.center                  # the scene's <statistic>: the lab floor
                 viewer.cam.lookat[:] = [cx, cy, 0.0]
                 viewer.cam.distance, viewer.cam.azimuth, viewer.cam.elevation = 1.5 * robot.m.stat.extent, 90.0, -65.0
         t_enc, *enc_prev = robot.read_encoders()

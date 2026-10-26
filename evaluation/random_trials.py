@@ -3,7 +3,7 @@
     python -m evaluation.random_trials                 # 20 scenarios on the EKF (seeds 1..20)
     python -m evaluation.random_trials --n 20 --odometry   # the same 20 on wheel odometry only
     python -m evaluation.random_trials --seeds 3 7 11  # just these seeds
-    python -m evaluation.random_trials --leg1-box      # stress test: a second box in the narrow leg 1
+    python -m evaluation.random_trials --two-boxes     # stress test: a second box on the long leg
 
 Each trial: a different route and start spot (told to the robot), and a different placement error,
 obstacle layout, sensor noise and wheel error (not told). Success = dock_complete AND no contact with a
@@ -24,12 +24,13 @@ import numpy as np                                              # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                 # noqa: E402
 
+from evaluation import DEFAULT_WORKERS                          # noqa: E402
 from evaluation.ground_truth import true_pose                   # noqa: E402
 from src.control.behaviour import run_mission                   # noqa: E402
 from src.estimation.ekf import EKF                              # noqa: E402
 from src.estimation.odometry import wrap                        # noqa: E402
-from src.robot.corridor import load_config                      # noqa: E402
-from src.robot.scenario import apply_world, random_scenario     # noqa: E402
+from src.robot.task import load_config                      # noqa: E402
+from src.robot.scenario import BOX_HALF, apply_world, random_scenario   # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT                    # noqa: E402
 
 OUT = PROJECT_ROOT / "results"
@@ -43,15 +44,15 @@ def contacts(robot):
     for i in range(robot.d.ncon):
         c = robot.d.contact[i]
         names = [robot.m.geom(g).name for g in (c.geom1, c.geom2)]
-        world = [n for n in names if n.startswith(("wall", "obstacle")) or n == "dock_body"]
+        world = [n for n in names if n.startswith(("panel", "obstacle", "furniture", "dock"))]
         if world and "floor" not in names:
             hit.update(world)
     return hit
 
 
 def one_trial(job):
-    seed, use_ekf, leg1_box = job
-    sc = random_scenario(seed, leg1_box=leg1_box)
+    seed, use_ekf, two_boxes = job
+    sc = random_scenario(seed, two_boxes=two_boxes)
     task, world = sc["task"], sc["world"]
     est = EKF(task["start"], marker_map=task["markers"]) if use_ekf else None
     rows = []
@@ -92,23 +93,25 @@ def stats(trials, key):
 
 
 def plot(trials, path, title):
-    fig, ax = plt.subplots(figsize=(6.2, 6.4))
+    fig, ax = plt.subplots(figsize=(8.0, 3.9))
     outline = np.array(CFG["outline"] + [CFG["outline"][0]], float)
     ax.plot(*outline.T, color="#555555", lw=1.2)
     for t in trials:
         for bx, by in t["boxes"]:
-            ax.add_patch(plt.Rectangle((bx - 0.15, by - 0.15), 0.3, 0.3, fc="#bbbbbb", ec="none", alpha=0.25))
+            ax.add_patch(plt.Rectangle((bx - BOX_HALF, by - BOX_HALF), 2 * BOX_HALF, 2 * BOX_HALF, fc="#bbbbbb",
+                                       ec="none", alpha=0.25))
     for t in trials:
         p = np.array(t["path"])
         ax.plot(*p.T, lw=1.0, color="#2a78d6" if t["success"] else "#d64545", alpha=0.75)
     ax.plot([], [], color="#2a78d6", label="true path, success")
     ax.plot([], [], color="#d64545", label="true path, failure")
-    ax.add_patch(plt.Rectangle((3.4, 4.15), 0.4, 0.4, color="#9fd3a8", alpha=0.6, lw=0, label="dock pad"))
+    gx, gy, _ = CFG["dock"]["goal_pose"]
+    ax.add_patch(plt.Rectangle((gx - 0.2, gy - 0.2), 0.4, 0.4, color="#9fd3a8", alpha=0.6, lw=0, label="dock pad"))
     ax.set_aspect("equal")
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")
     ax.set_title(title, fontsize=10)
-    ax.legend(fontsize=8, loc="upper left")
+    ax.legend(fontsize=8, loc="upper right")
     fig.tight_layout()
     fig.savefig(path, dpi=130)
     plt.close(fig)
@@ -119,16 +122,18 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=20, help="number of scenarios, seeds 1..n (default 20)")
     ap.add_argument("--seeds", type=int, nargs="*", help="run exactly these seeds instead")
     ap.add_argument("--odometry", action="store_true", help="steer on wheel odometry only (baseline)")
-    ap.add_argument("--leg1-box", action="store_true", help="stress test: also a box in the 1.0 m wide leg 1")
+    ap.add_argument("--two-boxes", action="store_true", help="stress test: a second box on the long leg")
     ap.add_argument("--from-json", help="re-summarise and re-plot a saved results/random_trials*.json")
+    ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
+                    help=f"sim runs in parallel (default {DEFAULT_WORKERS}; each renders the camera)")
     args = ap.parse_args()
     seeds = args.seeds or list(range(1, args.n + 1))
     trials = []
     if args.from_json:                                         # re-summarise saved trials, no simulation
         trials = json.loads(Path(args.from_json).read_text())["trials"]
         seeds = []
-    with Pool() as pool:
-        for t in pool.imap_unordered(one_trial, [(s, not args.odometry, args.leg1_box) for s in seeds]):
+    with Pool(args.workers) as pool:
+        for t in pool.imap_unordered(one_trial, [(s, not args.odometry, args.two_boxes) for s in seeds]):
             trials.append(t)
             print(f"  seed {t['seed']:3d}: {'OK    ' if t['success'] else 'FAILED'} {t['stop_reason']!s:28s} "
                   f"{t['time_s']:5.1f} s  dock {t['dock_lateral_cm']:+.1f} / {t['dock_along_cm']:+.1f} cm "
@@ -141,7 +146,7 @@ if __name__ == "__main__":
                    failures=[(t["seed"], t["stop_reason"], t["collisions"]) for t in trials if not t["success"]],
                    **{k: stats(trials, k) for k in ("time_s", "dock_lateral_cm", "dock_along_cm", "dock_yaw_deg",
                                                     "est_err_max_cm", "est_err_final_cm", "anees")})
-    sfx = ("" if est == "ekf" else "_odometry") + ("_leg1box" if args.leg1_box else "")
+    sfx = ("" if est == "ekf" else "_odometry") + ("_twoboxes" if args.two_boxes else "")
     OUT.mkdir(exist_ok=True)
     (OUT / f"random_trials{sfx}.json").write_text(json.dumps(dict(summary=summary, trials=trials), indent=1))
     plot(trials, OUT / f"random_trials{sfx}.png",

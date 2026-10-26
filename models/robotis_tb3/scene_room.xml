@@ -46,12 +46,12 @@
     <geom name="obs_box2" type="box"      size="0.10 0.25 0.15" pos="1.0 -0.5 0.15"  material="obstacle"/>
 
     <!-- Docking station, marker facing -x into the room. The 0.1333 m sheet carries a 0.10 m marker
-         (768/1024 of the sheet) centred 0.12 m above the floor. The sheet is visual only (group 2): the camera
+         (768/1024 of the sheet) centred 0.10 m above the floor, as on the lab panels (config/arena_lab.json). The sheet is visual only (group 2): the camera
          sees it, the LiDAR ignores it and hits the dock box 1 mm behind. Its plane frame is the marker frame
          {M}: x right and y up as the robot sees it, z out of the marker. -->
     <body name="dock" pos="1.9 0 0">
       <geom name="dock_body" type="box" size="0.05 0.15 0.125" pos="0 0 0.125" material="dock"/>
-      <geom name="aruco_marker" type="plane" size="0.0666667 0.0666667 0.001" pos="-0.051 0 0.12"
+      <geom name="aruco_marker" type="plane" size="0.0666667 0.0666667 0.001" pos="-0.051 0 0.10"
             xyaxes="0 -1 0 0 0 1" material="aruco" contype="0" conaffinity="0" group="2"/>
     </body>
   </worldbody>

@@ -40,7 +40,7 @@ class EKF:
             sx, sy, sth = self.p["P0_sd"]
             P0 = np.diag([sx ** 2, sy ** 2, np.deg2rad(sth) ** 2])
         self.xh, self.P = np.array(x0, float), np.array(P0, float)
-        # known map: id -> (x, y); keys starting with "_" are comments in corridor.json
+        # known map: id -> (x, y); keys starting with "_" are comments in the task file
         self.map = {int(i): np.array(m[:2], float) for i, m in (marker_map or {}).items() if not str(i).startswith("_")}
         self.enc_prev = None                            # last (t, phi_L, phi_R)
         self.t_frame = -np.inf                          # time of the last camera frame fused
