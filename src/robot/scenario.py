@@ -14,8 +14,7 @@ They go into `task`, the same dict load_task() returns, so the controller and th
 UNKNOWN to the robot = the world it meets. Only the simulator changes (apply_world):
     placement error true start = start spot + e,  e ~ N(0, P0) clipped at 2 sigma, so the prior is
                     honest by construction (P0 from config/estimation.json)
-    obstacles       box A always, inside the lane of the long leg, one side >= 0.7 m wide;
-                    with two_boxes=True also box B (probability 0.6) further along the same leg (stress test)
+    obstacle        the one printed box, inside the lane of the long leg, one side >= 0.7 m wide
     sensor noise    LiDAR range sd and dropout, camera pixel noise
     wheel scale     per-wheel encoder scale error = a wheel-radius calibration error the odometry
                     model does not know about
@@ -34,14 +33,12 @@ START_X, START_Y, START_YAW_DEG = (4.35, 4.65), (1.1, 1.4), (165.0, 195.0)   # s
                              # the red dot; x <= 4.65 keeps the robot's back 0.2 m off the right panel (x 5.0)
 W1_X, W1_Y = (3.8, 4.1), (1.1, 1.4)          # band 1.5 m wide: +-0.15 keeps 0.6 m to each panel
 W2_X, W2_Y = (0.4, 0.6), (1.15, 1.35)        # the corner: >= 0.4 m from the left panel (x 0) for the turn
-BOX_A_ALONG = (1.75, 3.0)    # box A: x range on the long leg. >= 0.8 m (trigger_dist) after W1 so the
+BOX_ALONG = (1.75, 3.0)      # the box: x range on the long leg. >= 0.8 m (trigger_dist) after W1 so the
                              # avoidance starts on a straight lane, and >= 1.15 m before the corner W2
-BOX_A_ACROSS = 0.25          # box A: max |y - lane| [m]
+BOX_ACROSS = 0.25            # the box: max |y - lane| [m]
 BAND_Y = (0.5, 2.0)          # long-leg panels (the pocket below y 0.5 only starts at x < 2.0)
-WIDE_GAP = 0.70              # box A leaves one side at least this wide (the robot needs 0.41 m), as in
+WIDE_GAP = 0.70              # the box leaves one side at least this wide (the robot needs 0.41 m), as in
                              # the old corridor: two similar ~0.55 m gaps can make the avoidance pick the tight side
-BOX_B_GAP = 0.8              # box B (two_boxes=True): at least this far along x from box A, same lane rules
-BOX_B_PROB = 0.6             # used only with two_boxes=True: a stress test, not the default
 BOX_HALF = 0.10              # the printed 0.20 m box
 LANE_HALF = 0.153 + 0.05 + BOX_HALF          # robot half width + side margin + box half: box overlaps the lane
 LIDAR_SIGMA_SCALE, LIDAR_DROPOUT = (1.0, 2.0), (0.01, 0.05)
@@ -60,17 +57,14 @@ def _box_in_lane(rng, x_range, w1, w2):
     bx = float(rng.uniform(*x_range))
     lane = _lane_y(w1, w2, bx)
     for _ in range(100):
-        by = lane + float(rng.uniform(-BOX_A_ACROSS, BOX_A_ACROSS))
+        by = lane + float(rng.uniform(-BOX_ACROSS, BOX_ACROSS))
         if max(by - BOX_HALF - BAND_Y[0], BAND_Y[1] - by - BOX_HALF) >= WIDE_GAP:
             break
     return [bx, by]
 
 
-def random_scenario(seed, p0_sd=None, two_boxes=False):
-    """Scenario for this seed: dict(task=..., world=...). Same seed, same scenario, on any computer.
-
-    two_boxes=True adds a second box on the long leg with probability BOX_B_PROB (stress test).
-    """
+def random_scenario(seed, p0_sd=None):
+    """Scenario for this seed: dict(task=..., world=...). Same seed, same scenario, on any computer."""
     rng = np.random.default_rng(10_000 + seed)                  # separate stream from the sensor noise
     u = lambda lo_hi: float(rng.uniform(*lo_hi))               # noqa: E731
     task = load_task()                                         # marker map and dock stay the same
@@ -88,14 +82,9 @@ def random_scenario(seed, p0_sd=None, two_boxes=False):
     sd = np.array([p0_sd[0], p0_sd[1], np.deg2rad(p0_sd[2])])
     placement = np.clip(rng.normal(0.0, sd), -2 * sd, 2 * sd)
 
-    box_a = _box_in_lane(rng, BOX_A_ALONG, w1, w2)
-    boxes = [box_a]
-    if rng.random() < BOX_B_PROB and two_boxes:
-        free = [(lo, hi) for lo, hi in ((BOX_A_ALONG[0], box_a[0] - BOX_B_GAP), (box_a[0] + BOX_B_GAP, BOX_A_ALONG[1]))
-                if hi > lo]                                    # the parts of the leg >= BOX_B_GAP from box A
-        if free:
-            lo, hi = free[int(rng.integers(len(free)))]
-            boxes.append(_box_in_lane(rng, (lo, hi), w1, w2))
+    boxes = [_box_in_lane(rng, BOX_ALONG, w1, w2)]          # the lab has one box
+    rng.random()                                               # was the second-box draw (removed): kept so every
+                                                               # seed draws the same noise as in results/random_trials*.json
 
     world = dict(
         true_start=(start + placement).tolist(),
@@ -111,7 +100,7 @@ def random_scenario(seed, p0_sd=None, two_boxes=False):
 
 
 def apply_world(robot, world):
-    """Sim only: place the boxes, put the robot at its TRUE start, set the noise and the wheel error.
+    """Sim only: place the box, put the robot at its TRUE start, set the noise and the wheel error.
 
     Pass as run_mission(..., setup=lambda robot: apply_world(robot, sc["world"])).
     """

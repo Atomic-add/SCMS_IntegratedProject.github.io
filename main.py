@@ -19,7 +19,7 @@ The robot starts from the task file's prior, follows the waypoints with the LQR,
 the LiDAR and docks at the ArUco station (marker ID 0). There is one simulated world, the lab track, and
 one simulated camera, the lab robot's (config/camera_sim.json). --randomise draws lab scenarios
 (src/robot/scenario.py): the robot is TOLD a new start spot (its prior) and a new route; it is NOT told
-where it was really placed, where the boxes are, how noisy its sensors are or how wrong its wheel radii
+where it was really placed, where the box is, how noisy its sensors are or how wrong its wheel radii
 are. The terminal prints both halves. The estimator is the EKF in
 src/estimation (wheel odometry + ArUco range-bearing) and the controller acts on its estimate xh only.
 Nothing here reads simulator ground truth; evaluation/ is the only place that does.
@@ -27,7 +27,7 @@ Nothing here reads simulator ground truth; evaluation/ is the only place that do
 --real swaps only the robot: the same run_mission, estimator and controllers drive the TurtleBot over
 rosbridge. It needs config/camera_real.json (experiments/calibrate_camera.py --images ...) and a
 task file measured in the lab arena (--task is required: config/arena_lab.json or a stage that
-extends it). --case has no effect there, the boxes are wherever they were put. Run
+extends it). --case has no effect there, the box is wherever it was put. Run
 experiments/check_robot.py first. Every real run is logged (--log, default results/hardware/run_<time>.npz),
 also when it stops early, so a failure can be diagnosed afterwards.
 
@@ -55,7 +55,7 @@ def parse_args(argv=None):
     ap.add_argument("--odometry", action="store_true", help="steer on wheel odometry only, without the EKF")
     ap.add_argument("--seed", type=int, default=0, help="sensor-noise seed, and the scenario with --randomise (default: 0)")
     ap.add_argument("--randomise", action="store_true",
-                    help="random lab route, start placement, boxes, sensor noise and wheel error for this seed "
+                    help="random lab route, start placement, box, sensor noise and wheel error for this seed "
                          "(ignores --case; runs config/arena_lab.json)")
     ap.add_argument("--dock", choices=("ibvs", "pbvs"), default=None,
                     help="docking: LQR then image-based visual servoing (ibvs), or the LQR all the way (pbvs); "
@@ -158,7 +158,7 @@ def main(argv=None):
         from src.robot.scenario import apply_world, describe, random_scenario
         sc = random_scenario(args.seed)
         print(describe(sc))
-        task, case, label = sc["task"], "none", f"random seed {args.seed}"   # boxes come from the scenario
+        task, case, label = sc["task"], "none", f"random seed {args.seed}"   # the box comes from the scenario
         setup = lambda robot: apply_world(robot, sc["world"])              # noqa: E731  (sim side only)
     if real:
         from src.robot.real_robot import RealRobot

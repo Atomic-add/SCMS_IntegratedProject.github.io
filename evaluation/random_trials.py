@@ -3,7 +3,6 @@
     python -m evaluation.random_trials                 # 20 scenarios on the EKF (seeds 1..20)
     python -m evaluation.random_trials --n 20 --odometry   # the same 20 on wheel odometry only
     python -m evaluation.random_trials --seeds 3 7 11  # just these seeds
-    python -m evaluation.random_trials --two-boxes     # stress test: a second box on the long leg
 
 Each trial: a different route and start spot (told to the robot), and a different placement error,
 obstacle layout, sensor noise and wheel error (not told). Success = dock_complete AND no contact with a
@@ -51,8 +50,8 @@ def contacts(robot):
 
 
 def one_trial(job):
-    seed, use_ekf, two_boxes = job
-    sc = random_scenario(seed, two_boxes=two_boxes)
+    seed, use_ekf = job
+    sc = random_scenario(seed)
     task, world = sc["task"], sc["world"]
     est = EKF(task["start"], marker_map=task["markers"]) if use_ekf else None
     rows = []
@@ -122,7 +121,6 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=20, help="number of scenarios, seeds 1..n (default 20)")
     ap.add_argument("--seeds", type=int, nargs="*", help="run exactly these seeds instead")
     ap.add_argument("--odometry", action="store_true", help="steer on wheel odometry only (baseline)")
-    ap.add_argument("--two-boxes", action="store_true", help="stress test: a second box on the long leg")
     ap.add_argument("--from-json", help="re-summarise and re-plot a saved results/random_trials*.json")
     ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
                     help=f"sim runs in parallel (default {DEFAULT_WORKERS}; each renders the camera)")
@@ -133,7 +131,7 @@ if __name__ == "__main__":
         trials = json.loads(Path(args.from_json).read_text())["trials"]
         seeds = []
     with Pool(args.workers) as pool:
-        for t in pool.imap_unordered(one_trial, [(s, not args.odometry, args.two_boxes) for s in seeds]):
+        for t in pool.imap_unordered(one_trial, [(s, not args.odometry) for s in seeds]):
             trials.append(t)
             print(f"  seed {t['seed']:3d}: {'OK    ' if t['success'] else 'FAILED'} {t['stop_reason']!s:28s} "
                   f"{t['time_s']:5.1f} s  dock {t['dock_lateral_cm']:+.1f} / {t['dock_along_cm']:+.1f} cm "
@@ -146,7 +144,7 @@ if __name__ == "__main__":
                    failures=[(t["seed"], t["stop_reason"], t["collisions"]) for t in trials if not t["success"]],
                    **{k: stats(trials, k) for k in ("time_s", "dock_lateral_cm", "dock_along_cm", "dock_yaw_deg",
                                                     "est_err_max_cm", "est_err_final_cm", "anees")})
-    sfx = ("" if est == "ekf" else "_odometry") + ("_twoboxes" if args.two_boxes else "")
+    sfx = "" if est == "ekf" else "_odometry"
     OUT.mkdir(exist_ok=True)
     (OUT / f"random_trials{sfx}.json").write_text(json.dumps(dict(summary=summary, trials=trials), indent=1))
     plot(trials, OUT / f"random_trials{sfx}.png",

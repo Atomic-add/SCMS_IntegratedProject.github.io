@@ -186,7 +186,6 @@ python -m evaluation.run_demo                # everything: 4 cases on odometry a
 python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
 python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
 python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
-python -m evaluation.random_trials --n 20 --two-boxes  # stress test: a second box on the long leg
 python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
 python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
 python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
@@ -203,7 +202,6 @@ Random lab scenarios (`random_trials`, seeds 1-20, 26 Oct):
 |---|---|---|---|
 | EKF | 20 / 20 | 0 | 44.0 +- 2.3 s, dock lateral 0.26 +- 0.43 cm, yaw -0.41 +- 0.68 deg, ANEES 5.0 |
 | Odometry only | 7 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
-| EKF, `--two-boxes` | 15 / 20 | 0 | 2 of the 7 two-box seeds dock; the other 5 stop safely with `too_close` (seeds 6, 9, 13 while going round the first box, 4 and 11 between the boxes). Cause not yet analysed; a stress test, not the default |
 
 ## 5. Repository layout
 

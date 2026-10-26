@@ -16,8 +16,7 @@
     id 0  dock, on the pocket's bottom panel (y = 0) at x = 0.5, facing +y
   Marker sheets and tile lines are visual only (group 2): the LiDAR does not see them.
 
-  The printed obstacle box (0.20 x 0.20 x 0.20 m) is moved by src/robot/task.py ("obstacle"; a
-  second box "obstacle2" is parked for scenario code that expects it).
+  The printed obstacle box (0.20 x 0.20 x 0.20 m) is moved by src/robot/task.py ("obstacle").
 -->
 <mujoco model="track_a_lab">
   <include file="turtlebot3_waffle_pi.xml"/>
@@ -107,6 +106,5 @@
 
     <!-- Printed obstacle box (0.20 x 0.20 x 0.20 m). Default: parked under the floor = "none". -->
     <geom name="obstacle" type="box" size="0.1 0.1 0.1" pos="2.75 1.25 -1" material="obstacle"/>
-    <geom name="obstacle2" type="box" size="0.1 0.1 0.1" pos="1.5 1.25 -1" material="obstacle"/>
   </worldbody>
 </mujoco>

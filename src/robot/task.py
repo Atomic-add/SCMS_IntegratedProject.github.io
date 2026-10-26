@@ -52,7 +52,7 @@ def apply_control_overrides(cfg, task):
     return cfg
 
 
-OBSTACLE_GEOMS = ("obstacle", "obstacle2")   # movable boxes in scene_lab.xml
+OBSTACLE_GEOMS = ("obstacle",)               # the movable box in scene_lab.xml
 
 
 def place_obstacles(robot, centres):
