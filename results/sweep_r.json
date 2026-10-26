@@ -1,0 +1,1063 @@
+{
+  "case": "centre",
+  "summary": {
+    "R x10": {
+      "n": 20,
+      "success_rate": 1.0,
+      "err_max_cm": {
+        "mean": 0.779,
+        "std": 0.046
+      },
+      "err_rms_cm": {
+        "mean": 0.503,
+        "std": 0.039
+      },
+      "anees": {
+        "mean": 1.694,
+        "std": 0.148
+      },
+      "anis": {
+        "mean": 0.025,
+        "std": 0.001
+      },
+      "gated": {
+        "mean": 0.0,
+        "std": 0.0
+      }
+    },
+    "R (config)": {
+      "n": 20,
+      "success_rate": 1.0,
+      "err_max_cm": {
+        "mean": 2.183,
+        "std": 0.666
+      },
+      "err_rms_cm": {
+        "mean": 0.705,
+        "std": 0.166
+      },
+      "anees": {
+        "mean": 3.31,
+        "std": 0.35
+      },
+      "anis": {
+        "mean": 0.129,
+        "std": 0.017
+      },
+      "gated": {
+        "mean": 0.35,
+        "std": 0.477
+      }
+    },
+    "R, measured bearing sd": {
+      "n": 20,
+      "success_rate": 1.0,
+      "err_max_cm": {
+        "mean": 3.727,
+        "std": 0.516
+      },
+      "err_rms_cm": {
+        "mean": 1.224,
+        "std": 0.211
+      },
+      "anees": {
+        "mean": 4.144,
+        "std": 0.335
+      },
+      "anis": {
+        "mean": 0.189,
+        "std": 0.015
+      },
+      "gated": {
+        "mean": 0.15,
+        "std": 0.357
+      }
+    },
+    "R / 10": {
+      "n": 20,
+      "success_rate": 1.0,
+      "err_max_cm": {
+        "mean": 6.356,
+        "std": 1.879
+      },
+      "err_rms_cm": {
+        "mean": 1.806,
+        "std": 0.448
+      },
+      "anees": {
+        "mean": 15.085,
+        "std": 3.136
+      },
+      "anis": {
+        "mean": 1.006,
+        "std": 0.223
+      },
+      "gated": {
+        "mean": 6.05,
+        "std": 4.533
+      }
+    }
+  },
+  "runs": [
+    {
+      "label": "R x10",
+      "seed": 1,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7641322306218987,
+      "err_rms_cm": 0.5153297424391554,
+      "anees": 1.8945109411756367,
+      "anis": 0.02432011684389697,
+      "gated": 0,
+      "updates": 1009
+    },
+    {
+      "label": "R x10",
+      "seed": 2,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7454672322009329,
+      "err_rms_cm": 0.5009520012014804,
+      "anees": 1.6220343579565861,
+      "anis": 0.02534399356031213,
+      "gated": 0,
+      "updates": 966
+    },
+    {
+      "label": "R x10",
+      "seed": 3,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7368941356202218,
+      "err_rms_cm": 0.4719829748992742,
+      "anees": 1.5831742574403742,
+      "anis": 0.024687853961568747,
+      "gated": 0,
+      "updates": 964
+    },
+    {
+      "label": "R x10",
+      "seed": 4,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7465199037708907,
+      "err_rms_cm": 0.4859553319996681,
+      "anees": 1.6203729340351352,
+      "anis": 0.026588479338929067,
+      "gated": 0,
+      "updates": 979
+    },
+    {
+      "label": "R x10",
+      "seed": 5,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.8524908413567986,
+      "err_rms_cm": 0.4390443709750195,
+      "anees": 1.531031701935329,
+      "anis": 0.02542297031625188,
+      "gated": 0,
+      "updates": 974
+    },
+    {
+      "label": "R x10",
+      "seed": 6,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 0.790183814533958,
+      "err_rms_cm": 0.5261094150144595,
+      "anees": 1.7276804614449095,
+      "anis": 0.02528608464547347,
+      "gated": 0,
+      "updates": 956
+    },
+    {
+      "label": "R x10",
+      "seed": 7,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7268538331918225,
+      "err_rms_cm": 0.4845286345615138,
+      "anees": 1.5886368137740814,
+      "anis": 0.02509895316969105,
+      "gated": 0,
+      "updates": 962
+    },
+    {
+      "label": "R x10",
+      "seed": 8,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.8555945903649482,
+      "err_rms_cm": 0.5367925460235187,
+      "anees": 1.9233146891424495,
+      "anis": 0.02395351913544116,
+      "gated": 0,
+      "updates": 1003
+    },
+    {
+      "label": "R x10",
+      "seed": 9,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7438083827514733,
+      "err_rms_cm": 0.4753604474489805,
+      "anees": 1.600660117589169,
+      "anis": 0.025914010905652544,
+      "gated": 0,
+      "updates": 977
+    },
+    {
+      "label": "R x10",
+      "seed": 10,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7309412692283744,
+      "err_rms_cm": 0.4951048887530504,
+      "anees": 1.5855459765319526,
+      "anis": 0.024999052257319982,
+      "gated": 0,
+      "updates": 970
+    },
+    {
+      "label": "R x10",
+      "seed": 11,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7582129616852364,
+      "err_rms_cm": 0.4760900689607688,
+      "anees": 1.6276702916194428,
+      "anis": 0.025673597582801386,
+      "gated": 0,
+      "updates": 969
+    },
+    {
+      "label": "R x10",
+      "seed": 12,
+      "docked": true,
+      "time_s": 45.9,
+      "err_max_cm": 0.8527223764353151,
+      "err_rms_cm": 0.5501071376678403,
+      "anees": 1.970242817337666,
+      "anis": 0.02366834950402113,
+      "gated": 0,
+      "updates": 1001
+    },
+    {
+      "label": "R x10",
+      "seed": 13,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7548322578743488,
+      "err_rms_cm": 0.48452122769781947,
+      "anees": 1.6195649849386486,
+      "anis": 0.02686431064533855,
+      "gated": 0,
+      "updates": 976
+    },
+    {
+      "label": "R x10",
+      "seed": 14,
+      "docked": true,
+      "time_s": 45.9,
+      "err_max_cm": 0.8813852969990583,
+      "err_rms_cm": 0.5825403533494864,
+      "anees": 1.982107793036164,
+      "anis": 0.02606578866135502,
+      "gated": 0,
+      "updates": 1006
+    },
+    {
+      "label": "R x10",
+      "seed": 15,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7803008901851591,
+      "err_rms_cm": 0.5680383317926789,
+      "anees": 1.6179699450041316,
+      "anis": 0.026275533811844345,
+      "gated": 0,
+      "updates": 955
+    },
+    {
+      "label": "R x10",
+      "seed": 16,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7346032429912631,
+      "err_rms_cm": 0.4494979250461153,
+      "anees": 1.5702054302289636,
+      "anis": 0.024486650912765643,
+      "gated": 0,
+      "updates": 965
+    },
+    {
+      "label": "R x10",
+      "seed": 17,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7545145882905928,
+      "err_rms_cm": 0.4660489816347914,
+      "anees": 1.6293261345485879,
+      "anis": 0.026643332599508802,
+      "gated": 0,
+      "updates": 964
+    },
+    {
+      "label": "R x10",
+      "seed": 18,
+      "docked": true,
+      "time_s": 45.9,
+      "err_max_cm": 0.8198608095437968,
+      "err_rms_cm": 0.5319319776993052,
+      "anees": 1.9347259228186116,
+      "anis": 0.025773226409918283,
+      "gated": 0,
+      "updates": 1005
+    },
+    {
+      "label": "R x10",
+      "seed": 19,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.7831789235482265,
+      "err_rms_cm": 0.5428962072649288,
+      "anees": 1.5802584738968188,
+      "anis": 0.024863199871033727,
+      "gated": 0,
+      "updates": 958
+    },
+    {
+      "label": "R x10",
+      "seed": 20,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 0.7681855778524465,
+      "err_rms_cm": 0.4742692012370358,
+      "anees": 1.671102002024515,
+      "anis": 0.026451414383987033,
+      "gated": 0,
+      "updates": 969
+    },
+    {
+      "label": "R (config)",
+      "seed": 1,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 1.163818313417128,
+      "err_rms_cm": 0.5404852534132587,
+      "anees": 3.743777250690583,
+      "anis": 0.10740681189985228,
+      "gated": 0,
+      "updates": 1001
+    },
+    {
+      "label": "R (config)",
+      "seed": 2,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.611432381236284,
+      "err_rms_cm": 0.7592413639909346,
+      "anees": 3.101251901783208,
+      "anis": 0.1480506045819855,
+      "gated": 1,
+      "updates": 975
+    },
+    {
+      "label": "R (config)",
+      "seed": 3,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.1635601691893895,
+      "err_rms_cm": 0.5876387272564301,
+      "anees": 2.9612045150762407,
+      "anis": 0.12749616638485778,
+      "gated": 0,
+      "updates": 967
+    },
+    {
+      "label": "R (config)",
+      "seed": 4,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 2.648583855995336,
+      "err_rms_cm": 0.5910845753921423,
+      "anees": 2.9369062905897954,
+      "anis": 0.15071765118454541,
+      "gated": 0,
+      "updates": 969
+    },
+    {
+      "label": "R (config)",
+      "seed": 5,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 1.344982197511961,
+      "err_rms_cm": 0.5452388023577486,
+      "anees": 2.995715697316037,
+      "anis": 0.14745508808702473,
+      "gated": 1,
+      "updates": 976
+    },
+    {
+      "label": "R (config)",
+      "seed": 6,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 2.2799203307324203,
+      "err_rms_cm": 0.9294993912882126,
+      "anees": 3.5297701149233682,
+      "anis": 0.1459888263695479,
+      "gated": 1,
+      "updates": 965
+    },
+    {
+      "label": "R (config)",
+      "seed": 7,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 2.1249507880100316,
+      "err_rms_cm": 0.6213546551530448,
+      "anees": 3.9661277896601437,
+      "anis": 0.10440048319167297,
+      "gated": 0,
+      "updates": 1000
+    },
+    {
+      "label": "R (config)",
+      "seed": 8,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 0.9139232935302786,
+      "err_rms_cm": 0.5203276891423427,
+      "anees": 3.7783877059192266,
+      "anis": 0.09411318018839011,
+      "gated": 0,
+      "updates": 1000
+    },
+    {
+      "label": "R (config)",
+      "seed": 9,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 3.0124825031237608,
+      "err_rms_cm": 0.6780311477229202,
+      "anees": 2.9163048721952536,
+      "anis": 0.14543530962959125,
+      "gated": 0,
+      "updates": 969
+    },
+    {
+      "label": "R (config)",
+      "seed": 10,
+      "docked": true,
+      "time_s": 46.0,
+      "err_max_cm": 1.0567592231208092,
+      "err_rms_cm": 0.6318295468081022,
+      "anees": 3.936683679202445,
+      "anis": 0.12153453835399035,
+      "gated": 1,
+      "updates": 1003
+    },
+    {
+      "label": "R (config)",
+      "seed": 11,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.704882215625175,
+      "err_rms_cm": 0.7825228174930893,
+      "anees": 3.2012264728087496,
+      "anis": 0.13581762616382065,
+      "gated": 1,
+      "updates": 960
+    },
+    {
+      "label": "R (config)",
+      "seed": 12,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.9581871350393008,
+      "err_rms_cm": 1.1432610676037467,
+      "anees": 3.6250187336237896,
+      "anis": 0.14633117304243082,
+      "gated": 1,
+      "updates": 949
+    },
+    {
+      "label": "R (config)",
+      "seed": 13,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 2.3099855411268564,
+      "err_rms_cm": 0.8327618691803929,
+      "anees": 3.158383480364126,
+      "anis": 0.14289349854547456,
+      "gated": 1,
+      "updates": 957
+    },
+    {
+      "label": "R (config)",
+      "seed": 14,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.3454727518741842,
+      "err_rms_cm": 1.0052387365990667,
+      "anees": 3.3033792296575455,
+      "anis": 0.12839709196677912,
+      "gated": 0,
+      "updates": 946
+    },
+    {
+      "label": "R (config)",
+      "seed": 15,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.343275547017292,
+      "err_rms_cm": 0.7518552416909096,
+      "anees": 3.351855536127026,
+      "anis": 0.13321185375522604,
+      "gated": 0,
+      "updates": 961
+    },
+    {
+      "label": "R (config)",
+      "seed": 16,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.3554789379207963,
+      "err_rms_cm": 0.6576622406740322,
+      "anees": 3.015519023460109,
+      "anis": 0.12376326639918094,
+      "gated": 0,
+      "updates": 967
+    },
+    {
+      "label": "R (config)",
+      "seed": 17,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.0605648651924953,
+      "err_rms_cm": 0.7435093424684572,
+      "anees": 3.0641513629420287,
+      "anis": 0.12612616017193806,
+      "gated": 0,
+      "updates": 960
+    },
+    {
+      "label": "R (config)",
+      "seed": 18,
+      "docked": true,
+      "time_s": 45.9,
+      "err_max_cm": 1.396048281497215,
+      "err_rms_cm": 0.5086660035570779,
+      "anees": 3.6085101604831453,
+      "anis": 0.0916532868143084,
+      "gated": 0,
+      "updates": 995
+    },
+    {
+      "label": "R (config)",
+      "seed": 19,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 2.2041507734522297,
+      "err_rms_cm": 0.7244690309495991,
+      "anees": 3.167087542950566,
+      "anis": 0.13136713443340142,
+      "gated": 0,
+      "updates": 961
+    },
+    {
+      "label": "R (config)",
+      "seed": 20,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.6530484675162342,
+      "err_rms_cm": 0.5467522316746333,
+      "anees": 2.8340053932278577,
+      "anis": 0.13261110418485153,
+      "gated": 0,
+      "updates": 967
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 1,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.337699406051641,
+      "err_rms_cm": 1.3515695686513995,
+      "anees": 4.21200798714525,
+      "anis": 0.17904560423637336,
+      "gated": 0,
+      "updates": 932
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 2,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.421584038192735,
+      "err_rms_cm": 1.1241338108136136,
+      "anees": 4.174340785329785,
+      "anis": 0.16187306073227076,
+      "gated": 0,
+      "updates": 952
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 3,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.8795305546924523,
+      "err_rms_cm": 1.4265187609858185,
+      "anees": 4.455699845764501,
+      "anis": 0.20647419980049583,
+      "gated": 0,
+      "updates": 939
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 4,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.68588124605353,
+      "err_rms_cm": 0.9480984590263669,
+      "anees": 3.607566566681308,
+      "anis": 0.19819663216379801,
+      "gated": 0,
+      "updates": 949
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 5,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.8385385643301664,
+      "err_rms_cm": 1.082325106987037,
+      "anees": 3.6643878053620496,
+      "anis": 0.1936339741018446,
+      "gated": 0,
+      "updates": 944
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 6,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.708388312681172,
+      "err_rms_cm": 1.2881279364453215,
+      "anees": 4.336806777594117,
+      "anis": 0.20050878507753106,
+      "gated": 1,
+      "updates": 955
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 7,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 4.6771749872963095,
+      "err_rms_cm": 1.9117054645733988,
+      "anees": 5.227557806277627,
+      "anis": 0.1711442973797895,
+      "gated": 0,
+      "updates": 934
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 8,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 4.32493221397768,
+      "err_rms_cm": 1.3420428962714555,
+      "anees": 4.134538819412521,
+      "anis": 0.18253506267699185,
+      "gated": 0,
+      "updates": 940
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 9,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.5027718655025497,
+      "err_rms_cm": 0.9281709602175284,
+      "anees": 3.7813400377654616,
+      "anis": 0.20799153913888688,
+      "gated": 0,
+      "updates": 947
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 10,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 4.613629827942818,
+      "err_rms_cm": 1.422376637147286,
+      "anees": 4.23619182557279,
+      "anis": 0.22434659803193738,
+      "gated": 1,
+      "updates": 939
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 11,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 4.467597725237844,
+      "err_rms_cm": 1.3217128257549242,
+      "anees": 4.206359256072002,
+      "anis": 0.18898362490346043,
+      "gated": 0,
+      "updates": 938
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 12,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 3.262187231225481,
+      "err_rms_cm": 1.092530484821728,
+      "anees": 3.89805369608295,
+      "anis": 0.1740626499138513,
+      "gated": 0,
+      "updates": 940
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 13,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 3.4614356486463778,
+      "err_rms_cm": 1.1797617151967679,
+      "anees": 4.357324600918371,
+      "anis": 0.19455004947476426,
+      "gated": 0,
+      "updates": 960
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 14,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.676629108923242,
+      "err_rms_cm": 1.183970487566148,
+      "anees": 4.112239310300973,
+      "anis": 0.21039339875381563,
+      "gated": 1,
+      "updates": 946
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 15,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.350116416873515,
+      "err_rms_cm": 1.0223367112257702,
+      "anees": 3.9559973000415596,
+      "anis": 0.19249748821055804,
+      "gated": 0,
+      "updates": 949
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 16,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.234496656624138,
+      "err_rms_cm": 1.0712391214566312,
+      "anees": 4.193819324541097,
+      "anis": 0.18025696158935003,
+      "gated": 0,
+      "updates": 935
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 17,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.64649738575432,
+      "err_rms_cm": 1.1368583991027803,
+      "anees": 4.351087110634815,
+      "anis": 0.17818079651101773,
+      "gated": 0,
+      "updates": 959
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 18,
+      "docked": true,
+      "time_s": 46.1,
+      "err_max_cm": 3.9880832639200468,
+      "err_rms_cm": 1.2664345314768268,
+      "anees": 3.982968312742425,
+      "anis": 0.17957623341305437,
+      "gated": 0,
+      "updates": 936
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 19,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 3.247528652795845,
+      "err_rms_cm": 1.1502520679578798,
+      "anees": 4.049316177320676,
+      "anis": 0.18021304572597352,
+      "gated": 0,
+      "updates": 958
+    },
+    {
+      "label": "R, measured bearing sd",
+      "seed": 20,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 4.224995033954138,
+      "err_rms_cm": 1.2316160723474645,
+      "anees": 3.9331511152298817,
+      "anis": 0.17252287027174573,
+      "gated": 0,
+      "updates": 937
+    },
+    {
+      "label": "R / 10",
+      "seed": 1,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 7.827929764214797,
+      "err_rms_cm": 1.794183512517377,
+      "anees": 13.925654122794796,
+      "anis": 0.9126691469933291,
+      "gated": 6,
+      "updates": 940
+    },
+    {
+      "label": "R / 10",
+      "seed": 2,
+      "docked": true,
+      "time_s": 46.2,
+      "err_max_cm": 2.758362896836769,
+      "err_rms_cm": 0.8599740814862142,
+      "anees": 9.460877282828728,
+      "anis": 0.8239089712085148,
+      "gated": 3,
+      "updates": 946
+    },
+    {
+      "label": "R / 10",
+      "seed": 3,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 3.2458769442493063,
+      "err_rms_cm": 1.0259339158389702,
+      "anees": 11.627586504140009,
+      "anis": 1.2279198336858934,
+      "gated": 9,
+      "updates": 964
+    },
+    {
+      "label": "R / 10",
+      "seed": 4,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 4.696415699231475,
+      "err_rms_cm": 1.5117742328414463,
+      "anees": 13.314907104943046,
+      "anis": 0.8952331340533662,
+      "gated": 3,
+      "updates": 943
+    },
+    {
+      "label": "R / 10",
+      "seed": 5,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 6.087186485466883,
+      "err_rms_cm": 2.151995925962192,
+      "anees": 20.180430521265116,
+      "anis": 1.1527500340239258,
+      "gated": 11,
+      "updates": 936
+    },
+    {
+      "label": "R / 10",
+      "seed": 6,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 7.366551361086933,
+      "err_rms_cm": 2.4275610006617145,
+      "anees": 21.734495967362957,
+      "anis": 1.0342351694612426,
+      "gated": 7,
+      "updates": 932
+    },
+    {
+      "label": "R / 10",
+      "seed": 7,
+      "docked": true,
+      "time_s": 46.7,
+      "err_max_cm": 7.716779122790293,
+      "err_rms_cm": 2.1865992991263976,
+      "anees": 17.02054136065276,
+      "anis": 0.8198833743800281,
+      "gated": 3,
+      "updates": 923
+    },
+    {
+      "label": "R / 10",
+      "seed": 8,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 9.090827605824348,
+      "err_rms_cm": 1.7658913775761538,
+      "anees": 11.764550339377143,
+      "anis": 1.032123596072492,
+      "gated": 10,
+      "updates": 942
+    },
+    {
+      "label": "R / 10",
+      "seed": 9,
+      "docked": true,
+      "time_s": 46.8,
+      "err_max_cm": 7.054634725515864,
+      "err_rms_cm": 1.7731106630022178,
+      "anees": 12.934667735432301,
+      "anis": 1.043742399243133,
+      "gated": 4,
+      "updates": 932
+    },
+    {
+      "label": "R / 10",
+      "seed": 10,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 9.062449141555408,
+      "err_rms_cm": 2.5191397152706108,
+      "anees": 14.812961698461008,
+      "anis": 1.7810703650767377,
+      "gated": 23,
+      "updates": 955
+    },
+    {
+      "label": "R / 10",
+      "seed": 11,
+      "docked": true,
+      "time_s": 46.4,
+      "err_max_cm": 8.652480889921591,
+      "err_rms_cm": 2.2076220205343224,
+      "anees": 18.307110178416455,
+      "anis": 0.7734055844888867,
+      "gated": 4,
+      "updates": 931
+    },
+    {
+      "label": "R / 10",
+      "seed": 12,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.3406928412014305,
+      "err_rms_cm": 1.132737448049622,
+      "anees": 11.846409973627896,
+      "anis": 1.097682181743251,
+      "gated": 5,
+      "updates": 956
+    },
+    {
+      "label": "R / 10",
+      "seed": 13,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 6.713086149411414,
+      "err_rms_cm": 2.1877507479282543,
+      "anees": 18.972681249880303,
+      "anis": 0.8529349652930003,
+      "gated": 4,
+      "updates": 926
+    },
+    {
+      "label": "R / 10",
+      "seed": 14,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 3.998046517173589,
+      "err_rms_cm": 1.4993210840467845,
+      "anees": 13.919097136459888,
+      "anis": 1.2215934996324527,
+      "gated": 4,
+      "updates": 942
+    },
+    {
+      "label": "R / 10",
+      "seed": 15,
+      "docked": true,
+      "time_s": 46.3,
+      "err_max_cm": 8.249927649248711,
+      "err_rms_cm": 1.3887470259058423,
+      "anees": 12.493623037552304,
+      "anis": 0.9932193621406464,
+      "gated": 3,
+      "updates": 945
+    },
+    {
+      "label": "R / 10",
+      "seed": 16,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 5.824380463769476,
+      "err_rms_cm": 1.7787476283738568,
+      "anees": 14.802072465799965,
+      "anis": 0.8820095832666688,
+      "gated": 4,
+      "updates": 941
+    },
+    {
+      "label": "R / 10",
+      "seed": 17,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 6.669065577646277,
+      "err_rms_cm": 1.737059449176024,
+      "anees": 13.362385050248877,
+      "anis": 0.8672029857537579,
+      "gated": 4,
+      "updates": 928
+    },
+    {
+      "label": "R / 10",
+      "seed": 18,
+      "docked": true,
+      "time_s": 46.6,
+      "err_max_cm": 5.822739298148701,
+      "err_rms_cm": 2.124248175021093,
+      "anees": 16.922536454828833,
+      "anis": 0.9560440771379366,
+      "gated": 6,
+      "updates": 928
+    },
+    {
+      "label": "R / 10",
+      "seed": 19,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 5.95182636662523,
+      "err_rms_cm": 2.1664212247698273,
+      "anees": 17.175317390653753,
+      "anis": 0.9859146317449281,
+      "gated": 5,
+      "updates": 933
+    },
+    {
+      "label": "R / 10",
+      "seed": 20,
+      "docked": true,
+      "time_s": 46.5,
+      "err_max_cm": 6.992133663105815,
+      "err_rms_cm": 1.872170991036587,
+      "anees": 17.124240520924662,
+      "anis": 0.7650685109981044,
+      "gated": 3,
+      "updates": 930
+    }
+  ]
+}

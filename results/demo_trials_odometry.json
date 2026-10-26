@@ -1,0 +1,455 @@
+{
+  "summary": {
+    "none": {
+      "n": 10,
+      "success_rate": 0.9,
+      "collisions": 0,
+      "failures": [
+        [
+          8,
+          "not_docked: lateral, heading"
+        ]
+      ],
+      "time_s": {
+        "mean": 38.82,
+        "std": 0.74,
+        "worst": 39.8
+      },
+      "cross_track_rms_cm": {
+        "mean": 3.52,
+        "std": 2.15,
+        "worst": 8.47
+      },
+      "dock_lateral_err_cm": {
+        "mean": 0.83,
+        "std": 0.4,
+        "worst": 1.59
+      },
+      "dock_along_err_cm": {
+        "mean": 0.37,
+        "std": 0.02,
+        "worst": 0.39
+      },
+      "dock_heading_err_deg": {
+        "mean": -1.31,
+        "std": 0.67,
+        "worst": -2.57
+      },
+      "estimate_err_final_cm": {
+        "mean": 7.32,
+        "std": 5.46,
+        "worst": 20.76
+      },
+      "estimate_rmse_cm": {
+        "mean": 5.47,
+        "std": 4.07,
+        "worst": 15.53
+      },
+      "min_centre_to_wall_m": {
+        "mean": 0.36,
+        "std": 0.0,
+        "worst": 0.36
+      }
+    },
+    "centre": {
+      "n": 10,
+      "success_rate": 0.7,
+      "collisions": 0,
+      "failures": [
+        [
+          2,
+          "not_docked: lateral, heading"
+        ],
+        [
+          6,
+          "not_docked: lateral, heading"
+        ],
+        [
+          8,
+          "not_docked: lateral, heading"
+        ]
+      ],
+      "time_s": {
+        "mean": 46.69,
+        "std": 0.81,
+        "worst": 47.6
+      },
+      "cross_track_rms_cm": {
+        "mean": 5.03,
+        "std": 2.64,
+        "worst": 11.02
+      },
+      "dock_lateral_err_cm": {
+        "mean": 0.69,
+        "std": 0.14,
+        "worst": 0.9
+      },
+      "dock_along_err_cm": {
+        "mean": 0.38,
+        "std": 0.0,
+        "worst": 0.39
+      },
+      "dock_heading_err_deg": {
+        "mean": -1.07,
+        "std": 0.21,
+        "worst": -1.39
+      },
+      "estimate_err_final_cm": {
+        "mean": 9.97,
+        "std": 6.21,
+        "worst": 24.48
+      },
+      "estimate_rmse_cm": {
+        "mean": 6.96,
+        "std": 4.43,
+        "worst": 17.16
+      },
+      "min_centre_to_wall_m": {
+        "mean": 0.32,
+        "std": 0.01,
+        "worst": 0.31
+      },
+      "min_centre_to_box_m": {
+        "mean": 0.3,
+        "std": 0.01,
+        "worst": 0.29
+      }
+    }
+  },
+  "trials": {
+    "none": [
+      {
+        "seed": 1,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 38.6,
+        "cross_track_rms_cm": 2.72,
+        "cross_track_max_cm": 7.0,
+        "dock_lateral_err_cm": 1.06,
+        "dock_along_err_cm": 0.37,
+        "dock_heading_err_deg": -1.74,
+        "estimate_err_final_cm": 6.33,
+        "estimate_err_max_cm": 6.33,
+        "estimate_rmse_cm": 3.94,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 2,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.6,
+        "cross_track_rms_cm": 5.16,
+        "cross_track_max_cm": 9.47,
+        "dock_lateral_err_cm": 1.16,
+        "dock_along_err_cm": 0.37,
+        "dock_heading_err_deg": -1.88,
+        "estimate_err_final_cm": 10.13,
+        "estimate_err_max_cm": 10.13,
+        "estimate_rmse_cm": 7.79,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 3,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 39.8,
+        "cross_track_rms_cm": 3.17,
+        "cross_track_max_cm": 6.07,
+        "dock_lateral_err_cm": 0.49,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -0.76,
+        "estimate_err_final_cm": 6.67,
+        "estimate_err_max_cm": 6.68,
+        "estimate_rmse_cm": 4.97,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 4,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 39.1,
+        "cross_track_rms_cm": 1.54,
+        "cross_track_max_cm": 5.56,
+        "dock_lateral_err_cm": 0.76,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -1.18,
+        "estimate_err_final_cm": 2.79,
+        "estimate_err_max_cm": 2.79,
+        "estimate_rmse_cm": 2.04,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 5,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 39.6,
+        "cross_track_rms_cm": 2.57,
+        "cross_track_max_cm": 5.09,
+        "dock_lateral_err_cm": 0.68,
+        "dock_along_err_cm": 0.39,
+        "dock_heading_err_deg": -1.04,
+        "estimate_err_final_cm": 5.79,
+        "estimate_err_max_cm": 5.79,
+        "estimate_rmse_cm": 4.13,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 6,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.8,
+        "cross_track_rms_cm": 5.14,
+        "cross_track_max_cm": 8.1,
+        "dock_lateral_err_cm": 1.59,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -2.57,
+        "estimate_err_final_cm": 9.18,
+        "estimate_err_max_cm": 9.19,
+        "estimate_rmse_cm": 7.13,
+        "min_centre_to_wall_m": 0.359,
+        "collisions": []
+      },
+      {
+        "seed": 7,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 38.3,
+        "cross_track_rms_cm": 1.86,
+        "cross_track_max_cm": 4.96,
+        "dock_lateral_err_cm": 0.4,
+        "dock_along_err_cm": 0.39,
+        "dock_heading_err_deg": -0.64,
+        "estimate_err_final_cm": 2.06,
+        "estimate_err_max_cm": 2.48,
+        "estimate_rmse_cm": 2.06,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 8,
+        "success": false,
+        "stop_reason": "not_docked: lateral, heading",
+        "time_s": 38.9,
+        "cross_track_rms_cm": 8.47,
+        "cross_track_max_cm": 18.61,
+        "dock_lateral_err_cm": 4.66,
+        "dock_along_err_cm": 0.08,
+        "dock_heading_err_deg": -7.2,
+        "estimate_err_final_cm": 20.76,
+        "estimate_err_max_cm": 20.76,
+        "estimate_rmse_cm": 15.53,
+        "min_centre_to_wall_m": 0.357,
+        "collisions": []
+      },
+      {
+        "seed": 9,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 39.1,
+        "cross_track_rms_cm": 1.74,
+        "cross_track_max_cm": 6.49,
+        "dock_lateral_err_cm": 0.93,
+        "dock_along_err_cm": 0.37,
+        "dock_heading_err_deg": -1.47,
+        "estimate_err_final_cm": 2.34,
+        "estimate_err_max_cm": 2.56,
+        "estimate_rmse_cm": 2.04,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      },
+      {
+        "seed": 10,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 39.4,
+        "cross_track_rms_cm": 2.88,
+        "cross_track_max_cm": 5.85,
+        "dock_lateral_err_cm": 0.36,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -0.53,
+        "estimate_err_final_cm": 7.11,
+        "estimate_err_max_cm": 7.11,
+        "estimate_rmse_cm": 5.03,
+        "min_centre_to_wall_m": 0.36,
+        "collisions": []
+      }
+    ],
+    "centre": [
+      {
+        "seed": 1,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 46.1,
+        "cross_track_rms_cm": 1.81,
+        "cross_track_max_cm": 5.69,
+        "dock_lateral_err_cm": 0.56,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -0.9,
+        "estimate_err_final_cm": 2.57,
+        "estimate_err_max_cm": 2.57,
+        "estimate_rmse_cm": 1.6,
+        "min_centre_to_wall_m": 0.319,
+        "collisions": [],
+        "min_centre_to_box_m": 0.303
+      },
+      {
+        "seed": 2,
+        "success": false,
+        "stop_reason": "not_docked: lateral, heading",
+        "time_s": 47.4,
+        "cross_track_rms_cm": 6.71,
+        "cross_track_max_cm": 12.74,
+        "dock_lateral_err_cm": 1.73,
+        "dock_along_err_cm": 0.32,
+        "dock_heading_err_deg": -2.8,
+        "estimate_err_final_cm": 13.83,
+        "estimate_err_max_cm": 13.83,
+        "estimate_rmse_cm": 10.04,
+        "min_centre_to_wall_m": 0.316,
+        "collisions": [],
+        "min_centre_to_box_m": 0.294
+      },
+      {
+        "seed": 3,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 47.5,
+        "cross_track_rms_cm": 5.26,
+        "cross_track_max_cm": 9.41,
+        "dock_lateral_err_cm": 0.66,
+        "dock_along_err_cm": 0.39,
+        "dock_heading_err_deg": -0.99,
+        "estimate_err_final_cm": 10.44,
+        "estimate_err_max_cm": 10.44,
+        "estimate_rmse_cm": 7.22,
+        "min_centre_to_wall_m": 0.311,
+        "collisions": [],
+        "min_centre_to_box_m": 0.302
+      },
+      {
+        "seed": 4,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 46.5,
+        "cross_track_rms_cm": 3.01,
+        "cross_track_max_cm": 5.19,
+        "dock_lateral_err_cm": 0.82,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -1.25,
+        "estimate_err_final_cm": 5.92,
+        "estimate_err_max_cm": 5.92,
+        "estimate_rmse_cm": 3.85,
+        "min_centre_to_wall_m": 0.33,
+        "collisions": [],
+        "min_centre_to_box_m": 0.289
+      },
+      {
+        "seed": 5,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 47.1,
+        "cross_track_rms_cm": 4.52,
+        "cross_track_max_cm": 8.07,
+        "dock_lateral_err_cm": 0.79,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -1.19,
+        "estimate_err_final_cm": 9.14,
+        "estimate_err_max_cm": 9.14,
+        "estimate_rmse_cm": 6.1,
+        "min_centre_to_wall_m": 0.323,
+        "collisions": [],
+        "min_centre_to_box_m": 0.293
+      },
+      {
+        "seed": 6,
+        "success": false,
+        "stop_reason": "not_docked: lateral, heading",
+        "time_s": 47.6,
+        "cross_track_rms_cm": 6.58,
+        "cross_track_max_cm": 11.08,
+        "dock_lateral_err_cm": 1.98,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -3.2,
+        "estimate_err_final_cm": 12.34,
+        "estimate_err_max_cm": 12.34,
+        "estimate_rmse_cm": 9.01,
+        "min_centre_to_wall_m": 0.306,
+        "collisions": [],
+        "min_centre_to_box_m": 0.302
+      },
+      {
+        "seed": 7,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 45.4,
+        "cross_track_rms_cm": 3.77,
+        "cross_track_max_cm": 6.08,
+        "dock_lateral_err_cm": 0.52,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -0.85,
+        "estimate_err_final_cm": 6.14,
+        "estimate_err_max_cm": 6.14,
+        "estimate_rmse_cm": 4.5,
+        "min_centre_to_wall_m": 0.329,
+        "collisions": [],
+        "min_centre_to_box_m": 0.291
+      },
+      {
+        "seed": 8,
+        "success": false,
+        "stop_reason": "not_docked: lateral, heading",
+        "time_s": 45.5,
+        "cross_track_rms_cm": 11.02,
+        "cross_track_max_cm": 21.73,
+        "dock_lateral_err_cm": 7.26,
+        "dock_along_err_cm": -0.37,
+        "dock_heading_err_deg": -10.85,
+        "estimate_err_final_cm": 24.48,
+        "estimate_err_max_cm": 24.48,
+        "estimate_rmse_cm": 17.16,
+        "min_centre_to_wall_m": 0.312,
+        "collisions": [],
+        "min_centre_to_box_m": 0.288
+      },
+      {
+        "seed": 9,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 46.6,
+        "cross_track_rms_cm": 2.79,
+        "cross_track_max_cm": 5.55,
+        "dock_lateral_err_cm": 0.9,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -1.39,
+        "estimate_err_final_cm": 4.6,
+        "estimate_err_max_cm": 4.6,
+        "estimate_rmse_cm": 3.28,
+        "min_centre_to_wall_m": 0.319,
+        "collisions": [],
+        "min_centre_to_box_m": 0.302
+      },
+      {
+        "seed": 10,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 47.2,
+        "cross_track_rms_cm": 4.83,
+        "cross_track_max_cm": 8.77,
+        "dock_lateral_err_cm": 0.6,
+        "dock_along_err_cm": 0.38,
+        "dock_heading_err_deg": -0.9,
+        "estimate_err_final_cm": 10.28,
+        "estimate_err_max_cm": 10.28,
+        "estimate_rmse_cm": 6.89,
+        "min_centre_to_wall_m": 0.329,
+        "collisions": [],
+        "min_centre_to_box_m": 0.288
+      }
+    ]
+  }
+}

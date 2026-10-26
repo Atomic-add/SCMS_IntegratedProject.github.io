@@ -196,12 +196,41 @@ Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_
 camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
 (`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
 
+**Laptops with an NVIDIA GPU (Linux):** with several sims rendering through EGL at once, the NVIDIA driver
+(open kernel module 595.84) crashed in `nvidia_unlocked_ioctl` and the machine hung until it was powered off
+(26 Oct, twice). Render on Mesa (the Intel iGPU) instead, about 2x slower per frame and stable:
+
+```bash
+export MUJOCO_GL=egl __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json
+python -m evaluation.sweep_r --n 20 --workers 1
+```
+
 Random lab scenarios (`random_trials`, seeds 1-20, 26 Oct):
 
 | Run | Docked | Contacts | Notes |
 |---|---|---|---|
 | EKF | 20 / 20 | 0 | 44.0 +- 2.3 s, dock lateral 0.26 +- 0.43 cm, yaw -0.41 +- 0.68 deg, ANEES 5.0 |
 | Odometry only | 7 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+
+Fixed track (`run_demo`, 26 Oct; repeated trials = 10 seeds of a random true start and encoder scale error):
+
+| Run | none | left | centre | right |
+|---|---|---|---|---|
+| Nominal, odometry | docked 39.1 s | docked 38.9 s | docked 46.2 s | docked 39.1 s |
+| Nominal, EKF | docked 39.1 s, ANEES 3.39 | docked 38.8 s, ANEES 3.01 | docked 46.5 s, ANEES 3.04 | docked 39.1 s, ANEES 3.39 |
+| 10 trials, odometry | 9 / 10 | - | 7 / 10 | - |
+| 10 trials, EKF | 10 / 10, ANEES 3.23 | - | 10 / 10, ANEES 3.47 | - |
+
+No contact in any run. Every EKF dock ends 0.43 cm to the side and -0.7 deg off the goal, the same in
+every trial (a systematic offset, inside the 3 cm / 5 deg tolerance). NIS stays low (ANIS 0.1) because the
+ArUco errors of consecutive frames are correlated (`evaluation/consistency_sweep.py`); NEES against the
+truth is inside its 95 % bound in 95 % of the steps.
+
+`sweep_r` (EKF, centre, 20 seeds per row, all docked): R x10 ANEES 1.69 (worst error 0.78 cm), R as
+configured 3.31 (2.18 cm), R with the measured bearing sd 4.14 (3.73 cm), R / 10 15.1 (6.36 cm, 6 marker
+updates gated per run). The configured R is the consistent one. R x10 has the smaller error only because the
+sim odometry has the model's exact wheel radius; the real encoders over-count by about 1.3 %.
+`check_ibvs` (10 seeds each): PBVS and IBVS both dock 10 / 10, lateral +0.26 +- 0.45 cm.
 
 ## 5. Repository layout
 
