@@ -3,7 +3,8 @@
   (top view with tile numbers: python experiments/plot_track.py -> results/track_arena_lab.png).
 
   World frame: origin at the outer corner of the bottom-left tile, x along the 10 tiles (5.0 m), y along
-  the 4 tiles (2.0 m), z up. The dark lines on the floor are the tile edges, every 0.5 m from the origin.
+  the 4 tiles (2.0 m), z up. The grid is a grey pad on the blue ground; its dark lines are the tile edges,
+  every 0.5 m from the origin.
   Free floor (the outline): the 5.0 x 1.5 m band y 0.5-2.0 plus the 2.0 x 0.5 m pocket x 0-2, y 0-0.5
   where the robot docks. The tiles x 2.0-4.0, y 0-0.5 hold furniture; x 4.0-5.0, y 0-0.5 is left outside.
   Walls: the 57 x 20 cm panels, 0.02 m thick, inner face on the outline (27 panels).
@@ -30,6 +31,10 @@
 
   <asset>
     <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <!-- MuJoCo's default blue checker for the ground outside the lab grid (as in the old corridor) -->
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"/>
     <material name="floor" rgba="0.62 0.62 0.6 1"/>
     <material name="tile_line" rgba="0.25 0.25 0.25 1"/>
     <material name="panel" rgba="0.92 0.92 0.9 1"/>
@@ -47,40 +52,44 @@
 
   <worldbody>
     <light pos="2.5 1.0 3" dir="0 0 -1" directional="true" diffuse="0.5 0.5 0.5"/>
-    <geom name="floor" size="0 0 0.05" type="plane" material="floor"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <!-- The 10 x 4 tile grid (5.0 x 2.0 m): a thin grey pad on the plane, visual only (group 2). The robot
+         drives on the plane; the tile lines sit on top of the pad. -->
+    <geom name="tile_pad" type="box" size="2.5 1.0 0.0002" pos="2.5 1.0 0.0002" material="floor"
+          contype="0" conaffinity="0" group="2"/>
 
     <!-- Tile edges every 0.5 m (visual only) -->
-    <geom name="tile_x00" type="box" size="0.004 1.0 0.0005" pos="0 1.0 0.0005" material="tile_line"
+    <geom name="tile_x00" type="box" size="0.004 1.0 0.0005" pos="0 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x01" type="box" size="0.004 1.0 0.0005" pos="0.5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x01" type="box" size="0.004 1.0 0.0005" pos="0.5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x02" type="box" size="0.004 1.0 0.0005" pos="1 1.0 0.0005" material="tile_line"
+    <geom name="tile_x02" type="box" size="0.004 1.0 0.0005" pos="1 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x03" type="box" size="0.004 1.0 0.0005" pos="1.5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x03" type="box" size="0.004 1.0 0.0005" pos="1.5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x04" type="box" size="0.004 1.0 0.0005" pos="2 1.0 0.0005" material="tile_line"
+    <geom name="tile_x04" type="box" size="0.004 1.0 0.0005" pos="2 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x05" type="box" size="0.004 1.0 0.0005" pos="2.5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x05" type="box" size="0.004 1.0 0.0005" pos="2.5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x06" type="box" size="0.004 1.0 0.0005" pos="3 1.0 0.0005" material="tile_line"
+    <geom name="tile_x06" type="box" size="0.004 1.0 0.0005" pos="3 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x07" type="box" size="0.004 1.0 0.0005" pos="3.5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x07" type="box" size="0.004 1.0 0.0005" pos="3.5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x08" type="box" size="0.004 1.0 0.0005" pos="4 1.0 0.0005" material="tile_line"
+    <geom name="tile_x08" type="box" size="0.004 1.0 0.0005" pos="4 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x09" type="box" size="0.004 1.0 0.0005" pos="4.5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x09" type="box" size="0.004 1.0 0.0005" pos="4.5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_x10" type="box" size="0.004 1.0 0.0005" pos="5 1.0 0.0005" material="tile_line"
+    <geom name="tile_x10" type="box" size="0.004 1.0 0.0005" pos="5 1.0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_y0" type="box" size="2.5 0.004 0.0005" pos="2.5 0 0.0005" material="tile_line"
+    <geom name="tile_y0" type="box" size="2.5 0.004 0.0005" pos="2.5 0 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_y1" type="box" size="2.5 0.004 0.0005" pos="2.5 0.5 0.0005" material="tile_line"
+    <geom name="tile_y1" type="box" size="2.5 0.004 0.0005" pos="2.5 0.5 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_y2" type="box" size="2.5 0.004 0.0005" pos="2.5 1 0.0005" material="tile_line"
+    <geom name="tile_y2" type="box" size="2.5 0.004 0.0005" pos="2.5 1 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_y3" type="box" size="2.5 0.004 0.0005" pos="2.5 1.5 0.0005" material="tile_line"
+    <geom name="tile_y3" type="box" size="2.5 0.004 0.0005" pos="2.5 1.5 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
-    <geom name="tile_y4" type="box" size="2.5 0.004 0.0005" pos="2.5 2 0.0005" material="tile_line"
+    <geom name="tile_y4" type="box" size="2.5 0.004 0.0005" pos="2.5 2 0.0009" material="tile_line"
           contype="0" conaffinity="0" group="2"/>
 
     <!-- Panels, 0.20 m high, on the outer side of each outline edge -->
