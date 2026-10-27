@@ -245,9 +245,11 @@ class RealRobot:
         elif self.strict and self.joint_jumps() > self._jumps_at_connect:
             problem = self._jump_message()
         else:
-            for key in ("joint_states", "scan"):
+            limits = {"joint_states": self.cfg["max_sensor_age"],
+                      "scan": self.cfg.get("max_scan_silence", self.cfg["max_sensor_age"])}
+            for key, limit in limits.items():
                 age = self.t - self._bridge.sample(key)[0]
-                if age > self.cfg["max_sensor_age"]:
+                if age > limit:
                     problem = f"no {self.cfg['topics'][key]} for {age:.1f} s"
         if problem:
             try:

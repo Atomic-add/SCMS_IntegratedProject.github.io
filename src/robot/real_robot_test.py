@@ -26,7 +26,7 @@ from src.robot.real_robot import JOINT_JUMP, RealRobot, load_config  # noqa: E40
 from src.robot.sim_robot import MAX_V, MAX_W, WHEEL_RADIUS, WHEEL_SEPARATION  # noqa: E402
 
 FAILS = []
-CFG = {**load_config(), "connect_timeout": 2.0, "max_sensor_age": 0.3}
+CFG = {**load_config(), "connect_timeout": 2.0, "max_sensor_age": 0.3, "max_scan_silence": 0.3}
 
 
 def check(name, ok, detail=""):
