@@ -91,6 +91,7 @@ class EKF:
                 and t - marker_frame["t"] <= self.p["max_frame_age"]):
             self.t_frame = marker_frame["t"]            # new, recent frame: each marker once
             for mid, m in marker_frame["markers"].items():
+                # When a frame arrives with 2 markers in it. self.update() is called once for each marker
                 z = np.asarray(m["z"], float)
                 if int(mid) in self.map and z.shape == (2,) and np.all(np.isfinite(z)):
                     self.update(int(mid), z, marker_frame["t"])
