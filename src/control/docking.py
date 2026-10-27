@@ -150,6 +150,11 @@ class DockingController:
         if (e_rms <= self.p["ibvs_e_tol_px"] or rng - self.stop_range <= self.p["stop_early"]
                 or (self.t_still is not None and t - self.t_still >= self.p["ibvs_still_sec"])):
             return None                                        # converged, at the stop range, or stalled
+        if v <= 0.0:
+            # IBVS would back up (or hold): the camera says the robot is at the stop or a hair past it. A real
+            # base cannot creep back by millimetres (28 Oct: -0.8 cm/s for 30 s at 2 cm from the stop), so end
+            # IBVS here and let the SETTLE checks decide.
+            return None
         self.v_cmd = min(v, self.v_cmd + self.a_max * self.Ts)  # gentle start (acceleration limit)
         if 0.0 < self.v_cmd < self.p["v_min_dock"]:
             # The real motors do not turn below ~1 cm/s: near the stop IBVS asked for 0.6 cm/s and the robot sat
