@@ -148,6 +148,16 @@ python experiments/aruco_real_noise.py --write                   # ArUco range b
 python main.py --real --task config/stage1_dock.json             # then stage2_corner.json, then arena_lab.json
 ```
 
+Wheel calibration (UMBmark, Week 2 B.3-B.4): `experiments/umbmark.py` drives 1 m squares on the encoders
+only and asks for three tape readings (two rear chassis corners against an L of tape on the floor) before
+and after each run; it fits the left/right wheel sizes and the true track width, `--straight` gives the
+overall wheel scale, and the scatter left over gives `k_wheel`. Config files are not changed by it.
+
+```bash
+python experiments/umbmark.py --cw --runs 5        # right turns; then --ccw --runs 5, then --straight --runs 3
+python experiments/umbmark.py --analyse 'results/hardware/umbmark_*.json'
+```
+
 `--real` requires `--task`, caps the speed at `v_max` / `w_max` from `config/robot_real.json`, stops the
 robot when `/joint_states` or `/scan` goes quiet, when the link drops, on Ctrl+C, or when a second robot
 publishes on the same topics, and saves the run to `results/hardware/run_<time>.npz` (estimate, P,
