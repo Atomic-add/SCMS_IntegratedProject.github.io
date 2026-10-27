@@ -71,8 +71,15 @@ class AvoidanceController:
 
     # ------------------------------------------------------------ helpers
     def _lane_free(self, Q, d, a_from, a_to):
-        """True if no LiDAR point lies in the robot's lane at offset d between along-track a_from..a_to."""
-        sel = (Q[0] >= a_from) & (Q[0] <= a_to) & (np.abs(Q[1] - d) <= self.half)
+        """True if no LiDAR point lies in the lane the robot will sweep between along-track a_from..a_to.
+
+        The offset ramps from 0 at a_from to d over ramp_len (as step() drives it), so a point at along-track s
+        is checked against the offset the robot has when its REAR passes s (the largest offset of the body
+        there). Checking the full offset from a_from on refused to pass on 28 Oct: a wall point beside the
+        robot, where it is still in its own lane, blocked the side it would only reach 0.6 m later.
+        """
+        reach = np.clip((Q[0] + ROBOT_REAR - a_from) / self.p["ramp_len"], 0.0, 1.0)
+        sel = (Q[0] >= a_from) & (Q[0] <= a_to) & (np.abs(Q[1] - d * reach) <= self.half)
         return not np.any(sel)
 
     def _rate_limit(self, v, w):
