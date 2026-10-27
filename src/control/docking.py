@@ -208,6 +208,11 @@ class DockingController:
                 v = float(np.clip(self.p["v_dock"] * to_go / self.p["slow_down_dist"],
                                   self.p["v_min_dock"], self.p["v_dock"]))
                 self.v_cmd = min(v, self.v_cmd + self.a_max * self.Ts)   # gentle start (acceleration limit)
+                if self.ibvs_done:
+                    # The last centimetres after IBVS: it left the robot facing the marker, so drive straight.
+                    # The LQR at v_min_dock turned the real robot 4 deg while it rolled 3 cm (28 Oct): at that
+                    # speed a 2 cm offset becomes a large omega and no lateral correction.
+                    return self.v_cmd, 0.0
                 e_y, e_theta, _ = self.line.errors(self._dock_pose(x_hat))
                 return self.v_cmd, self.lqr.step(e_y, e_theta, 0.0, self.v_cmd)
             self.phase, self.t_settle = SETTLE, t               # range reached: stop at once
