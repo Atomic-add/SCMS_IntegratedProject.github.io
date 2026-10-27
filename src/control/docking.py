@@ -151,6 +151,10 @@ class DockingController:
                 or (self.t_still is not None and t - self.t_still >= self.p["ibvs_still_sec"])):
             return None                                        # converged, at the stop range, or stalled
         self.v_cmd = min(v, self.v_cmd + self.a_max * self.Ts)  # gentle start (acceleration limit)
+        if 0.0 < self.v_cmd < self.p["v_min_dock"]:
+            # The real motors do not turn below ~1 cm/s: near the stop IBVS asked for 0.6 cm/s and the robot sat
+            # 4 cm short for 30 s (28 Oct). Keep the approach's floor until the stop range ends IBVS.
+            self.v_cmd = self.p["v_min_dock"]
         return self.v_cmd, w
 
     def step(self, x_hat, P, marker_frame, motion_feedback, t):
