@@ -102,6 +102,8 @@ class DockingController:
         self.marker, self.t_marker = None, -np.inf          # last ID 0 measurement and its frame time
         self.t_lost = self.t_settle = self.t_ok = self.t_still = None
         self.ibvs_log = []
+        self.ibvs_done = False                              # IBVS ran once; the LQR finishes if it fell short
+        self.checks, self.values = {}, {}                   # last SETTLE checks and the numbers behind them
         self.lqr.reset()
 
     @property
@@ -129,7 +131,7 @@ class DockingController:
 
     def _ibvs_ready(self, rng):
         """Switch to IBVS: servo = ibvs, close enough, and the frame carries corners and the PnP pose."""
-        return (self.servo == "ibvs" and rng <= self.p["ibvs_switch_range"]
+        return (self.servo == "ibvs" and not self.ibvs_done and rng <= self.p["ibvs_switch_range"]
                 and "corners" in self.marker and "T_CM" in self.marker)
 
     def _ibvs_step(self, rng, t):
@@ -193,7 +195,13 @@ class DockingController:
             if cmd is not None:
                 return cmd
             if self.phase == IBVS:                              # finished: stop at once and confirm
-                self.phase, self.t_settle, self.v_cmd = SETTLE, t, 0.0
+                self.ibvs_done, self.v_cmd = True, 0.0
+                if rng - self.stop_range > self.p["dock_range_tol"] / 2:
+                    # IBVS settled short of the stop (on the real robot its image goal and the true stop differ
+                    # by ~2 cm): the LQR closes the rest on the camera range, at least v_min_dock.
+                    self.phase = APPROACH
+                else:
+                    self.phase, self.t_settle = SETTLE, t
         if self.phase == APPROACH:
             to_go = rng - self.stop_range                       # metres left, from the camera
             if to_go > self.p["stop_early"]:
@@ -218,6 +226,15 @@ class DockingController:
             stopped=(abs(motion_feedback["v"]) <= self.p["dock_linear_speed_tol"]
                      and abs(motion_feedback["w"]) <= self.p["dock_angular_speed_tol"]),
         )
+        self.values = dict(
+            range=f"{rng:.3f} m (stop {self.stop_range:.3f} +- {self.p['dock_range_tol']})",
+            bearing=f"{np.degrees(brg):+.1f} deg (+- {self.p['dock_bearing_tol_deg']})",
+            lateral=f"{100 * e_y:+.1f} cm (+- {100 * self.p['dock_lateral_tol']:.0f})",
+            heading=f"{np.degrees(e_theta):+.1f} deg (+- {self.p['dock_heading_tol_deg']})",
+            confident=f"sd {100 * np.sqrt(P[0, 0] + P[1, 1]):.1f} cm (<= {100 * self.p['dock_pos_sigma_max']:.0f}), "
+                      f"{np.degrees(np.sqrt(P[2, 2])):.1f} deg (<= {self.p['dock_heading_sigma_max_deg']})",
+            stopped=f"v {100 * motion_feedback['v']:+.1f} cm/s, w {motion_feedback['w']:+.3f} rad/s",
+        )
         if all(self.checks.values()):
             self.t_ok = t if self.t_ok is None else self.t_ok
             if t - self.t_ok >= self.p["dock_hold_sec"]:      # held long enough: not one lucky frame
@@ -231,7 +248,8 @@ class DockingController:
 
     def info(self):
         """For behaviour.py / logging."""
-        return dict(phase=self.phase, dock_complete=self.dock_complete, stop_reason=self.stop_reason)
+        return dict(phase=self.phase, dock_complete=self.dock_complete, stop_reason=self.stop_reason,
+                    checks=dict(self.checks), values=dict(self.values))
 
 
 # ---------------------------------------------------------------- try it on the robot

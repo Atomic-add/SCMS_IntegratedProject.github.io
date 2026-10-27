@@ -129,7 +129,8 @@ class NavigationController:
                     waypoint_index=self.tracker.i,
                     pre_dock_reached=self.tracker.pre_dock_reached,
                     dock_complete=self.dock.dock_complete,
-                    stop_reason=self.stop_reason)
+                    stop_reason=self.stop_reason,
+                    dock=self.dock.info() if self.dock.phase is not None else None)
 
 
 # ---------------------------------------------------------------- the whole mission in the sim

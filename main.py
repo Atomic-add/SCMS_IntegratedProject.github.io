@@ -124,6 +124,25 @@ def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None, range_correction=No
     return on_step
 
 
+def start_check(estimator, n=15):
+    """on_step hook: say it loudly when the first n marker updates are all rejected by the EKF's NIS gate. That
+    means the start pose in the task file disagrees with what the camera sees (28 Oct: the robot stood 0.25 m
+    from where the task file put it, and the whole run went on odometry)."""
+    said = []
+
+    def check(robot, row):
+        import numpy as np
+        log = getattr(estimator, "log", [])
+        if not said and len(log) >= n:
+            said.append(True)
+            first = np.array(log[:n], dtype=float)
+            if first[:, 3].sum() == 0:
+                print(f"WARNING: the EKF rejected the first {n} marker updates (median NIS {np.median(first[:, 2]):.0f}): "
+                      f"the robot is not where the task file's start says. Stop (Ctrl+C), measure its distance to "
+                      f"the marker and put it on the start pose.")
+    return check
+
+
 def main(argv=None):
     args = parse_args(argv)
     real = args.real is not None
@@ -197,7 +216,7 @@ def main(argv=None):
                                      range_correction=aruco.load_range_correction(intrinsics)))
     log_path = args.log or (ROOT / "results" / "hardware" / time.strftime("run_%Y%m%d_%H%M%S.npz") if real else None)
     log_step, save_log = run_logger(estimator)
-    hooks = cameras + ([log_step] if log_path else [])
+    hooks = cameras + ([log_step] if log_path else []) + ([start_check(estimator)] if estimator is not None else [])
 
     def on_step(robot, row):
         for hook in hooks:
@@ -227,6 +246,11 @@ def main(argv=None):
     if failure:
         print(f"result: stopped, {failure}")
         return 1
+    dock = info.get("dock") if info else None
+    if dock and dock["checks"]:                                  # the last docking checks, so a failed dock says why
+        print(f"docking checks (phase {dock['phase']}):")
+        for k, ok in dock["checks"].items():
+            print(f"  {'ok  ' if ok else 'FAIL'} {k:9s} {dock['values'].get(k, '')}")
     reason = info["stop_reason"] or "stopped before the end (window closed or time limit)"
     print(f"result: {reason} after {t_end:.1f} s{'' if real else ' of sim time'}, "
           f"dock_complete = {info['dock_complete']}")
