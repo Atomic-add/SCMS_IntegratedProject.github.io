@@ -175,6 +175,11 @@ def main(argv=None):
     if args.dock:
         cfg["docking"]["servo"] = args.dock
     cfg["docking"]["camera_intrinsics"] = str(intrinsics.relative_to(ROOT))   # IBVS: the same K and T_BC as ArUco
+    if real and "min_coverage" in robot.cfg:
+        # The lab room is open: whole sectors have nothing within the LDS-01's 3.5 m and read 0, so the robot
+        # needs its own coverage threshold (config/robot_real.json); the sim keeps control.json's.
+        cfg["lidar_obs"]["min_coverage"] = robot.cfg["min_coverage"]
+        print(f"note: LiDAR min_coverage {robot.cfg['min_coverage']} on the real robot (config/robot_real.json)")
     if real:
         # RealRobot scales any command above its caps down (v and w together, so the path keeps its shape).
         # Say so: the gains were designed at v_nom, and a sim twin for comparison must use the same speeds.

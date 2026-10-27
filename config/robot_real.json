@@ -17,6 +17,8 @@
   "v_max": 0.10,
   "w_max": 1.0,
   "_v_max": "m/s and rad/s, first-run safety caps on top of the Waffle Pi limits (0.26, 1.82). Commands above a cap are scaled down together, so the turning radius v/w is kept. Raise them once the lab speed rule is known and the robot behaves",
+  "min_coverage": 0.4,
+  "_min_coverage": "fraction of the forward (+-90 deg) LiDAR beams that must return before the robot moves (config/control.json lidar_obs, 0.8 in the sim). Measured on 28 Oct at the stage-1 start: 0.55, because the room is open (no panel within 3.5 m on the robot's left, so those beams read 0) and the mission waited forever at 0.8. 0.4 still stops the robot when the LiDAR is blocked or broken; the price: a dark obstacle the LDS-01 cannot see is not caught",
   "max_sensor_age": 1.0,
   "_max_sensor_age": "s; step() stops the robot and raises if /joint_states or /scan is older than this (lost wifi, crashed driver)",
   "connect_timeout": 10.0,

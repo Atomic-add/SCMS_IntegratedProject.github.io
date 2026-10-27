@@ -243,7 +243,7 @@ def run_mission(case="centre", seed=0, t_max=180.0, verbose=True, estimator=None
         frame, t_last_frame, state = None, None, None
         while nav.state != STOP and robot.t < t_max:
             # sensors -> stand-in perception
-            obs = make_obs(*robot.read_scan(), robot.lidar.range_min, robot.lidar.range_max)
+            obs = make_obs(*robot.read_scan(), robot.lidar.range_min, robot.lidar.range_max, cfg=cfg)
             if nav.state == DOCK or estimator is not None:   # odometry alone needs the camera only to dock
                 t_frame, rgb = robot.read_image()
                 if t_frame != t_last_frame:                   # run ArUco once per NEW frame

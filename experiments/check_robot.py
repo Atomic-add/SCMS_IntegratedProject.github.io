@@ -77,9 +77,11 @@ def scan_report(robot):
     rep["valid_after_resampling"] = int(ok.sum())
     rep["range_at_deg"] = {d: (float(rho[d]) if ok[d] else None) for d in (0, 90, 180, 270)}
     # What the mission sees: the obs the navigation waits on (coverage of the +-90 deg forward half)
-    obs = make_obs(t_scan, rho, robot.lidar.range_min, robot.lidar.range_max)
+    cfg = load_control_config()
+    cfg["lidar_obs"]["min_coverage"] = robot.cfg.get("min_coverage", cfg["lidar_obs"]["min_coverage"])   # as main.py --real
+    obs = make_obs(t_scan, rho, robot.lidar.range_min, robot.lidar.range_max, cfg=cfg)
     rep["forward_coverage"] = round(float(obs["coverage"]), 3)
-    rep["min_coverage"] = load_control_config()["lidar_obs"]["min_coverage"]
+    rep["min_coverage"] = cfg["lidar_obs"]["min_coverage"]
     rep["scan_valid_for_driving"] = bool(obs["valid"])
     rep["free_ahead_m"] = round(float(obs["free_ahead"]), 3)
     return rep, scan
