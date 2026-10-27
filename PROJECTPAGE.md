@@ -2,9 +2,9 @@
 
 ## GROUP NUMBER / TEAM MEMBERS
 TEAM 12
-Addison Possamai (25840164)
-Nguyen Kim Uyen Phan (25596519)
-Nhat Thien Mai (25161391)
+- Addison Possamai (25840164)
+- Nguyen Kim Uyen Phan (25596519)
+- Nhat Thien Mai (25161391)
 
 ## TRACK
 
