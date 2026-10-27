@@ -19,10 +19,14 @@ from src.control.behaviour import AVOID, DOCK, STOP, TRACK, NavigationController
 from src.control.lqr import PathLQR, design_lqr  # noqa: E402
 from src.control.models import controllability_rank, error_model, load_control_config  # noqa: E402
 from src.control.waypoints import TURN, Segment, WaypointTracker  # noqa: E402
-from src.robot.task import load_task  # noqa: E402
+from src.robot.sim_robot import SIM_INTRINSICS  # noqa: E402
+from src.robot.task import apply_control_overrides, load_task  # noqa: E402
 from src.robot.sim_robot import MAX_V, MAX_W  # noqa: E402
 
-TASK, CFG = load_task(), load_control_config()
+TASK = load_task()
+CFG = apply_control_overrides(load_control_config(), TASK)        # as main.py: the task's own tuning
+STOP_RANGE = TASK["dock"]["stop_range_base"]                          # dock stop range from the task file
+IBVS_AT = STOP_RANGE + 0.10                                                  # a range inside ibvs_switch_range
 FAILS = []
 
 
@@ -186,30 +190,30 @@ def run_dock(ranges, feedback_v=0.0, lose_marker_after=None, steps=200, P=P_ok, 
     return d
 
 
-d = run_dock(list(np.linspace(0.70, 0.356, 60)))
-check("docking: range reaches 0.356 m, robot still -> dock_complete", d.dock_complete, f"phase {d.phase}")
-d = run_dock(list(np.linspace(0.70, 0.356, 60)), feedback_v=0.05)
+d = run_dock(list(np.linspace(STOP_RANGE + 0.35, STOP_RANGE, 60)))
+check(f"docking: range reaches {STOP_RANGE} m, robot still -> dock_complete", d.dock_complete, f"phase {d.phase}")
+d = run_dock(list(np.linspace(STOP_RANGE + 0.35, STOP_RANGE, 60)), feedback_v=0.05)
 check("docking: encoders say it is still moving -> NOT complete", not d.dock_complete and "stopped" in (d.stop_reason or ""),
       f"{d.phase}, {d.stop_reason}")
-d = run_dock(list(np.linspace(0.70, 0.356, 60)), x_off=0.05)
+d = run_dock(list(np.linspace(STOP_RANGE + 0.35, STOP_RANGE, 60)), x_off=0.05)
 check("docking: 5 cm sideways but pointing at the marker -> NOT complete (bearing alone would pass)",
       not d.dock_complete and "lateral" in (d.stop_reason or ""), f"{d.phase}, {d.stop_reason}")
-d = run_dock(list(np.linspace(0.70, 0.356, 60)), P=np.diag([0.05**2, 0.05**2, np.deg2rad(1.0)**2]))
+d = run_dock(list(np.linspace(STOP_RANGE + 0.35, STOP_RANGE, 60)), P=np.diag([0.05**2, 0.05**2, np.deg2rad(1.0)**2]))
 check("docking: estimate not confident (5 cm sd) -> NOT complete", not d.dock_complete and "confident" in (d.stop_reason or ""),
       f"{d.phase}, {d.stop_reason}")
 d = docking.DockingController.from_task(TASK, cfg=CFG)
 d.start()
-xh_stop = on_approach(0.356, point_at_marker=False)
+xh_stop = on_approach(STOP_RANGE, point_at_marker=False)
 for k in range(4):                                          # range reached, all checks true for 0.15 s only
-    d.step(xh_stop, P_ok, marker_frame(0.05 * k, 0.356), {"v": 0, "w": 0, "t": 0.05 * k}, 0.05 * k)
+    d.step(xh_stop, P_ok, marker_frame(0.05 * k, STOP_RANGE), {"v": 0, "w": 0, "t": 0.05 * k}, 0.05 * k)
 check("docking: checks true for only 0.15 s -> not complete yet (dock_hold_sec)", d.phase == docking.SETTLE, d.phase)
-d = run_dock(list(np.linspace(0.70, 0.356, 60)), lose_marker_after=20)
+d = run_dock(list(np.linspace(STOP_RANGE + 0.35, STOP_RANGE, 60)), lose_marker_after=20)
 check("docking: marker lost for good -> FAILED marker_lost (never drives in blind)",
       d.phase == docking.FAILED and d.stop_reason == "marker_lost", f"{d.phase}, {d.stop_reason}")
 d = docking.DockingController.from_task(TASK, cfg=CFG)
 d.start()
-d.step(on_approach(0.7, point_at_marker=False), P_ok, marker_frame(0.0, 0.7), {"v": 0, "w": 0, "t": 0.0}, 0.0)
-v, w = d.step(on_approach(0.7, point_at_marker=False), P_ok, None, {"v": 0, "w": 0, "t": 0.5}, 0.5)
+d.step(on_approach(STOP_RANGE + 0.35, point_at_marker=False), P_ok, marker_frame(0.0, STOP_RANGE + 0.35), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(on_approach(STOP_RANGE + 0.35, point_at_marker=False), P_ok, None, {"v": 0, "w": 0, "t": 0.5}, 0.5)
 check("docking: marker briefly missing -> no forward motion (WAIT)", v == 0.0 and d.phase == docking.WAIT)
 
 # ---------------------------------------------------------------- docking: IBVS hand-over (Week 9)
@@ -219,32 +223,33 @@ CFG_IBVS = {**CFG, "docking": {**CFG["docking"], "servo": "ibvs"}}
 
 
 K_IBVS = docking.DockingController.from_task(TASK, cfg=CFG_IBVS).K
+T_BC_SIM = vs.aruco.load_T_BC(SIM_INTRINSICS)                         # the sim camera, tilted 6.3 deg down
 
 
 def ibvs_frame(t, rng, shift_x=0.0):
     """A frame with corners and PnP pose: the marker square on at base range rng, slid shift_x along x_C."""
-    T_CM = SE3(shift_x, 0, 0) * vs.desired_pose(rng, TASK["markers"][0][2])
-    p = (vs.aruco.T_BC * T_CM).t                                # marker centre in the base frame
+    T_CM = SE3(shift_x, 0, 0) * vs.desired_pose(rng, TASK["markers"][0][2], T_BC=T_BC_SIM)
+    p = (T_BC_SIM * T_CM).t                                     # marker centre in the base frame
     z = np.array([np.hypot(p[0], p[1]), np.arctan2(p[1], p[0])])
     corners = vs.project(K_IBVS, T_CM).T                        # 4 x 2, as aruco.detect returns them
     return {"t": t, "markers": {0: {"z": z, "corners": corners, "T_CM": T_CM}}}
 
 
-xh_line = on_approach(0.50, point_at_marker=False)
+xh_line = on_approach(IBVS_AT, point_at_marker=False)
 d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
 d.start()
-v, w = d.step(xh_line, P_ok, ibvs_frame(0.0, 0.50), {"v": 0, "w": 0, "t": 0.0}, 0.0)
-v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, 0.50), {"v": 0, "w": 0, "t": 0.1}, 0.1)
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.0, IBVS_AT), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, IBVS_AT), {"v": 0, "w": 0, "t": 0.1}, 0.1)
 check("docking: below ibvs_switch_range with corners -> IBVS, drives forward, does not turn",
       d.phase == docking.IBVS and v > 0 and abs(w) < 1e-3, f"{d.phase}, v {v:.3f}, w {w:+.4f}")
 d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
 d.start()
-d.step(xh_line, P_ok, ibvs_frame(0.0, 0.50, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.0}, 0.0)
-v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, 0.50, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.1}, 0.1)
+d.step(xh_line, P_ok, ibvs_frame(0.0, IBVS_AT, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(xh_line, P_ok, ibvs_frame(0.1, IBVS_AT, shift_x=-0.03), {"v": 0, "w": 0, "t": 0.1}, 0.1)
 check("docking: IBVS turns LEFT (omega > 0) towards a marker left of the image centre", w > 0, f"w {w:+.3f}")
 d = docking.DockingController.from_task(TASK, cfg=CFG_IBVS)
 d.start()
-v, w = d.step(xh_line, P_ok, marker_frame(0.0, 0.50), {"v": 0, "w": 0, "t": 0.0}, 0.0)
+v, w = d.step(xh_line, P_ok, marker_frame(0.0, IBVS_AT), {"v": 0, "w": 0, "t": 0.0}, 0.0)
 check("docking: frame without corners -> stays on the LQR approach (no IBVS)", d.phase == docking.APPROACH, d.phase)
 
 # ---------------------------------------------------------------- avoidance on its own
