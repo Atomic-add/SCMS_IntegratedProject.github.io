@@ -23,7 +23,9 @@
     "_doc": "Overrides of config/control.json and the task file's control block, for the real robot only (main.py --real). 28 Oct: the lab lane between the panel rows is 1.05 m, not the designed 1.5 m, and the box is 10 x 10 cm. With side_margin 0.05 and clearance 0.10 the pass lane reached 0.60 m from the path and every run ended no_passage. With 0.03 and 0.05 the robot passes a centred 10 cm box 0.28 m off the path, its side 0.47 m from the path (the panels are 0.48 and 0.55 m away)",
     "avoidance": {"side_margin": 0.03, "clearance": 0.05},
     "lidar_obs": {"margin": 0.01},
-    "docking": {"v_dock": 0.05, "stop_early": 0.015},
+    "docking": {"v_dock": 0.05, "stop_early": 0.015, "marker_max_age": 0.5,
+                "dock_lateral_tol": 0.04, "dock_heading_tol_deg": 8.0},
+    "_docking_tol": "28 Oct: the lowered dock marker is found in only 20-40 % of the frames near the 0.35 m stop, so a marker frame up to 0.5 s old still counts as fresh (0.2 in control.json). The team relaxed the dock tolerances for the real robot to 4 cm sideways and 8 deg: IBVS points the robot at the marker but cannot remove a sideways offset, and runs ended at 3.0 cm / 5.6 deg",
     "_docking": "28 Oct, dock stop 0.30 m: the robot kept rolling 8 cm after the stop command (late commands over the wifi) and lost the marker at the bottom of the image. Docking at 5 cm/s and commanding the stop 1.5 cm early (inside the 2 cm range tolerance) keeps it short of that",
     "_lidar_obs": "free_ahead's margin beside the robot (0.05 in control.json). Passing the box in the 1.05 m lane leaves about 8 cm on each side; with 0.05 the too_close stop fired on 4 cm of estimate error (28 Oct, two runs stopped beside the box). 0.01 still stops for anything in front of the body"
   },

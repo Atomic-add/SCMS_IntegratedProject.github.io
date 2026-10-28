@@ -110,7 +110,7 @@
           xyaxes="0 1 0 0 0 1" material="aruco2" contype="0" conaffinity="0" group="2"/>
     <geom name="aruco_L1" type="plane" size="0.0666667 0.0666667 0.001" pos="0.001 1.75 0.145"
           xyaxes="0 1 0 0 0 1" material="aruco1" contype="0" conaffinity="0" group="2"/>
-    <geom name="dock_plate" type="box" size="0.2 0.2 0.002" pos="0.5 0.38 0.002" material="dock_plate"
+    <geom name="dock_plate" type="box" size="0.2 0.2 0.002" pos="0.5 0.35 0.002" material="dock_plate"
           contype="0" conaffinity="0" group="2"/>
 
     <!-- Printed obstacle box (0.20 x 0.20 x 0.20 m). Default: parked under the floor = "none". -->
