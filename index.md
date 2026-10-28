@@ -12,9 +12,16 @@ INSERT LINK
 ## DEMO VIDEO
 INSERT LINK
 
-## TRACK
+## TRACK & MODEL
+- This is **track A, mobile robot**. It utilises the **TurtleBot3** to navigate a room full of obstacles and fully dock at the ArUco-marked charging station
 
-## MODEL
+- The robot is equipt with a **2D LiDAR**, and a **camera**
+
+- The robot is set to do the following:
+  -- state-space model of platform
+  -- EKF fusing wheel-encoder odometry with range and bearing, or pose
+  -- measurements from the camera
+  -- state-feedback or LQR trajectory tracker
 
 ## FRAME DIAGRAM
 
@@ -26,10 +33,10 @@ INSERT LINK
 
 ## TEAM CONTRIBUTIONS
 **Addison Possamai**
-My section was the **estimation** section. I helped work on and refine it, with the help of Kim. In addition to this, I helped with creating the project page, video, and overall organisation and refinement of the repository. 
+- My section was the **estimation** section. I helped work on and refine it, with the help of Kim. In addition to this, I helped with creating the project page, video, and overall organisation and refinement of the repository. 
 
 **Nguyen Kim Uyen Phan**
-**control**
+- **control**
 
 **Nhat Thien Mai**
-**perception**
+- **perception**
