@@ -21,7 +21,9 @@
   "_min_coverage": "fraction of the forward (+-90 deg) LiDAR beams that must return before the robot moves (config/control.json lidar_obs, 0.8 in the sim). The lab panels are black foam, which the LDS-01 does not see: on 28 Oct the forward coverage was 0.55 at the stage-1 start and 0.34-0.38 at the stage-2 start (nothing from -10 to +70 deg although the left panel was 1.5 m ahead), so the mission waited at 0.8 and at 0.4. 0.2 still stops the robot when the LiDAR is blocked or broken. The LiDAR sees the white marker stands and the orange box, not the panels: the panels are kept off by the waypoints, not the LiDAR",
   "control": {
     "_doc": "Overrides of config/control.json and the task file's control block, for the real robot only (main.py --real). 28 Oct: the lab lane between the panel rows is 1.05 m, not the designed 1.5 m, and the box is 10 x 10 cm. With side_margin 0.05 and clearance 0.10 the pass lane reached 0.60 m from the path and every run ended no_passage. With 0.03 and 0.05 the robot passes a centred 10 cm box 0.28 m off the path, its side 0.47 m from the path (the panels are 0.48 and 0.55 m away)",
-    "avoidance": {"side_margin": 0.03, "clearance": 0.05}
+    "avoidance": {"side_margin": 0.03, "clearance": 0.05},
+    "lidar_obs": {"margin": 0.01},
+    "_lidar_obs": "free_ahead's margin beside the robot (0.05 in control.json). Passing the box in the 1.05 m lane leaves about 8 cm on each side; with 0.05 the too_close stop fired on 4 cm of estimate error (28 Oct, two runs stopped beside the box). 0.01 still stops for anything in front of the body"
   },
   "max_sensor_age": 1.0,
   "max_scan_silence": 3.0,
