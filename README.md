@@ -7,7 +7,7 @@
 - Nhat Thien Mai (25161391)
 
 ## GITHUB REPOSITORY
-INSERT LINK
+(https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git)
 
 ## DEMO VIDEO
 INSERT LINK
