@@ -18,10 +18,10 @@ INSERT LINK
 - The robot is equipt with a **2D LiDAR**, and a **camera**
 
 - The robot is set to do the following:
-  -- state-space model of platform
-  -- EKF fusing wheel-encoder odometry with range and bearing, or pose
-  -- measurements from the camera
-  -- state-feedback or LQR trajectory tracker
+  - state-space model of platform
+  - EKF fusing wheel-encoder odometry with range and bearing, or pose
+  -  measurements from the camera
+  -  state-feedback or LQR trajectory tracker
 
 ## FRAME DIAGRAM
 
