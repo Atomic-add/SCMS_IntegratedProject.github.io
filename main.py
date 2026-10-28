@@ -37,6 +37,7 @@ The simulated camera is the lab robot's camera as measured on 23 Oct (49.7 x 38.
 Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the run.
 """
 import argparse
+import json
 import os
 import sys
 import time
@@ -190,6 +191,12 @@ def main(argv=None):
     estimator = None if args.odometry else EKF(task["start"], marker_map=task["markers"],
                                                params=load_estimation_config(camera=intrinsics))
     from src.robot.task import apply_control_overrides
+    if real and "control" in robot.cfg:
+        # The real arena's own tuning on top of the task file's (a narrower lane than the design). Merged into the
+        # task itself, because run_mission applies the task's control block again.
+        task["control"] = apply_control_overrides(json.loads(json.dumps(task.get("control", {}))), {"control": robot.cfg["control"]})
+        shown = {k: v for k, v in robot.cfg["control"].items() if not k.startswith("_")}
+        print(f"note: real-robot control overrides {json.dumps(shown)} (config/robot_real.json)")
     cfg = apply_control_overrides(load_control_config(), task)   # a task file may tune the controller
     if args.dock:
         cfg["docking"]["servo"] = args.dock

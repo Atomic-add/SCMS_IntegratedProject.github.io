@@ -19,6 +19,10 @@
   "_v_max": "m/s and rad/s, first-run safety caps on top of the Waffle Pi limits (0.26, 1.82). Commands above a cap are scaled down together, so the turning radius v/w is kept. Raise them once the lab speed rule is known and the robot behaves",
   "min_coverage": 0.2,
   "_min_coverage": "fraction of the forward (+-90 deg) LiDAR beams that must return before the robot moves (config/control.json lidar_obs, 0.8 in the sim). The lab panels are black foam, which the LDS-01 does not see: on 28 Oct the forward coverage was 0.55 at the stage-1 start and 0.34-0.38 at the stage-2 start (nothing from -10 to +70 deg although the left panel was 1.5 m ahead), so the mission waited at 0.8 and at 0.4. 0.2 still stops the robot when the LiDAR is blocked or broken. The LiDAR sees the white marker stands and the orange box, not the panels: the panels are kept off by the waypoints, not the LiDAR",
+  "control": {
+    "_doc": "Overrides of config/control.json and the task file's control block, for the real robot only (main.py --real). 28 Oct: the lab lane between the panel rows is 1.05 m, not the designed 1.5 m, and the box is 10 x 10 cm. With side_margin 0.05 and clearance 0.10 the pass lane reached 0.60 m from the path and every run ended no_passage. With 0.03 and 0.05 the robot passes a centred 10 cm box 0.28 m off the path, its side 0.47 m from the path (the panels are 0.48 and 0.55 m away)",
+    "avoidance": {"side_margin": 0.03, "clearance": 0.05}
+  },
   "max_sensor_age": 1.0,
   "max_scan_silence": 3.0,
   "_max_scan_silence": "s without /scan before step() stops the run (max_sensor_age still applies to /joint_states). The lab wifi drops /scan for more than 1 s now and then (28 Oct, four runs ended so); the navigation already holds v = w = 0 while the scan is older than avoidance.max_scan_age (0.5 s), so waiting up to 3 s for the next scan does not drive blind",
