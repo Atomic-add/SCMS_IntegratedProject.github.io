@@ -2,21 +2,21 @@
   "_doc": "Lab track on the 10 x 4 grid of 0.5 m floor tiles (5.0 x 2.0 m; models/robotis_tb3/scene_lab.xml). World frame {W}: origin at the outer corner of the bottom-left tile, x along the 10 tiles, y along the 4 tiles (left of x), z up. The tiles x 2.0-4.0, y 0-0.5 are taken by furniture; the tiles x 4.0-5.0, y 0-0.5 are left outside. Route: start near the right end facing -x, drive the 1.5 m band past the box, turn LEFT at the far end into the bottom-left pocket and dock on its bottom panel. Every point sits on a tile centre or a tile edge so the track can be laid out by counting tiles. Walls are 57 x 20 cm panels standing with their inner face on the outline. Units m and rad. 'markers' is the EKF's known map. 'obstacles', 'outline' and 'lidar' describe the world: only src/robot/task.py and evaluation/ may read them. All marker and start numbers are the DESIGN: measure where the panels and markers really ended up and update them before a real run.",
   "scene": "models/robotis_tb3/scene_lab.xml",
   "start": [4.5, 1.25, 3.1415927],
-  "waypoints": [[4.0, 1.25], [0.5, 1.25], [0.5, 0.95]],
+  "waypoints": [[4.0, 1.25], [0.5, 1.25], [0.5, 0.65]],
   "waypoint_names": ["W1", "W2 corner (turn left)", "W3 pre-dock"],
-  "_marker_stands": "28 Oct: the printed stands hold the marker centre at 0.145 m (camera PnP at the stage-1 start: 0.143 and 0.147 m) and cannot be lowered. The camera (6.3 deg down, 38 deg tall view) then loses the marker's top edge closer than 0.45 m base-to-marker, and its white quiet zone closer than 0.55 m, so the dock stop moved from 0.356 to 0.60 m (quiet zone 23 px inside the image there) and IBVS takes over at 0.75 m instead of 0.55. W3 stays 0.35 m before the stop.",
+  "_marker_stands": "28 Oct: the printed stands hold the marker centre at 0.145 m (camera PnP at the stage-1 start: 0.143 and 0.147 m) and cannot be lowered. The camera (6.3 deg down, 38 deg tall view) then loses the marker's top edge closer than 0.45 m base-to-marker, and its white quiet zone closer than 0.55 m, so the dock stop moved from 0.356 to 0.60 m (quiet zone 23 px inside the image there) and IBVS takes over at 0.75 m instead of 0.55. W3 stays 0.35 m before the stop. Later on 28 Oct the dock marker (0) was lowered to a centre height of 0.0665 m (tape); markers 1 and 2 stay at 0.145 m. At 0.0665 m the limit is the image bottom: the stop is 0.30 m (marker rows 126-428, 50 px of quiet zone below it), IBVS from 0.47 m, W3 at (0.5, 0.65).",
   "markers": {
     "_doc": "id -> [x, y, z, theta_M]: centre of the 0.10 m marker; theta_M = world heading of its normal (z axis, out of the panel). Centres 0.10 m up (sheet 0.033-0.167 m on the 0.20 m panel): at the dock stop (0.28 m from the camera) the whole marker stays in the real camera's 38 deg vertical view even with the ~6 deg downward tilt measured on 23 Oct; at 0.12 m its top edge would leave the image. IBVS takes z from here, so z must match the panel. Landmarks 1 and 2 are on the left end panel (x = 0) at tile-row centres, 1.0 m apart and 0.5 m either side of the lane (y = 1.75: row 4; y = 0.75: row 2). Chosen by evaluation/marker_layout.py (results/marker_layout.json): with the real camera they are both in view 26 % of the run (y = 0.25 for marker 2: 14 %), and in an EKF replay (20 seeds x 2 cases) the error after the first fix is 1.12 cm rms (1.23), ANEES 4.8 (8.0) and 0.25 cm at the dock handover (0.60). Spots nearer the lane (y 1.0-1.5) are hidden by the centre box early on (whole-run error 4.0 cm instead of 3.0); a fourth marker gained under 1 mm, so none was added",
-    "0": [0.5, 0.0, 0.145, 1.5707963],
+    "0": [0.5, 0.0, 0.0665, 1.5707963],
     "1": [0.0, 1.75, 0.145, 0.0],
     "2": [0.0, 0.75, 0.145, 0.0]
   },
   "dock": {
     "_doc": "Ranges from the robot base origin (base_footprint), as aruco.measure() returns them. The dock is marker 0 on the bottom panel of the left pocket (y = 0); the robot stops facing -y with its base 0.356 m from the marker (0.28 m from the camera).",
     "marker_id": 0,
-    "stop_range_base": 0.60,
-    "stop_camera_to_marker": 0.524,
-    "goal_pose": [0.5, 0.60, -1.5707963]
+    "stop_range_base": 0.30,
+    "stop_camera_to_marker": 0.224,
+    "goal_pose": [0.5, 0.30, -1.5707963]
   },
   "obstacles": {
     "_doc": "centre [x, y] of the 0.20 x 0.20 x 0.20 m printed box, always on a tile centre in column 6 (x 2.5-3.0). centre: in the robot's lane (row 3), it must go around. left / right: in the next row (row 2 / row 4, as the robot drives -x: left = -y), beside the lane with 0.25 m to the path, so the robot should drive past WITHOUT avoiding (like the side cases of corridor.json). A box only partly in the lane with a ~0.5 m gap to a panel made the avoidance pick the tight side and stop too_close in 1 of 5 sim runs. null = no obstacle",
@@ -28,7 +28,7 @@
   "control": {
     "_doc": "Overrides of config/control.json for this track (src/robot/corridor.apply_control_overrides). clearance 0.10 m instead of 0.05: going round the 0.20 m box at 0.05 m, the robot's turn back after the offset ramp swept the box corner and stopped too_close in 3 of 10 sim runs; with 0.10 m, 20 of 20 docked. Not changed in control.json: the corridor's 1.2 m entry is too narrow for it (no_passage).",
     "avoidance": {"clearance": 0.10},
-    "docking": {"ibvs_switch_range": 0.75}
+    "docking": {"ibvs_switch_range": 0.47}
   },
   "lidar": {
     "_doc": "LDS-01 on the lab robot (check_robot.py, 23 Oct): 0.12-3.5 m, no return = 0",
