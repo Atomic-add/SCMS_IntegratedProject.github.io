@@ -32,11 +32,11 @@ The robot is set to do the following:
 ## QUANTITATIVE RESULTS
 
 ## TEAM CONTRIBUTIONS
-**Addison Possamai**
+### Addison Possamai
 My section was the **estimation** section. I helped work on and refine it, with the help of Kim. In addition to this, I helped with creating the project page, video, and overall organisation and refinement of the repository. 
 
-**Nguyen Kim Uyen Phan**
+### Nguyen Kim Uyen Phan
 **control**
 
-**Nhat Thien Mai**
+### Nhat Thien Mai 
 **perception**
