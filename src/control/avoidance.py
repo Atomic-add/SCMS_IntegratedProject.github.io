@@ -34,6 +34,20 @@ from src.control.models import TS, load_control_config  # noqa: E402
 from src.perception.lidar import ROBOT_FRONT, ROBOT_HALF_WIDTH  # noqa: E402
 
 AVOID, REJOIN, DONE, STOP = "AVOID", "REJOIN", "DONE", "STOP"
+def _ramp(f):
+    """Offset profile 0 -> 1 over the ramp, f in [0, 1]: half a cosine, so its slope is 0 at both ends.
+
+    The linear ramp stepped the reference heading by atan(d_pass / ramp_len) (25 deg for 0.28 m over 0.6 m) at
+    its start and end; the real robot answered with a +-12 deg swing and pointed back at the box (28 Oct).
+    """
+    return 0.5 * (1.0 - np.cos(np.pi * f))
+
+
+def _ramp_slope(f):
+    """d(_ramp)/df: the profile's slope per unit of f (0 at both ends, pi/2 in the middle)."""
+    return 0.5 * np.pi * np.sin(np.pi * f)
+
+
 ROBOT_REAR = 0.20     # m, base origin to the back of the Waffle Pi (about 0.28 m long, origin near the axle)
 
 
@@ -78,7 +92,7 @@ class AvoidanceController:
         there). Checking the full offset from a_from on refused to pass on 28 Oct: a wall point beside the
         robot, where it is still in its own lane, blocked the side it would only reach 0.6 m later.
         """
-        reach = np.clip((Q[0] + ROBOT_REAR - a_from) / self.p["ramp_len"], 0.0, 1.0)
+        reach = _ramp(np.clip((Q[0] + ROBOT_REAR - a_from) / self.p["ramp_len"], 0.0, 1.0))
         sel = (Q[0] >= a_from) & (Q[0] <= a_to) & (np.abs(Q[1] - d * reach) <= self.half)
         return not np.any(sel)
 
@@ -149,8 +163,8 @@ class AvoidanceController:
         if self.phase == AVOID:
             # Ramp d from 0 to d_pass over ramp_len of travel: the shifted reference is a gentle slant.
             frac = np.clip((a - self.a_start) / ramp, 0.0, 1.0)
-            self.d = frac * self.d_pass
-            slope = self.d_pass / ramp if frac < 1.0 else 0.0
+            self.d = _ramp(frac) * self.d_pass
+            slope = _ramp_slope(frac) * self.d_pass / ramp
             # Passed? The robot's REAR must be past the box's BACK face (front face a_box + box_depth;
             # the LiDAR cannot see the back, so box_depth is assumed), and the original lane must be free
             # from behind the rear to look_ahead. (Comparing with the front face only let the robot swing
@@ -159,8 +173,8 @@ class AvoidanceController:
                 self.phase, self.a_rejoin = REJOIN, a
         if self.phase == REJOIN:
             frac = np.clip((a - self.a_rejoin) / ramp, 0.0, 1.0)
-            self.d = (1.0 - frac) * self.d_pass
-            slope = -self.d_pass / ramp if frac < 1.0 else 0.0
+            self.d = (1.0 - _ramp(frac)) * self.d_pass
+            slope = -_ramp_slope(frac) * self.d_pass / ramp
             if frac >= 1.0:
                 self.phase = DONE
                 self.d = 0.0
