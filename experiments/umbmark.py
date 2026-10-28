@@ -32,6 +32,10 @@ encoder increments, so it drives exactly what the robot did (its turns stop with
 the wheel distance noise sd = k_wheel |distance per step| that src/estimation/models.Qd_wheels assumes,
 with steps of TS at this speed (Monte Carlo of the same squares). Writes results/hardware/umbmark_<time>.json
 per session; config files are NOT changed, the printout says what to change.
+
+Adapted from 41014 Week 2 B.3-B.4 (square, straight, UMBmark both ways) and Week 7 D.4 (Qd from data).
+Additions: tape readings from two chassis corners, the fit that replays the recorded encoder increments,
+k_wheel from the residual, the sim test with known wheel errors.
 """
 import argparse
 import glob

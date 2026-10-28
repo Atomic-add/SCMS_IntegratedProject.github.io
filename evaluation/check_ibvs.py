@@ -12,6 +12,9 @@ servoing on the four corners). Truth is read here only, for the final dock error
 What the robot's IBVS sees is re-measured here from the same camera frames (corners -> undistorted
 pixels -> error to p*), so the figure shows the image-plane behaviour Week 9 B1 plots: corners moving
 to p*, the error decaying, and the commands. Writes results/ibvs_docking.png and results/ibvs_docking.json.
+
+Adapted from 41014 Week 9 D2 (IBVS vs PBVS from the same start), D3 and D4 (run_unicycle_ibvs).
+Additions: Waffle Pi camera mount, random placement errors, the image-plane figure.
 """
 import argparse
 import json

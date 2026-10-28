@@ -242,6 +242,14 @@ updates gated per run). The configured R is the consistent one. R x10 has the sm
 sim odometry has the model's exact wheel radius; the real encoders over-count by about 1.3 %.
 `check_ibvs` (10 seeds each): PBVS and IBVS both dock 10 / 10, lateral +0.26 +- 0.45 cm.
 
+### Placeholders (numbers not measured yet)
+
+| Value | Where | Replaced by |
+|---|---|---|
+| `k_wheel` = 0.06 (wheel distance noise) | `config/estimation.json` | `python experiments/umbmark.py` on the lab robot |
+| `bearing_sd_deg` = 0.1 for the real camera | `config/estimation.json` | moving real runs with a tape-measured truth |
+| `pixel_noise` = 2.0 grey levels (sim camera) | `src/robot/sim_robot.py` CameraSpec | a static frame sequence from the real camera |
+
 ## 5. Repository layout
 
 ```

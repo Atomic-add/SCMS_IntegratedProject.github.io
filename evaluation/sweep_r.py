@@ -11,6 +11,9 @@ What to expect (Week 7 consistency): R too small -> P too small -> NEES above it
 starts rejecting good measurements; R too large -> NEES and NIS below their bands, the filter leans on
 odometry. Note that the simulated odometry uses the same wheel radius as the simulator, so leaning on it
 costs little here; on the real robot it will cost more.
+
+Adapted from 41014 Week 7 D.4 (tuning the 2D EKF) and Week 8 C.3 (consistency while steering).
+Additions: R x10, /10 and the measured bearing sd, 20 seeds each.
 """
 import argparse
 import json

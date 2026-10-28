@@ -12,6 +12,9 @@ What makes this "like the real robot":
   * Waffle Pi limits: 0.26 m/s, 1.82 rad/s, plus an acceleration limit (placeholder, see below)
   * the robot knows where it is ONLY from wheel-encoder odometry (4096 ticks/rev),
     like the real /joint_states; ground truth is used only to grade the odometry at the end
+
+Adapted from 41014 Week 2 B (square, diff_drive_step with the midpoint heading).
+Additions: the Waffle Pi limits and the 20 Hz command rate of the real robot.
 """
 import argparse
 import time

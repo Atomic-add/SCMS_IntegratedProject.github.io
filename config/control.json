@@ -1,12 +1,17 @@
 {
   "_doc": "Controller tuning (src/control/). Units m, s, rad unless the key says otherwise. Every value here is a design choice, not a property of the corridor: the corridor itself is in corridor.json.",
   "Ts": 0.05,
+  "_Ts": "s, control period: 20 Hz, the rate /joint_states arrives on the lab robot (check_robot.py, 23 Oct); the error model is discretised with it (Week 5 C5, models.error_model)",
   "v_nom": 0.2,
+  "_v_nom": "m/s, cruise speed: below the Waffle Pi's 0.26 m/s (ROBOTIS e-Manual); the LQR gain is designed at this speed (lqr.design_lqr). On the real robot commands are scaled down to robot_real.json v_max",
   "lqr": {
     "_doc": "Bryson's rule (Week 6): Q_ii = 1/x_i_max^2, R = 1/u_max^2, x_max = the largest error we accept in normal driving, u_max = the largest correction we want to spend on it.",
     "e_y_max": 0.05,
+    "_e_y_max": "m, Bryson x_max for the cross-track error (Week 6 C.2); why 0.05 and not 0.10: lqr.design_weights docstring",
     "e_theta_max_deg": 10.0,
-    "d_omega_max": 0.5
+    "_e_theta_max_deg": "deg, Bryson x_max for the heading error: a noticeable misalignment; larger and the camera starts to lose the markers (lqr.py)",
+    "d_omega_max": 0.5,
+    "_d_omega_max": "rad/s, Bryson u_max: the feedback correction we spend, well below the Waffle Pi's 1.82 rad/s (lqr.py)"
   },
   "lqi": {
     "_doc": "Integral action on e_y (Assessment 3 A.3). Off until the plain LQR shows a steady cross-track offset. z_max in m*s.",
@@ -36,10 +41,13 @@
     "ibvs_lambda": 0.8,
     "_ibvs_lambda": "1/s, IBVS gain: the feature error decays with a time constant of about 1/lambda = 1.25 s; lambda * camera period (67 ms) = 0.05 per frame keeps the loop far from the camera rate",
     "ibvs_w_max": 0.5,
+    "_ibvs_w_max": "rad/s, IBVS turn-rate saturation (Week 9 B3: saturate the twist, keep its direction), well below 1.82 rad/s",
     "ibvs_e_tol_px": 1.5,
     "_ibvs_e_tol_px": "px rms over the 8 corner coordinates: 1.5 px is about 4 mm of range at the stop (the marker is 189 px wide there)",
     "ibvs_v_still": 0.003,
+    "_ibvs_v_still": "m/s, see _ibvs_still",
     "ibvs_w_still": 0.01,
+    "_ibvs_w_still": "rad/s, see _ibvs_still",
     "ibvs_still_sec": 1.0,
     "_ibvs_still": "IBVS also ends when |v| and |omega| stay below these for ibvs_still_sec: the residual the base cannot remove; the SETTLE checks then decide",
     "v_dock": 0.08,
@@ -53,12 +61,15 @@
     "settle_timeout": 3.0,
     "dock_range_tol": 0.02,
     "dock_bearing_tol_deg": 3.0,
+    "_dock_bearing_tol_deg": "deg, see the docking _doc: 3 deg is about 1.9 cm sideways at the 0.356 m stop of the design",
     "dock_lateral_tol": 0.03,
     "dock_heading_tol_deg": 5.0,
     "dock_pos_sigma_max": 0.03,
     "dock_heading_sigma_max_deg": 3.0,
     "dock_linear_speed_tol": 0.005,
+    "_dock_linear_speed_tol": "m/s: encoder speed below which the robot counts as stopped, about 5 encoder ticks per 50 ms step (4096 ticks/rev, r = 33 mm)",
     "dock_angular_speed_tol": 0.02,
+    "_dock_angular_speed_tol": "rad/s: turn rate below which the robot counts as stopped (same tick resolution, over the 0.288 m track)",
     "dock_hold_sec": 0.5
   },
   "lidar_obs": {
@@ -67,10 +78,12 @@
       15,
       75
     ],
+    "_left_sector_deg": "deg in {B}: forward-left sector of the team plan's 'LiDAR output specification' (left_clear)",
     "right_sector_deg": [
       -75,
       -15
     ],
+    "_right_sector_deg": "deg in {B}: forward-right sector (right_clear), mirror of left_sector_deg",
     "margin": 0.05,
     "min_coverage": 0.8
   },

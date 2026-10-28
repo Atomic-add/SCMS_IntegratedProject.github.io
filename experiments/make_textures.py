@@ -15,6 +15,9 @@ Writes into models/robotis_tb3/assets/:
   checkerboard_9x6_25mm.png calibration board: 9 x 6 internal corners, 60 px squares + 60 px margin,
                             so the 0.30 x 0.225 m plane in scene_calib.xml has 25 mm squares. It is only seen
                             from 0.35-0.55 m, where the GPU uses the full-size or half-size copy.
+
+Adapted from 41014 Week 3 E (marker_image).
+Additions: power-of-two textures, so mipmaps keep the marker edges on texel boundaries.
 """
 import sys
 from pathlib import Path

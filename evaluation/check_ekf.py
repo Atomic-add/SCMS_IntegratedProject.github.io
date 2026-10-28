@@ -5,6 +5,9 @@
 Drives the whole mission with the controller steering on the EKF, then prints how far the estimate
 was from the simulator's truth. Truth is read here, through evaluation/ground_truth.py, and nowhere
 in src/estimation or src/control.
+
+Adapted from 41014 Week 7 C.4 (2D localisation with the EKF) and D.3 (is the filter consistent?).
+Additions: the whole mission steering on the EKF.
 """
 import sys
 from pathlib import Path

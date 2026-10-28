@@ -9,6 +9,9 @@ images; speed caps that keep the turning radius; a zero command and an exception
 sensor goes quiet or a second robot shows up. If rosbridge_api is installed, the same messages also go
 through its real decoding callbacks (the private hooks real_robot.py relies on). The exit code is the
 number of failures (0 = all passed), as in src/control/control_test.py.
+
+No tutorial counterpart (hardware adapter, checked on a fake rosbridge link).
+Additions: scan layouts, speed caps, stale sensors, second robot, Ctrl+C.
 """
 import base64
 import sys

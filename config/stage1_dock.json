@@ -2,6 +2,7 @@
   "_doc": "Real-robot stage 1: docking only. Same arena, markers and dock as arena_lab.json (extends). Put the robot 1.0 m from the dock marker's face, on (0.5, 1.0), facing -y (towards marker 0): it drives to W3 and docks. python main.py --real --task config/stage1_dock.json",
   "extends": "config/arena_lab.json",
   "start": [0.5, 1.0, -1.5707963],
+  "_start": "m and rad in {W}: where the robot is put, 1.0 m from the dock marker's face, facing it (see _doc)",
   "waypoints": [[0.5, 0.70]],
   "waypoint_names": ["W3 pre-dock"]
 }

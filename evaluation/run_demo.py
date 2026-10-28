@@ -30,6 +30,9 @@ Outputs of the single run (in results/):
   demo_<case>.png      none and centre only (left / right look the same as none), in detail: truth vs estimate, cross-track error, commands, estimate error
   demo_metrics.json    the numbers quoted in the report (success, time, errors, clearance, collisions)
   (with --ekf: demo_paths_ekf.png, demo_<case>_ekf.png, demo_metrics_ekf.json; NEES / NIS added)
+
+Adapted from 41014 Week 8 C.1-C.3 (controller on the estimate, NEES / NIS bounds) and Week 7 B.6.
+Additions: the four box cases, repeated trials, odometry vs EKF comparison.
 """
 import json
 import sys

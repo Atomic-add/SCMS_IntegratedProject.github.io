@@ -2,6 +2,9 @@
 
 This is the only package allowed to read the true robot pose. Nothing in src/estimation or
 src/control may import it.
+
+Adapted from 41014 Week 2 C (frame chains T_WB T_BS) and Week 3 A (the pinhole K from fovy).
+Additions: the simulator readers that only evaluation/ may use.
 """
 import mujoco
 import numpy as np

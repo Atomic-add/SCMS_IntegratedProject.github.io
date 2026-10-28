@@ -9,6 +9,9 @@ gives the centre height, 0.10 m above the floor).
 Every page has a 100 mm scale bar: print at 100 % / "Actual size" (not "Fit to page") and measure it.
 The squares are drawn as vector rectangles, so the PDF is exact at any printer resolution. Sizes come
 from src/perception, so the print always matches what calibrate_camera.py and aruco.measure assume.
+
+Adapted from 41014 Week 3 E (marker_image) and B (the checkerboard).
+Additions: printable pages with scale bars.
 """
 import sys
 from pathlib import Path

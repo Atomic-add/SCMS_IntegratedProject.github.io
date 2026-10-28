@@ -21,6 +21,9 @@ UNKNOWN to the robot = the world it meets. Only the simulator changes (apply_wor
 
 The robot's software never sees the unknown part: it gets `task` only. Obstacles are found with the
 LiDAR, the placement error is corrected by the EKF, the wheel error is absorbed by Qd.
+
+Adapted from 41014 Week 2 B.2 (systematic vs random wheel error) and Week 7 C.5 (a bad initial guess).
+Additions: known vs unknown randomness, the honest prior from P0, the box always inside the lane.
 """
 import numpy as np
 

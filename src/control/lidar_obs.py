@@ -15,6 +15,9 @@ src/perception/lidar.py (nothing there is changed). When Perception delivers the
 behaviour.py keep working unchanged: delete this file and pass their obs instead.
 
 Settings (sector limits, coverage, margin) are in config/control.json "lidar_obs".
+
+Adapted from 41014 Week 4 Part 5.1 (simulate_scan: beams to points) and Week 2 C (h_lidar, frames).
+Additions: the team plan's obs dict (free_ahead, left/right_clear, nearest) and the forward coverage rule.
 """
 import sys
 from pathlib import Path

@@ -11,6 +11,9 @@ Writes config/camera_sim.json and results/camera_calibration.png.
 The sim camera (MJCF camera rgb) has the lab robot's geometry, tilted 6.3 deg down. --pitch-deg is that
 tilt as built into the MJCF (default 6.3): the board is held along it, and it is stored as "T_BC" (URDF
 position, tilted) for aruco.load_T_BC, as experiments/camera_pitch.py does for the real camera.
+
+Adapted from 41014 Week 3 B (calibrating a camera with a checkerboard) and C (reprojection per image).
+Additions: the board held in the sim along the camera tilt, T_BC stored with the intrinsics.
 """
 import argparse
 import json

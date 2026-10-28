@@ -21,6 +21,10 @@ Two driving modes (a small state machine):
 
 pause() / resume() let behaviour.py hand control to avoidance or docking without the tracker
 skipping waypoints meanwhile.
+
+Adapted from 41014 Week 5 D1-D2 (unicycle error model e_y, e_theta), Week 6 C.2 (LQR, Bryson) and
+Week 1 C (closed-loop heading control, for the turn on the spot).
+Additions: segment switching, slowing before sharp corners, pause / resume for avoidance and docking.
 """
 import sys
 from dataclasses import dataclass

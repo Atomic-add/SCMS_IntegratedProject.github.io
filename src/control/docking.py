@@ -12,8 +12,8 @@ Kept deliberately small. Four ideas:
    (src/control/visual_servo.py). Saturated at v_dock and ibvs_w_max (Week 9 B3). It ends when the
    feature error is below ibvs_e_tol_px, or the commands have died out (the residual the base cannot
    remove), or the stop range is reached. servo = "pbvs" keeps idea 1 all the way to the stop.
-3. STOP on what the camera SEES: never closer than stop_range_base = 0.356 m (0.28 m from the camera,
-   which still sees ID 0 reliably; checked in the sim from 0.16 to 1.36 m, error < 1 mm).
+3. STOP on what the camera SEES: never closer than the task file's stop_range_base (0.35 m on the lab
+   track, where the lowered dock marker is still found; arena_lab.json _marker_stands).
 4. CONFIRM (team plan "Docking completion"): dock_complete when, for dock_hold_sec without a break,
    - range and bearing to ID 0 are within tolerance          (what the camera sees)
    - lateral and heading error to goal_pose are within tolerance   (lateral from _dock_pose, heading
@@ -30,6 +30,11 @@ Inputs (team interface): x_hat from the EKF (odometry until it is ready); marker
 motion_feedback {v, w, t} = speeds measured by the encoders. IBVS needs "corners" and "T_CM" (the PnP
 pose, for the corner depths); a frame without them keeps the LQR approach. Nothing here reads the
 simulator's ground truth.
+
+Adapted from 41014 Week 9 D1-D4 (PBVS with an ArUco tag, docking a unicycle, run_unicycle_ibvs) and
+Week 6 A.5 (LQR along the approach line).
+Additions: the hand-over LQR -> IBVS, the straight finish after IBVS, the camera-range stop, the SETTLE checks
+(range, bearing, lateral, heading, confidence from P, encoders still), WAIT / FAILED on a lost marker.
 """
 import sys
 from pathlib import Path

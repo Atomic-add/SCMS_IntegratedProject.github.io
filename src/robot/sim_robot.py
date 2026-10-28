@@ -12,6 +12,10 @@ The camera intrinsics are deliberately not exposed: perception uses the calibrat
 exactly as it will with the real camera (experiments/calibrate_camera.py).
 
 This class never returns the robot's pose. Ground truth is read only in evaluation/.
+
+Adapted from 41014 Week 2 A.1 (encoder model, 4096 counts per revolution), Week 4 Part 5 (raycast /
+simulate_scan) and Week 3 A (perspective projection: the camera renders, perception calibrates).
+Additions: MuJoCo physics, sensor rates (scan 5 Hz, camera 30 Hz) and noise, the SimRobot / RealRobot interface.
 """
 from dataclasses import dataclass
 from pathlib import Path

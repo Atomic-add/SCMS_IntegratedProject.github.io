@@ -35,6 +35,10 @@ The simulated camera is the lab robot's camera as measured on 23 Oct (49.7 x 38.
 30 Hz), so a sim run sees what the real camera sees.
 
 Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the run.
+
+Adapted from 41014 Week 8 C (run_landmark_lqg: LQR on the range-bearing EKF, closed loop).
+Additions: one entry point for the sim and the real robot (--real), the camera window, the run log,
+the start-pose warning and the printed docking checks.
 """
 import argparse
 import json
@@ -113,7 +117,7 @@ def camera_window(K, dist, marker_ids, dock_id=0, T_BC=None, range_correction=No
     last = {"t": None}
 
     def on_step(robot, row):
-        t_frame, rgb = robot.read_image()           # latest camera frame (15 Hz), no new render if not due
+        t_frame, rgb = robot.read_image()           # latest camera frame (30 Hz), no new render if not due
         if t_frame == last["t"]:
             return
         last["t"] = t_frame

@@ -10,6 +10,9 @@
    and the real-robot adapter checks in src/robot/real_robot_test.py (fake rosbridge link, no robot).
 
 Exit code 0 = all pass. Pure Python, so it runs the same in PowerShell and in a Linux shell.
+
+No tutorial counterpart (the team's rule check).
+Additions: the ground-truth scan of the guarded files and the unit-check runner.
 """
 import re
 import subprocess

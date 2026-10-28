@@ -5,6 +5,9 @@ Run from the project root:   python -m src.estimation.estimation_test      (or t
 Each check prints PASS or FAIL with what it tested; the exit code is the number of failures (0 = all
 passed). The checks are the team plan's list: baseline, straight and turning motion, angle wrapping,
 Jacobians, missing / unknown / repeated / old markers, the correction itself, the gate, and P's health.
+
+Adapted from 41014 Week 7 C.2 (num_jac against the analytic Jacobians) and C.3-C.4 (EKF steps).
+Additions: odometry, gating, wrap and per-camera noise loading checks.
 """
 import sys
 from pathlib import Path

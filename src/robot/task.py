@@ -3,6 +3,9 @@
 Sim side only (like SimRobot.reset): it moves the obstacle box, which the robot's software must not know
 about. The marker map and the waypoints in the same file are what the estimator and controller may use;
 they get them from load_task(), never the obstacle positions.
+
+No tutorial counterpart (project infrastructure).
+Additions: task files with 'extends', the control overrides of a task, the sim placement of the boxes.
 """
 import json
 from pathlib import Path

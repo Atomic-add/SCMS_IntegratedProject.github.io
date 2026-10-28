@@ -20,6 +20,11 @@ Phases:
 
 Points are compared in the PATH frame: along-track a and cross-track l to the active segment, computed
 with the ESTIMATED pose x_hat (never the truth). The footprint is the robot half width plus a margin.
+
+Adapted from 41014 Week 6 A.5 (LQR tracking, here of a shifted reference line) and Week 2 C.1
+(points from the sensor frame into a path frame, h_lidar / invert).
+Additions: the pass side and offset from the LiDAR, the swept-lane check with the offset ramping in, the
+half-cosine ramp (no heading step), the rejoin test behind the robot, the STOP reasons.
 """
 import sys
 from pathlib import Path

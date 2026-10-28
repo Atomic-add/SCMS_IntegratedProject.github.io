@@ -5,6 +5,9 @@
 Draws the 0.5 m tiles, the walls on the outline (with the number of 57 cm panels per edge), the start
 pose, the waypoint path, the obstacle positions, the dock goal and every marker with the direction it
 faces, all labelled with their coordinates in {W}.
+
+No tutorial counterpart (lab layout plan).
+Additions: tiles, panels, path, markers and their normals from a task file.
 """
 import json
 import math

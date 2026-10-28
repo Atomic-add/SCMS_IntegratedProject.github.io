@@ -8,6 +8,10 @@ Each trial: a different route and start spot (told to the robot), and a differen
 obstacle layout, sensor noise and wheel error (not told). Success = dock_complete AND no contact with a
 wall, a box or the dock body AND the true final pose within the dock tolerances below. Truth is read
 here only. Writes results/random_trials[_odometry].json and .png (every true path on one map).
+
+Adapted from 41014 Week 7 D.3 (consistency over many runs) and Week 8 C.2-C.3 (degraded localisation,
+is the covariance still honest while steering?).
+Additions: random lab scenarios, contacts, dock errors against the truth.
 """
 import argparse
 import json

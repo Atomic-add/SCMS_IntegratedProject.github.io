@@ -29,6 +29,10 @@ encoder angles as in 41014 Week 2 Part A WheelEncoder (the wheel angle is what t
 and L are assumed, Week 2 Part B, so they are calibrated separately); the 360-beam scan layout of
 Week 2 Part C; the speed limits of the ROBOTIS e-Manual. The rosbridge link is UTS-RI/turtlebot_rosbridge.
 Offline checks with a fake link: python -m src.robot.real_robot_test
+
+Adapted from 41014 Week 2 A (wheel angles from the encoders: /joint_states, never /odom).
+Additions: the rosbridge adapter (UTS-RI/turtlebot_rosbridge), arrival-time stamps, scan resampling, speed caps,
+and the stops on stale sensors, a lost link, a second robot or Ctrl+C.
 """
 import json
 import threading

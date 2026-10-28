@@ -5,6 +5,10 @@ Run from the project root:   python -m src.control.control_test      (or the VS 
 Each check prints PASS or FAIL with what it tested; the exit code is the number of failures (0 = all
 passed), so it can also be used before every merge. Inputs are made up on purpose (synthetic poses,
 LiDAR obs and marker frames), so each rule is tested on its own, without the physics.
+
+Adapted from 41014 Week 5 B1, C3, C5, D1 (SymPy Jacobians, controllability, c2d, rank vs speed) and
+Week 6 A.5 / C.2 (dlqr, Riccati residual, Bryson).
+Additions: transition, sensor-loss, docking and avoidance checks of the team plan's interfaces.
 """
 import sys
 from pathlib import Path

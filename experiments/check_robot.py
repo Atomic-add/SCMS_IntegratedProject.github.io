@@ -18,6 +18,9 @@ LidarSpec.sigma and dropout (Week 4 Part 5: sd from repeated returns of a static
 The drive distance is Delta s = r/2 (Delta phi_R + Delta phi_L) with the URDF r (41014 Week 2 Part B):
 the encoders do not measure r, so compare --distance runs with a tape to calibrate it (and UMBmark,
 Week 2 B.3-B.4, for the track width L).
+
+Adapted from 41014 Week 2 A (encoders) and C (the LiDAR's frame and beam layout).
+Additions: topic rates, joint names, scan layout and coverage, second-robot detection, a short drive.
 """
 import argparse
 import json

@@ -7,6 +7,9 @@
 
 Or open this file in VS Code and press Run (centre, EKF, 4x). Red dots = LiDAR, top-left = state and
 commands. Drag to rotate, scroll to zoom. Close the window to finish; the result prints here.
+
+Adapted from 41014 Week 8 B.2 / C (closed loop with the EKF, animated).
+Additions: the MuJoCo viewer at real time or faster.
 """
 import sys
 import time

@@ -30,6 +30,11 @@ Interface (team plan):  v, w, info = navigation.step(xh, P, obs, marker_frame, d
     dt               control period [s]
     motion_feedback  {"v", "w", "t"}: speeds from the encoders and the current time [s]
 Ground truth is never used here.
+
+Adapted from 41014 Week 8 C.1 and C.4 (run_landmark_lqg: the controller acts on the range-bearing EKF
+estimate, waypoints instead of a circle).
+Additions: the TRACK / AVOID / DOCK / STOP state machine, the LiDAR waits and the docking bumper, the run log and
+the on_step / setup hooks that let evaluation/ read the truth without src/ ever seeing it.
 """
 import sys
 from pathlib import Path

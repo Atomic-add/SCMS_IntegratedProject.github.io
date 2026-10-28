@@ -19,6 +19,10 @@ compares it with the true K of the MJCF camera.
 7. Planar-pose ambiguity (W3 Part E): both IPPE solutions agree on range and bearing, and the yaw
    is only wrong when it is flagged.
 8. Frame chain: the marker in the world with the full T_BC, and the cost of a wrong extrinsic.
+
+Adapted from 41014 Week 3 B-C (calibration, reprojection per image), E (ArUco pose, planar ambiguity),
+the Week 3 wrap-up law sigma_Z ~ Z^2 sigma_px / (f s), and Week 2 C.2 (a forgotten extrinsic).
+Additions: checks against the MuJoCo truth (true K, true marker pose), detection span at the dock stop.
 """
 import argparse
 import csv

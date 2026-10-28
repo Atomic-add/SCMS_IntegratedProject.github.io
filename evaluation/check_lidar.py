@@ -9,6 +9,9 @@
 3. Noise model: range residuals and the fraction of lost beams match LidarSpec.
 4. Frame chain: world points rebuilt with the true pose, and the cost of a wrong extrinsic (W2 C.2).
 5. Avoidance helpers: free distance ahead and nearest obstacle against analytic values.
+
+Adapted from 41014 Week 4 Part 5 (raycast, simulate_scan) and Week 2 C (h_lidar, invert, extrinsics).
+Additions: an independent analytic ray caster, the noise and dropout check, the avoidance helpers.
 """
 import argparse
 import sys

@@ -7,6 +7,9 @@ draws the walls, markers, start pose and obstacle boxes, and puts a dimension ar
 tile line to everything that is not on a line. Below it, numbered instructions (in Vietnamese, for the
 person laying it out) say the same in words. Both are generated from the task file, so after a marker
 moves in config/arena_lab.json the sheet follows.
+
+No tutorial counterpart (lab layout sheet).
+Additions: tile and panel coordinates for laying the track out.
 """
 import json
 import math
