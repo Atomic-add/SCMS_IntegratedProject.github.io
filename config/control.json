@@ -46,6 +46,8 @@
     "v_min_dock": 0.02,
     "slow_down_dist": 0.15,
     "stop_early": 0.003,
+    "bumper_dist": 0.05,
+    "_bumper_dist": "m: in DOCK the forward command is held at 0 while the LiDAR sees anything closer than this in front of the robot's body (free_ahead), so the robot never pushes into the dock stand or a panel",
     "marker_max_age": 0.2,
     "marker_lost_timeout": 3.0,
     "settle_timeout": 3.0,

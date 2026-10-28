@@ -19,7 +19,8 @@ Safety rules that apply everywhere:
     - While driving on the path (TRACK / AVOID), a LiDAR scan that is too old or not valid means
       "wait" (v = w = 0): missing returns do not prove the way is clear.
     - In DOCK the box-ahead trigger is off (the charger is SUPPOSED to be in front); docking stops on
-      the camera range instead, and holds when the marker is lost.
+      the camera range instead, and holds when the marker is lost. A LiDAR bumper still holds the robot
+      (v = 0) when anything is closer than docking.bumper_dist in front of its body.
     - The final command is always clipped to the Waffle Pi limits (0.26 m/s, 1.82 rad/s).
 
 Interface (team plan):  v, w, info = navigation.step(xh, P, obs, marker_frame, dt, motion_feedback)
@@ -56,6 +57,7 @@ class NavigationController:
         self.avoid = AvoidanceController(cfg=cfg)
         self.dock = DockingController.from_task(task, cfg=cfg)
         self.max_scan_age = cfg["avoidance"]["max_scan_age"]
+        self.bumper_dist = cfg["docking"].get("bumper_dist", 0.0)
         self.state, self.stop_reason = TRACK, None
 
     def _scan_ok(self, obs, t):
@@ -105,6 +107,8 @@ class NavigationController:
         # ---- DOCK: drive onto the charger; finished or failed means STOP
         if self.state == DOCK:
             v, w = self.dock.step(xh, P, marker_frame, motion_feedback, t)
+            if v > 0.0 and obs is not None and obs["free_ahead"] < self.bumper_dist:
+                v = 0.0                                             # never push into the dock stand or a panel
             if self.dock.phase == COMPLETE:
                 self._stop("docked")
             elif self.dock.phase == FAILED:
