@@ -1,6 +1,10 @@
 # Track A project page structure (final)
 
-
+## GROUP NUMBER / TEAM MEMBERS
+**TEAM 12**
+- Addison Possamai (25840164)
+- Nguyen Kim Uyen Phan (25596519)
+- Nhat Thien Mai (25161391)
 
 ## 1. Overview
 ### 1.1 Task, platform, the rule that the controller uses the estimated state only, plus repo and video links [D]
