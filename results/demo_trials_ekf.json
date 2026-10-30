@@ -6,71 +6,71 @@
       "collisions": 0,
       "failures": [],
       "time_s": {
-        "mean": 38.83,
-        "std": 0.22,
-        "worst": 39.2
+        "mean": 37.26,
+        "std": 0.28,
+        "worst": 37.7
       },
       "cross_track_rms_cm": {
-        "mean": 1.16,
-        "std": 0.16,
-        "worst": 1.44
+        "mean": 1.1,
+        "std": 0.09,
+        "worst": 1.24
       },
       "dock_lateral_err_cm": {
-        "mean": 0.43,
+        "mean": 0.42,
         "std": 0.01,
-        "worst": 0.45
+        "worst": 0.44
       },
       "dock_along_err_cm": {
-        "mean": 0.4,
-        "std": 0.0,
-        "worst": 0.4
+        "mean": 0.33,
+        "std": 0.01,
+        "worst": 0.34
       },
       "dock_heading_err_deg": {
-        "mean": -0.68,
+        "mean": -0.71,
         "std": 0.02,
-        "worst": -0.72
+        "worst": -0.74
       },
       "estimate_err_final_cm": {
-        "mean": 0.27,
+        "mean": 0.26,
         "std": 0.01,
         "worst": 0.28
       },
       "estimate_rmse_cm": {
-        "mean": 0.76,
-        "std": 0.32,
-        "worst": 1.3
+        "mean": 0.62,
+        "std": 0.21,
+        "worst": 0.98
       },
       "min_centre_to_wall_m": {
-        "mean": 0.36,
+        "mean": 0.35,
         "std": 0.0,
-        "worst": 0.36
+        "worst": 0.35
       },
       "anees": {
-        "mean": 3.23,
-        "std": 0.27,
-        "worst": 3.58
+        "mean": 2.78,
+        "std": 0.24,
+        "worst": 3.17
       },
       "mean_nis": {
-        "mean": 0.11,
-        "std": 0.03,
-        "worst": 0.19
+        "mean": 0.1,
+        "std": 0.01,
+        "worst": 0.11
       },
       "nees_inside_95": {
-        "mean": 0.95,
+        "mean": 0.89,
         "std": 0.04,
-        "worst": 0.88
+        "worst": 0.82
       },
       "nis_inside_95": {
         "mean": 0.45,
-        "std": 0.01,
-        "worst": 0.43
+        "std": 0.02,
+        "worst": 0.42
       },
       "anis": {
-        "mean": 0.11,
-        "std": 0.03,
-        "worst": 0.19
+        "mean": 0.1,
+        "std": 0.01,
+        "worst": 0.11
       },
-      "anees_inside_bounds": 3
+      "anees_inside_bounds": 4
     },
     "centre": {
       "n": 10,
@@ -78,29 +78,29 @@
       "collisions": 0,
       "failures": [],
       "time_s": {
-        "mean": 46.03,
-        "std": 0.18,
-        "worst": 46.4
+        "mean": 43.19,
+        "std": 0.11,
+        "worst": 43.3
       },
       "cross_track_rms_cm": {
-        "mean": 1.38,
+        "mean": 1.42,
         "std": 0.11,
-        "worst": 1.56
+        "worst": 1.59
       },
       "dock_lateral_err_cm": {
-        "mean": 0.43,
+        "mean": 0.44,
         "std": 0.02,
         "worst": 0.46
       },
       "dock_along_err_cm": {
-        "mean": 0.4,
+        "mean": 0.34,
         "std": 0.01,
-        "worst": 0.4
+        "worst": 0.36
       },
       "dock_heading_err_deg": {
-        "mean": -0.69,
+        "mean": -0.73,
         "std": 0.03,
-        "worst": -0.73
+        "worst": -0.77
       },
       "estimate_err_final_cm": {
         "mean": 0.27,
@@ -108,14 +108,14 @@
         "worst": 0.29
       },
       "estimate_rmse_cm": {
-        "mean": 0.77,
-        "std": 0.33,
-        "worst": 1.4
+        "mean": 0.81,
+        "std": 0.16,
+        "worst": 1.03
       },
       "min_centre_to_wall_m": {
-        "mean": 0.32,
+        "mean": 0.33,
         "std": 0.01,
-        "worst": 0.3
+        "worst": 0.32
       },
       "min_centre_to_box_m": {
         "mean": 0.31,
@@ -123,29 +123,29 @@
         "worst": 0.29
       },
       "anees": {
-        "mean": 3.47,
-        "std": 0.54,
-        "worst": 4.44
+        "mean": 3.21,
+        "std": 0.34,
+        "worst": 3.75
       },
       "mean_nis": {
-        "mean": 0.13,
-        "std": 0.03,
-        "worst": 0.18
+        "mean": 0.17,
+        "std": 0.05,
+        "worst": 0.25
       },
       "nees_inside_95": {
-        "mean": 0.96,
-        "std": 0.04,
-        "worst": 0.85
+        "mean": 0.88,
+        "std": 0.03,
+        "worst": 0.83
       },
       "nis_inside_95": {
-        "mean": 0.43,
-        "std": 0.01,
-        "worst": 0.42
+        "mean": 0.45,
+        "std": 0.04,
+        "worst": 0.37
       },
       "anis": {
-        "mean": 0.13,
-        "std": 0.03,
-        "worst": 0.18
+        "mean": 0.17,
+        "std": 0.05,
+        "worst": 0.25
       },
       "anees_inside_bounds": 2
     }
@@ -156,763 +156,29 @@
         "seed": 1,
         "success": true,
         "stop_reason": "docked",
-        "time_s": 38.6,
-        "cross_track_rms_cm": 1.02,
+        "time_s": 37.0,
+        "cross_track_rms_cm": 1.24,
         "cross_track_max_cm": 5.0,
-        "dock_lateral_err_cm": 0.42,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.66,
-        "estimate_err_final_cm": 0.25,
-        "estimate_err_max_cm": 2.14,
-        "estimate_rmse_cm": 0.53,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 2.83,
-        "anees_bounds": [
-          2.829,
-          3.176
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.884,
-        "marker_updates": 985,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.877,
-          2.127
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.438,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 2,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 39.1,
-        "cross_track_rms_cm": 1.01,
-        "cross_track_max_cm": 4.9,
         "dock_lateral_err_cm": 0.41,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.65,
-        "estimate_err_final_cm": 0.25,
-        "estimate_err_max_cm": 1.57,
-        "estimate_rmse_cm": 0.42,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 2.85,
-        "anees_bounds": [
-          2.83,
-          3.175
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.988,
-        "marker_updates": 986,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.877,
-          2.127
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.429,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 3,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 39.2,
-        "cross_track_rms_cm": 1.01,
-        "cross_track_max_cm": 5.08,
-        "dock_lateral_err_cm": 0.43,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.68,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 1.9,
-        "estimate_rmse_cm": 0.51,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 2.93,
-        "anees_bounds": [
-          2.83,
-          3.174
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.941,
-        "marker_updates": 1013,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.879,
-          2.125
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.437,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 4,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.8,
-        "cross_track_rms_cm": 1.1,
-        "cross_track_max_cm": 5.11,
-        "dock_lateral_err_cm": 0.45,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.72,
-        "estimate_err_final_cm": 0.28,
-        "estimate_err_max_cm": 1.84,
-        "estimate_rmse_cm": 0.69,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.58,
-        "anees_bounds": [
-          2.83,
-          3.175
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.947,
-        "marker_updates": 1003,
-        "anis": 0.12,
-        "anis_bounds": [
-          1.878,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.468,
-        "mean_nis": 0.12
-      },
-      {
-        "seed": 5,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.8,
-        "cross_track_rms_cm": 1.18,
-        "cross_track_max_cm": 5.15,
-        "dock_lateral_err_cm": 0.45,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.7,
-        "estimate_err_final_cm": 0.27,
-        "estimate_err_max_cm": 2.38,
-        "estimate_rmse_cm": 0.86,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.41,
-        "anees_bounds": [
-          2.83,
-          3.175
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.958,
-        "marker_updates": 975,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.876,
-          2.127
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.455,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 6,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.9,
-        "cross_track_rms_cm": 1.17,
-        "cross_track_max_cm": 5.16,
-        "dock_lateral_err_cm": 0.45,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.71,
-        "estimate_err_final_cm": 0.28,
-        "estimate_err_max_cm": 2.45,
-        "estimate_rmse_cm": 0.66,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.58,
-        "anees_bounds": [
-          2.83,
-          3.175
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.973,
-        "marker_updates": 969,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.876,
-          2.128
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.448,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 7,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.6,
-        "cross_track_rms_cm": 1.03,
-        "cross_track_max_cm": 5.05,
-        "dock_lateral_err_cm": 0.44,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.69,
-        "estimate_err_final_cm": 0.28,
-        "estimate_err_max_cm": 1.41,
-        "estimate_rmse_cm": 0.44,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.27,
-        "anees_bounds": [
-          2.829,
-          3.176
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.901,
-        "marker_updates": 979,
-        "anis": 0.11,
-        "anis_bounds": [
-          1.877,
-          2.127
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.451,
-        "mean_nis": 0.11
-      },
-      {
-        "seed": 8,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.6,
-        "cross_track_rms_cm": 1.3,
-        "cross_track_max_cm": 4.91,
-        "dock_lateral_err_cm": 0.42,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.67,
-        "estimate_err_final_cm": 0.25,
-        "estimate_err_max_cm": 2.99,
-        "estimate_rmse_cm": 1.06,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.27,
-        "anees_bounds": [
-          2.829,
-          3.176
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.949,
-        "marker_updates": 1001,
-        "anis": 0.19,
-        "anis_bounds": [
-          1.878,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.467,
-        "mean_nis": 0.19
-      },
-      {
-        "seed": 9,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 38.7,
-        "cross_track_rms_cm": 1.38,
-        "cross_track_max_cm": 5.0,
-        "dock_lateral_err_cm": 0.43,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.68,
-        "estimate_err_final_cm": 0.27,
-        "estimate_err_max_cm": 4.07,
-        "estimate_rmse_cm": 1.17,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.3,
-        "anees_bounds": [
-          2.829,
-          3.176
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.983,
-        "marker_updates": 998,
-        "anis": 0.11,
-        "anis_bounds": [
-          1.878,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.454,
-        "mean_nis": 0.11
-      },
-      {
-        "seed": 10,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 39.0,
-        "cross_track_rms_cm": 1.44,
-        "cross_track_max_cm": 4.96,
-        "dock_lateral_err_cm": 0.42,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.67,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 3.93,
-        "estimate_rmse_cm": 1.3,
-        "min_centre_to_wall_m": 0.36,
-        "collisions": [],
-        "anees": 3.25,
-        "anees_bounds": [
-          2.83,
-          3.175
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.985,
-        "marker_updates": 992,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.877,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.455,
-        "mean_nis": 0.1
-      }
-    ],
-    "centre": [
-      {
-        "seed": 1,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.0,
-        "cross_track_rms_cm": 1.28,
-        "cross_track_max_cm": 5.03,
-        "dock_lateral_err_cm": 0.42,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.66,
-        "estimate_err_final_cm": 0.25,
-        "estimate_err_max_cm": 2.14,
-        "estimate_rmse_cm": 0.61,
-        "min_centre_to_wall_m": 0.321,
-        "collisions": [],
-        "min_centre_to_box_m": 0.304,
-        "anees": 2.79,
-        "anees_bounds": [
-          2.843,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.964,
-        "marker_updates": 969,
-        "anis": 0.16,
-        "anis_bounds": [
-          1.876,
-          2.128
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.448,
-        "mean_nis": 0.16
-      },
-      {
-        "seed": 2,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 45.9,
-        "cross_track_rms_cm": 1.4,
-        "cross_track_max_cm": 5.07,
-        "dock_lateral_err_cm": 0.44,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.7,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 1.57,
-        "estimate_rmse_cm": 0.7,
-        "min_centre_to_wall_m": 0.327,
-        "collisions": [],
-        "min_centre_to_box_m": 0.3,
-        "anees": 3.56,
-        "anees_bounds": [
-          2.843,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.99,
-        "marker_updates": 992,
-        "anis": 0.11,
-        "anis_bounds": [
-          1.877,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.425,
-        "mean_nis": 0.11
-      },
-      {
-        "seed": 3,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.1,
-        "cross_track_rms_cm": 1.28,
-        "cross_track_max_cm": 4.94,
-        "dock_lateral_err_cm": 0.42,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.66,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 1.9,
-        "estimate_rmse_cm": 0.56,
-        "min_centre_to_wall_m": 0.309,
-        "collisions": [],
-        "min_centre_to_box_m": 0.314,
-        "anees": 2.83,
-        "anees_bounds": [
-          2.844,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.849,
-        "marker_updates": 955,
-        "anis": 0.13,
-        "anis_bounds": [
-          1.875,
-          2.129
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.438,
-        "mean_nis": 0.13
-      },
-      {
-        "seed": 4,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.1,
-        "cross_track_rms_cm": 1.27,
-        "cross_track_max_cm": 5.04,
-        "dock_lateral_err_cm": 0.44,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.7,
-        "estimate_err_final_cm": 0.28,
-        "estimate_err_max_cm": 1.12,
-        "estimate_rmse_cm": 0.47,
-        "min_centre_to_wall_m": 0.305,
-        "collisions": [],
-        "min_centre_to_box_m": 0.314,
-        "anees": 3.12,
-        "anees_bounds": [
-          2.844,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.969,
-        "marker_updates": 967,
-        "anis": 0.13,
-        "anis_bounds": [
-          1.876,
-          2.128
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.425,
-        "mean_nis": 0.13
-      },
-      {
-        "seed": 5,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.0,
-        "cross_track_rms_cm": 1.28,
-        "cross_track_max_cm": 5.0,
-        "dock_lateral_err_cm": 0.43,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.68,
-        "estimate_err_final_cm": 0.27,
-        "estimate_err_max_cm": 2.22,
-        "estimate_rmse_cm": 0.6,
-        "min_centre_to_wall_m": 0.311,
-        "collisions": [],
-        "min_centre_to_box_m": 0.312,
-        "anees": 3.15,
-        "anees_bounds": [
-          2.843,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.945,
-        "marker_updates": 954,
-        "anis": 0.13,
-        "anis_bounds": [
-          1.875,
-          2.129
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.444,
-        "mean_nis": 0.13
-      },
-      {
-        "seed": 6,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.0,
-        "cross_track_rms_cm": 1.51,
-        "cross_track_max_cm": 5.1,
-        "dock_lateral_err_cm": 0.46,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.73,
-        "estimate_err_final_cm": 0.29,
-        "estimate_err_max_cm": 2.45,
-        "estimate_rmse_cm": 0.79,
-        "min_centre_to_wall_m": 0.32,
-        "collisions": [],
-        "min_centre_to_box_m": 0.304,
-        "anees": 4.44,
-        "anees_bounds": [
-          2.843,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.972,
-        "marker_updates": 989,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.877,
-          2.127
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.431,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 7,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 45.8,
-        "cross_track_rms_cm": 1.4,
-        "cross_track_max_cm": 5.02,
-        "dock_lateral_err_cm": 0.46,
-        "dock_along_err_cm": 0.4,
-        "dock_heading_err_deg": -0.72,
-        "estimate_err_final_cm": 0.28,
-        "estimate_err_max_cm": 1.41,
-        "estimate_rmse_cm": 0.68,
-        "min_centre_to_wall_m": 0.327,
-        "collisions": [],
-        "min_centre_to_box_m": 0.298,
-        "anees": 4.17,
-        "anees_bounds": [
-          2.843,
-          3.161
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.951,
-        "marker_updates": 999,
-        "anis": 0.11,
-        "anis_bounds": [
-          1.878,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.42,
-        "mean_nis": 0.11
-      },
-      {
-        "seed": 8,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 45.8,
-        "cross_track_rms_cm": 1.36,
-        "cross_track_max_cm": 5.05,
-        "dock_lateral_err_cm": 0.44,
-        "dock_along_err_cm": 0.4,
+        "dock_along_err_cm": 0.33,
         "dock_heading_err_deg": -0.69,
         "estimate_err_final_cm": 0.25,
-        "estimate_err_max_cm": 1.11,
-        "estimate_rmse_cm": 0.53,
-        "min_centre_to_wall_m": 0.332,
+        "estimate_err_max_cm": 2.78,
+        "estimate_rmse_cm": 0.98,
+        "min_centre_to_wall_m": 0.353,
         "collisions": [],
-        "min_centre_to_box_m": 0.294,
-        "anees": 3.35,
+        "anees": 2.68,
         "anees_bounds": [
-          2.843,
-          3.161
+          2.826,
+          3.179
         ],
         "nees_bounds": [
           0.216,
           9.348
         ],
-        "nees_inside_95": 0.957,
-        "marker_updates": 995,
-        "anis": 0.1,
-        "anis_bounds": [
-          1.878,
-          2.126
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.43,
-        "mean_nis": 0.1
-      },
-      {
-        "seed": 9,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.4,
-        "cross_track_rms_cm": 1.56,
-        "cross_track_max_cm": 5.02,
-        "dock_lateral_err_cm": 0.43,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.67,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 4.09,
-        "estimate_rmse_cm": 1.35,
-        "min_centre_to_wall_m": 0.306,
-        "collisions": [],
-        "min_centre_to_box_m": 0.32,
-        "anees": 3.56,
-        "anees_bounds": [
-          2.844,
-          3.16
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.995,
-        "marker_updates": 953,
-        "anis": 0.18,
-        "anis_bounds": [
-          1.875,
-          2.129
-        ],
-        "nis_bounds": [
-          0.051,
-          7.378
-        ],
-        "nis_inside_95": 0.453,
-        "mean_nis": 0.18
-      },
-      {
-        "seed": 10,
-        "success": true,
-        "stop_reason": "docked",
-        "time_s": 46.2,
-        "cross_track_rms_cm": 1.48,
-        "cross_track_max_cm": 4.9,
-        "dock_lateral_err_cm": 0.41,
-        "dock_along_err_cm": 0.39,
-        "dock_heading_err_deg": -0.65,
-        "estimate_err_final_cm": 0.26,
-        "estimate_err_max_cm": 4.14,
-        "estimate_rmse_cm": 1.4,
-        "min_centre_to_wall_m": 0.313,
-        "collisions": [],
-        "min_centre_to_box_m": 0.314,
-        "anees": 3.69,
-        "anees_bounds": [
-          2.844,
-          3.16
-        ],
-        "nees_bounds": [
-          0.216,
-          9.348
-        ],
-        "nees_inside_95": 0.987,
-        "marker_updates": 937,
-        "anis": 0.11,
+        "nees_inside_95": 0.923,
+        "marker_updates": 933,
+        "anis": 0.09,
         "anis_bounds": [
           1.874,
           2.13
@@ -922,7 +188,741 @@
           7.378
         ],
         "nis_inside_95": 0.424,
+        "mean_nis": 0.09
+      },
+      {
+        "seed": 2,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.5,
+        "cross_track_rms_cm": 1.06,
+        "cross_track_max_cm": 4.9,
+        "dock_lateral_err_cm": 0.41,
+        "dock_along_err_cm": 0.32,
+        "dock_heading_err_deg": -0.68,
+        "estimate_err_final_cm": 0.25,
+        "estimate_err_max_cm": 1.77,
+        "estimate_rmse_cm": 0.51,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.43,
+        "anees_bounds": [
+          2.827,
+          3.178
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.887,
+        "marker_updates": 965,
+        "anis": 0.1,
+        "anis_bounds": [
+          1.876,
+          2.128
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.464,
+        "mean_nis": 0.1
+      },
+      {
+        "seed": 3,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.6,
+        "cross_track_rms_cm": 1.0,
+        "cross_track_max_cm": 5.08,
+        "dock_lateral_err_cm": 0.43,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -0.71,
+        "estimate_err_final_cm": 0.26,
+        "estimate_err_max_cm": 1.37,
+        "estimate_rmse_cm": 0.38,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.57,
+        "anees_bounds": [
+          2.827,
+          3.178
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.865,
+        "marker_updates": 973,
+        "anis": 0.11,
+        "anis_bounds": [
+          1.876,
+          2.128
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.466,
         "mean_nis": 0.11
+      },
+      {
+        "seed": 4,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.7,
+        "cross_track_rms_cm": 1.1,
+        "cross_track_max_cm": 4.99,
+        "dock_lateral_err_cm": 0.43,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.71,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 2.16,
+        "estimate_rmse_cm": 0.78,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 3.17,
+        "anees_bounds": [
+          2.827,
+          3.178
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.928,
+        "marker_updates": 956,
+        "anis": 0.1,
+        "anis_bounds": [
+          1.875,
+          2.129
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.476,
+        "mean_nis": 0.1
+      },
+      {
+        "seed": 5,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.0,
+        "cross_track_rms_cm": 1.02,
+        "cross_track_max_cm": 5.11,
+        "dock_lateral_err_cm": 0.44,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.73,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 1.71,
+        "estimate_rmse_cm": 0.43,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.8,
+        "anees_bounds": [
+          2.826,
+          3.18
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.825,
+        "marker_updates": 942,
+        "anis": 0.1,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.464,
+        "mean_nis": 0.1
+      },
+      {
+        "seed": 6,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.3,
+        "cross_track_rms_cm": 1.19,
+        "cross_track_max_cm": 5.17,
+        "dock_lateral_err_cm": 0.44,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.74,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 1.91,
+        "estimate_rmse_cm": 0.66,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 3.12,
+        "anees_bounds": [
+          2.826,
+          3.179
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.914,
+        "marker_updates": 944,
+        "anis": 0.09,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.445,
+        "mean_nis": 0.09
+      },
+      {
+        "seed": 7,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.0,
+        "cross_track_rms_cm": 1.1,
+        "cross_track_max_cm": 5.05,
+        "dock_lateral_err_cm": 0.43,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.72,
+        "estimate_err_final_cm": 0.27,
+        "estimate_err_max_cm": 2.0,
+        "estimate_rmse_cm": 0.67,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.93,
+        "anees_bounds": [
+          2.826,
+          3.18
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.924,
+        "marker_updates": 927,
+        "anis": 0.09,
+        "anis_bounds": [
+          1.873,
+          2.131
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.448,
+        "mean_nis": 0.09
+      },
+      {
+        "seed": 8,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.0,
+        "cross_track_rms_cm": 1.2,
+        "cross_track_max_cm": 4.93,
+        "dock_lateral_err_cm": 0.4,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -0.67,
+        "estimate_err_final_cm": 0.24,
+        "estimate_err_max_cm": 2.43,
+        "estimate_rmse_cm": 0.89,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.67,
+        "anees_bounds": [
+          2.826,
+          3.18
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.924,
+        "marker_updates": 934,
+        "anis": 0.09,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.453,
+        "mean_nis": 0.09
+      },
+      {
+        "seed": 9,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.1,
+        "cross_track_rms_cm": 1.07,
+        "cross_track_max_cm": 4.99,
+        "dock_lateral_err_cm": 0.42,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.71,
+        "estimate_err_final_cm": 0.27,
+        "estimate_err_max_cm": 1.28,
+        "estimate_rmse_cm": 0.57,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.83,
+        "anees_bounds": [
+          2.826,
+          3.179
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.864,
+        "marker_updates": 945,
+        "anis": 0.1,
+        "anis_bounds": [
+          1.875,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.436,
+        "mean_nis": 0.1
+      },
+      {
+        "seed": 10,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 37.4,
+        "cross_track_rms_cm": 0.98,
+        "cross_track_max_cm": 4.95,
+        "dock_lateral_err_cm": 0.42,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.7,
+        "estimate_err_final_cm": 0.26,
+        "estimate_err_max_cm": 1.16,
+        "estimate_rmse_cm": 0.36,
+        "min_centre_to_wall_m": 0.353,
+        "collisions": [],
+        "anees": 2.62,
+        "anees_bounds": [
+          2.827,
+          3.179
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.862,
+        "marker_updates": 964,
+        "anis": 0.11,
+        "anis_bounds": [
+          1.876,
+          2.128
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.461,
+        "mean_nis": 0.11
+      }
+    ],
+    "centre": [
+      {
+        "seed": 1,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.3,
+        "cross_track_rms_cm": 1.31,
+        "cross_track_max_cm": 5.05,
+        "dock_lateral_err_cm": 0.42,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -0.71,
+        "estimate_err_final_cm": 0.26,
+        "estimate_err_max_cm": 2.71,
+        "estimate_rmse_cm": 1.03,
+        "min_centre_to_wall_m": 0.336,
+        "collisions": [],
+        "min_centre_to_box_m": 0.306,
+        "anees": 2.95,
+        "anees_bounds": [
+          2.839,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.894,
+        "marker_updates": 931,
+        "anis": 0.14,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.45,
+        "mean_nis": 0.14
+      },
+      {
+        "seed": 2,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.3,
+        "cross_track_rms_cm": 1.4,
+        "cross_track_max_cm": 4.97,
+        "dock_lateral_err_cm": 0.42,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -0.7,
+        "estimate_err_final_cm": 0.26,
+        "estimate_err_max_cm": 2.12,
+        "estimate_rmse_cm": 0.86,
+        "min_centre_to_wall_m": 0.323,
+        "collisions": [],
+        "min_centre_to_box_m": 0.317,
+        "anees": 3.28,
+        "anees_bounds": [
+          2.839,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.856,
+        "marker_updates": 932,
+        "anis": 0.22,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.474,
+        "mean_nis": 0.22
+      },
+      {
+        "seed": 3,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.1,
+        "cross_track_rms_cm": 1.32,
+        "cross_track_max_cm": 5.0,
+        "dock_lateral_err_cm": 0.43,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.71,
+        "estimate_err_final_cm": 0.27,
+        "estimate_err_max_cm": 1.58,
+        "estimate_rmse_cm": 0.64,
+        "min_centre_to_wall_m": 0.339,
+        "collisions": [],
+        "min_centre_to_box_m": 0.3,
+        "anees": 3.11,
+        "anees_bounds": [
+          2.838,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.828,
+        "marker_updates": 952,
+        "anis": 0.19,
+        "anis_bounds": [
+          1.875,
+          2.129
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.484,
+        "mean_nis": 0.19
+      },
+      {
+        "seed": 4,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.3,
+        "cross_track_rms_cm": 1.37,
+        "cross_track_max_cm": 5.11,
+        "dock_lateral_err_cm": 0.45,
+        "dock_along_err_cm": 0.35,
+        "dock_heading_err_deg": -0.75,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 2.01,
+        "estimate_rmse_cm": 0.86,
+        "min_centre_to_wall_m": 0.324,
+        "collisions": [],
+        "min_centre_to_box_m": 0.315,
+        "anees": 3.31,
+        "anees_bounds": [
+          2.839,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.899,
+        "marker_updates": 918,
+        "anis": 0.18,
+        "anis_bounds": [
+          1.873,
+          2.131
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.478,
+        "mean_nis": 0.18
+      },
+      {
+        "seed": 5,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.1,
+        "cross_track_rms_cm": 1.55,
+        "cross_track_max_cm": 5.15,
+        "dock_lateral_err_cm": 0.46,
+        "dock_along_err_cm": 0.36,
+        "dock_heading_err_deg": -0.77,
+        "estimate_err_final_cm": 0.29,
+        "estimate_err_max_cm": 1.71,
+        "estimate_rmse_cm": 0.55,
+        "min_centre_to_wall_m": 0.328,
+        "collisions": [],
+        "min_centre_to_box_m": 0.305,
+        "anees": 3.45,
+        "anees_bounds": [
+          2.838,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.827,
+        "marker_updates": 922,
+        "anis": 0.09,
+        "anis_bounds": [
+          1.873,
+          2.131
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.371,
+        "mean_nis": 0.09
+      },
+      {
+        "seed": 6,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.3,
+        "cross_track_rms_cm": 1.55,
+        "cross_track_max_cm": 5.2,
+        "dock_lateral_err_cm": 0.46,
+        "dock_along_err_cm": 0.35,
+        "dock_heading_err_deg": -0.77,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 2.15,
+        "estimate_rmse_cm": 0.95,
+        "min_centre_to_wall_m": 0.334,
+        "collisions": [],
+        "min_centre_to_box_m": 0.305,
+        "anees": 3.29,
+        "anees_bounds": [
+          2.839,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.906,
+        "marker_updates": 944,
+        "anis": 0.16,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.49,
+        "mean_nis": 0.16
+      },
+      {
+        "seed": 7,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.2,
+        "cross_track_rms_cm": 1.39,
+        "cross_track_max_cm": 5.11,
+        "dock_lateral_err_cm": 0.44,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.74,
+        "estimate_err_final_cm": 0.28,
+        "estimate_err_max_cm": 2.0,
+        "estimate_rmse_cm": 0.83,
+        "min_centre_to_wall_m": 0.323,
+        "collisions": [],
+        "min_centre_to_box_m": 0.317,
+        "anees": 3.32,
+        "anees_bounds": [
+          2.839,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.915,
+        "marker_updates": 918,
+        "anis": 0.15,
+        "anis_bounds": [
+          1.873,
+          2.131
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.461,
+        "mean_nis": 0.15
+      },
+      {
+        "seed": 8,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.2,
+        "cross_track_rms_cm": 1.35,
+        "cross_track_max_cm": 4.99,
+        "dock_lateral_err_cm": 0.41,
+        "dock_along_err_cm": 0.33,
+        "dock_heading_err_deg": -0.69,
+        "estimate_err_final_cm": 0.25,
+        "estimate_err_max_cm": 2.89,
+        "estimate_rmse_cm": 1.02,
+        "min_centre_to_wall_m": 0.335,
+        "collisions": [],
+        "min_centre_to_box_m": 0.306,
+        "anees": 2.46,
+        "anees_bounds": [
+          2.838,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.922,
+        "marker_updates": 932,
+        "anis": 0.19,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.466,
+        "mean_nis": 0.19
+      },
+      {
+        "seed": 9,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.1,
+        "cross_track_rms_cm": 1.59,
+        "cross_track_max_cm": 5.09,
+        "dock_lateral_err_cm": 0.46,
+        "dock_along_err_cm": 0.35,
+        "dock_heading_err_deg": -0.77,
+        "estimate_err_final_cm": 0.29,
+        "estimate_err_max_cm": 1.28,
+        "estimate_rmse_cm": 0.67,
+        "min_centre_to_wall_m": 0.339,
+        "collisions": [],
+        "min_centre_to_box_m": 0.292,
+        "anees": 3.75,
+        "anees_bounds": [
+          2.838,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.874,
+        "marker_updates": 936,
+        "anis": 0.1,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.373,
+        "mean_nis": 0.1
+      },
+      {
+        "seed": 10,
+        "success": true,
+        "stop_reason": "docked",
+        "time_s": 43.0,
+        "cross_track_rms_cm": 1.32,
+        "cross_track_max_cm": 5.01,
+        "dock_lateral_err_cm": 0.43,
+        "dock_along_err_cm": 0.34,
+        "dock_heading_err_deg": -0.72,
+        "estimate_err_final_cm": 0.27,
+        "estimate_err_max_cm": 1.93,
+        "estimate_rmse_cm": 0.71,
+        "min_centre_to_wall_m": 0.342,
+        "collisions": [],
+        "min_centre_to_box_m": 0.302,
+        "anees": 3.23,
+        "anees_bounds": [
+          2.838,
+          3.166
+        ],
+        "nees_bounds": [
+          0.216,
+          9.348
+        ],
+        "nees_inside_95": 0.855,
+        "marker_updates": 939,
+        "anis": 0.25,
+        "anis_bounds": [
+          1.874,
+          2.13
+        ],
+        "nis_bounds": [
+          0.051,
+          7.378
+        ],
+        "nis_inside_95": 0.487,
+        "mean_nis": 0.25
       }
     ]
   }

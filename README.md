@@ -215,32 +215,37 @@ export MUJOCO_GL=egl __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.
 python -m evaluation.sweep_r --n 20 --workers 1
 ```
 
-Random lab scenarios (`random_trials`, seeds 1-20, 26 Oct):
+Random lab scenarios (`random_trials`, seeds 1-20, re-run 30 Oct on the current code):
 
 | Run | Docked | Contacts | Notes |
 |---|---|---|---|
-| EKF | 20 / 20 | 0 | 44.0 +- 2.3 s, dock lateral 0.26 +- 0.43 cm, yaw -0.41 +- 0.68 deg, ANEES 5.0 |
-| Odometry only | 7 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+| EKF | 19 / 20 | 0 | 40.8 +- 6.8 s, dock lateral 0.25 +- 0.40 cm, yaw -0.42 +- 0.69 deg, ANEES 3.6; seed 5 stops `too_close` at the box after 12.5 s, no contact (20 / 20 before the 28 Oct avoidance change) |
+| Odometry only | 8 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
 
-Fixed track (`run_demo`, 26 Oct; repeated trials = 10 seeds of a random true start and encoder scale error):
+Fixed track (`run_demo`, re-run 30 Oct; repeated trials = 10 seeds of a random true start and encoder scale error):
 
 | Run | none | left | centre | right |
 |---|---|---|---|---|
-| Nominal, odometry | docked 39.1 s | docked 38.9 s | docked 46.2 s | docked 39.1 s |
-| Nominal, EKF | docked 39.1 s, ANEES 3.39 | docked 38.8 s, ANEES 3.01 | docked 46.5 s, ANEES 3.04 | docked 39.1 s, ANEES 3.39 |
-| 10 trials, odometry | 9 / 10 | - | 7 / 10 | - |
-| 10 trials, EKF | 10 / 10, ANEES 3.23 | - | 10 / 10, ANEES 3.47 | - |
+| Nominal, odometry | docked 37.4 s | docked 37.2 s | docked 43.1 s | docked 37.4 s |
+| Nominal, EKF | docked 37.4 s, ANEES 2.79 | docked 37.2 s, ANEES 2.62 | docked 43.2 s, ANEES 3.66 | docked 37.4 s, ANEES 2.79 |
+| 10 trials, odometry | 9 / 10 | - | 9 / 10 | - |
+| 10 trials, EKF | 10 / 10, ANEES 2.78 | - | 10 / 10, ANEES 3.21 | - |
 
-No contact in any run. Every EKF dock ends 0.43 cm to the side and -0.7 deg off the goal, the same in
+No contact in any run. Every EKF dock ends about 0.43 cm to the side and -0.7 deg off the goal, the same in
 every trial (a systematic offset, inside the 3 cm / 5 deg tolerance). NIS stays low (ANIS 0.1) because the
 ArUco errors of consecutive frames are correlated (`evaluation/consistency_sweep.py`); NEES against the
-truth is inside its 95 % bound in 95 % of the steps.
+truth is inside its 95 % bound in 88-89 % of the steps (95-96 % before the 28 Oct changes).
 
-`sweep_r` (EKF, centre, 20 seeds per row, all docked): R x10 ANEES 1.69 (worst error 0.78 cm), R as
-configured 3.31 (2.18 cm), R with the measured bearing sd 4.14 (3.73 cm), R / 10 15.1 (6.36 cm, 6 marker
+`sweep_r` (EKF, centre, 20 seeds per row, all docked, 30 Oct): R x10 ANEES 1.47 (worst error 0.81 cm), R as
+configured 3.24 (1.80 cm), R with the measured bearing sd 6.34 (3.21 cm), R / 10 9.42 (3.06 cm, 12.7 marker
 updates gated per run). The configured R is the consistent one. R x10 has the smaller error only because the
 sim odometry has the model's exact wheel radius; the real encoders over-count by about 1.3 %.
-`check_ibvs` (10 seeds each): PBVS and IBVS both dock 10 / 10, lateral +0.26 +- 0.45 cm.
+`check_ibvs` (10 seeds each, 30 Oct): PBVS and IBVS both dock 10 / 10, lateral +0.26 +- 0.45 cm; IBVS docks in 7.1 s, PBVS in 8.25 s.
+`consistency_sweep` (40 recorded runs, 30 Oct): the configured noise gives ANEES 3.00, ANIS 0.12, 2-sigma coverage 0.979, rms 0.69 cm
+(fitted noise: ANEES 2.95, coverage 1.000, rms 0.92 cm); the config was not rewritten.
+
+All simulation numbers above were regenerated on 30 Oct on the code after the 28 Oct docking and avoidance changes (Linux, Mesa
+software rendering, `--workers 4`).
 
 ### Placeholders (numbers not measured yet)
 
