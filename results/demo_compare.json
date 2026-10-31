@@ -11,108 +11,100 @@
         ]
       ],
       "time_s": {
-        "mean": 38.82,
-        "std": 0.74,
-        "worst": 39.8
+        "mean": 37.24,
+        "std": 0.77,
+        "worst": 38.2
       },
       "cross_track_rms_cm": {
-        "mean": 3.52,
-        "std": 2.15,
+        "mean": 3.58,
+        "std": 2.16,
         "worst": 8.47
       },
       "dock_lateral_err_cm": {
-        "mean": 0.83,
-        "std": 0.4,
-        "worst": 1.59
+        "mean": 0.81,
+        "std": 0.39,
+        "worst": 1.56
       },
       "dock_along_err_cm": {
-        "mean": 0.37,
-        "std": 0.02,
-        "worst": 0.39
+        "mean": 0.31,
+        "std": 0.03,
+        "worst": 0.37
       },
       "dock_heading_err_deg": {
-        "mean": -1.31,
-        "std": 0.67,
-        "worst": -2.57
+        "mean": -1.39,
+        "std": 0.77,
+        "worst": -2.81
       },
       "estimate_err_final_cm": {
-        "mean": 7.32,
-        "std": 5.46,
-        "worst": 20.76
+        "mean": 7.34,
+        "std": 5.52,
+        "worst": 20.94
       },
       "estimate_rmse_cm": {
-        "mean": 5.47,
-        "std": 4.07,
-        "worst": 15.53
+        "mean": 5.38,
+        "std": 4.02,
+        "worst": 15.35
       },
       "min_centre_to_wall_m": {
-        "mean": 0.36,
+        "mean": 0.35,
         "std": 0.0,
-        "worst": 0.36
+        "worst": 0.35
       }
     },
     "centre": {
       "n": 10,
-      "success_rate": 0.7,
+      "success_rate": 0.9,
       "collisions": 0,
       "failures": [
-        [
-          2,
-          "not_docked: lateral, heading"
-        ],
-        [
-          6,
-          "not_docked: lateral, heading"
-        ],
         [
           8,
           "not_docked: lateral, heading"
         ]
       ],
       "time_s": {
-        "mean": 46.69,
-        "std": 0.81,
-        "worst": 47.6
+        "mean": 43.24,
+        "std": 0.7,
+        "worst": 44.2
       },
       "cross_track_rms_cm": {
-        "mean": 5.03,
-        "std": 2.64,
-        "worst": 11.02
+        "mean": 4.42,
+        "std": 2.46,
+        "worst": 9.99
       },
       "dock_lateral_err_cm": {
-        "mean": 0.69,
-        "std": 0.14,
-        "worst": 0.9
+        "mean": 0.72,
+        "std": 0.41,
+        "worst": 1.58
       },
       "dock_along_err_cm": {
-        "mean": 0.38,
-        "std": 0.0,
-        "worst": 0.39
+        "mean": 0.33,
+        "std": 0.02,
+        "worst": 0.35
       },
       "dock_heading_err_deg": {
-        "mean": -1.07,
-        "std": 0.21,
-        "worst": -1.39
+        "mean": -1.23,
+        "std": 0.78,
+        "worst": -2.83
       },
       "estimate_err_final_cm": {
-        "mean": 9.97,
-        "std": 6.21,
-        "worst": 24.48
+        "mean": 7.75,
+        "std": 5.95,
+        "worst": 22.47
       },
       "estimate_rmse_cm": {
-        "mean": 6.96,
-        "std": 4.43,
-        "worst": 17.16
+        "mean": 5.5,
+        "std": 4.17,
+        "worst": 15.75
       },
       "min_centre_to_wall_m": {
-        "mean": 0.32,
+        "mean": 0.33,
         "std": 0.01,
-        "worst": 0.31
+        "worst": 0.32
       },
       "min_centre_to_box_m": {
-        "mean": 0.3,
+        "mean": 0.29,
         "std": 0.01,
-        "worst": 0.29
+        "worst": 0.28
       }
     }
   },
@@ -123,71 +115,71 @@
       "collisions": 0,
       "failures": [],
       "time_s": {
-        "mean": 38.83,
-        "std": 0.22,
-        "worst": 39.2
+        "mean": 37.26,
+        "std": 0.28,
+        "worst": 37.7
       },
       "cross_track_rms_cm": {
-        "mean": 1.16,
-        "std": 0.16,
-        "worst": 1.44
+        "mean": 1.1,
+        "std": 0.09,
+        "worst": 1.24
       },
       "dock_lateral_err_cm": {
-        "mean": 0.43,
+        "mean": 0.42,
         "std": 0.01,
-        "worst": 0.45
+        "worst": 0.44
       },
       "dock_along_err_cm": {
-        "mean": 0.4,
-        "std": 0.0,
-        "worst": 0.4
+        "mean": 0.33,
+        "std": 0.01,
+        "worst": 0.34
       },
       "dock_heading_err_deg": {
-        "mean": -0.68,
+        "mean": -0.71,
         "std": 0.02,
-        "worst": -0.72
+        "worst": -0.74
       },
       "estimate_err_final_cm": {
-        "mean": 0.27,
+        "mean": 0.26,
         "std": 0.01,
         "worst": 0.28
       },
       "estimate_rmse_cm": {
-        "mean": 0.76,
-        "std": 0.32,
-        "worst": 1.3
+        "mean": 0.62,
+        "std": 0.21,
+        "worst": 0.98
       },
       "min_centre_to_wall_m": {
-        "mean": 0.36,
+        "mean": 0.35,
         "std": 0.0,
-        "worst": 0.36
+        "worst": 0.35
       },
       "anees": {
-        "mean": 3.23,
-        "std": 0.27,
-        "worst": 3.58
+        "mean": 2.78,
+        "std": 0.24,
+        "worst": 3.17
       },
       "mean_nis": {
-        "mean": 0.11,
-        "std": 0.03,
-        "worst": 0.19
+        "mean": 0.1,
+        "std": 0.01,
+        "worst": 0.11
       },
       "nees_inside_95": {
-        "mean": 0.95,
+        "mean": 0.89,
         "std": 0.04,
-        "worst": 0.88
+        "worst": 0.82
       },
       "nis_inside_95": {
         "mean": 0.45,
-        "std": 0.01,
-        "worst": 0.43
+        "std": 0.02,
+        "worst": 0.42
       },
       "anis": {
-        "mean": 0.11,
-        "std": 0.03,
-        "worst": 0.19
+        "mean": 0.1,
+        "std": 0.01,
+        "worst": 0.11
       },
-      "anees_inside_bounds": 3
+      "anees_inside_bounds": 4
     },
     "centre": {
       "n": 10,
@@ -195,29 +187,29 @@
       "collisions": 0,
       "failures": [],
       "time_s": {
-        "mean": 46.03,
-        "std": 0.18,
-        "worst": 46.4
+        "mean": 43.19,
+        "std": 0.11,
+        "worst": 43.3
       },
       "cross_track_rms_cm": {
-        "mean": 1.38,
+        "mean": 1.42,
         "std": 0.11,
-        "worst": 1.56
+        "worst": 1.59
       },
       "dock_lateral_err_cm": {
-        "mean": 0.43,
+        "mean": 0.44,
         "std": 0.02,
         "worst": 0.46
       },
       "dock_along_err_cm": {
-        "mean": 0.4,
+        "mean": 0.34,
         "std": 0.01,
-        "worst": 0.4
+        "worst": 0.36
       },
       "dock_heading_err_deg": {
-        "mean": -0.69,
+        "mean": -0.73,
         "std": 0.03,
-        "worst": -0.73
+        "worst": -0.77
       },
       "estimate_err_final_cm": {
         "mean": 0.27,
@@ -225,14 +217,14 @@
         "worst": 0.29
       },
       "estimate_rmse_cm": {
-        "mean": 0.77,
-        "std": 0.33,
-        "worst": 1.4
+        "mean": 0.81,
+        "std": 0.16,
+        "worst": 1.03
       },
       "min_centre_to_wall_m": {
-        "mean": 0.32,
+        "mean": 0.33,
         "std": 0.01,
-        "worst": 0.3
+        "worst": 0.32
       },
       "min_centre_to_box_m": {
         "mean": 0.31,
@@ -240,29 +232,29 @@
         "worst": 0.29
       },
       "anees": {
-        "mean": 3.47,
-        "std": 0.54,
-        "worst": 4.44
+        "mean": 3.21,
+        "std": 0.34,
+        "worst": 3.75
       },
       "mean_nis": {
-        "mean": 0.13,
-        "std": 0.03,
-        "worst": 0.18
+        "mean": 0.17,
+        "std": 0.05,
+        "worst": 0.25
       },
       "nees_inside_95": {
-        "mean": 0.96,
-        "std": 0.04,
-        "worst": 0.85
+        "mean": 0.88,
+        "std": 0.03,
+        "worst": 0.83
       },
       "nis_inside_95": {
-        "mean": 0.43,
-        "std": 0.01,
-        "worst": 0.42
+        "mean": 0.45,
+        "std": 0.04,
+        "worst": 0.37
       },
       "anis": {
-        "mean": 0.13,
-        "std": 0.03,
-        "worst": 0.18
+        "mean": 0.17,
+        "std": 0.05,
+        "worst": 0.25
       },
       "anees_inside_bounds": 2
     }
