@@ -297,9 +297,13 @@ own range and bearing to that marker).
 
 ### Placeholders (numbers not measured yet)
 
+`k_wheel` = 0.06 is no longer a placeholder: UMBmark on the lab robot (30 Oct, 0.5 m squares, 3 runs each way,
+`results/hardware/umbmark_*.json`) gives at most 0.052 (an upper bound: the tape error is in it too), so 0.06 is kept.
+The same fit gives right / left wheel 1.006 and a true track width of 292.6 mm (model 288 mm); the model
+values are kept, the EKF's marker updates correct the drift they cause.
+
 | Value | Where | Replaced by |
 |---|---|---|
-| `k_wheel` = 0.06 (wheel distance noise) | `config/estimation.json` | `python experiments/umbmark.py` on the lab robot |
 | `bearing_sd_deg` = 0.1 for the real camera | `config/estimation.json` | moving real runs with a tape-measured truth |
 | `pixel_noise` = 2.0 grey levels (sim camera) | `src/robot/sim_robot.py` CameraSpec | a static frame sequence from the real camera |
 
