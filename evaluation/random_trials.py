@@ -154,8 +154,9 @@ if __name__ == "__main__":
     plot(trials, OUT / f"random_trials{sfx}.png",
          f"{len(trials)} random scenarios on the {est.upper() if est == 'ekf' else est}: "
          f"{100 * summary['success_rate']:.0f} % success, {summary['collisions']} with contact")
+    lat, yaw = summary["dock_lateral_cm"], summary["dock_yaw_deg"]        # None when no run docked
+    dock = (f", dock lateral {lat['mean']} ± {lat['std']} cm, yaw {yaw['mean']} ± {yaw['std']} deg" if lat
+            else ", no run docked")
     print(f"\n{est}: success {100 * summary['success_rate']:.0f} % of {len(trials)}, contacts in {summary['collisions']}, "
-          f"time {summary['time_s']['mean']} ± {summary['time_s']['std']} s, dock lateral "
-          f"{summary['dock_lateral_cm']['mean']} ± {summary['dock_lateral_cm']['std']} cm, yaw "
-          f"{summary['dock_yaw_deg']['mean']} ± {summary['dock_yaw_deg']['std']} deg")
+          f"time {summary['time_s']['mean']} ± {summary['time_s']['std']} s{dock}")
     print(f"saved results/random_trials{sfx}.json and .png")
