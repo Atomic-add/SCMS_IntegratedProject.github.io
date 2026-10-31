@@ -173,6 +173,8 @@ python -m src.control.visual_servo           # Week 9 image Jacobian vs finite d
 python -m src.estimation.estimation_test     # EKF and odometry unit checks
 python -m src.control.control_test           # controller, avoidance and docking unit checks
 python -m src.robot.real_robot_test          # RealRobot on a fake rosbridge link (no robot needed)
+python -m src.estimation.observability_test # observability ranks per marker case, F_jac / H_rb vs numerical Jacobians
+python -m src.control.lqr_weights_test      # LQR at R x10, x1, /10: K vs control.dlqr, Riccati residual, |eig| < 1
 python main.py --headless                    # the lab track must dock (exit code 0)
 python main.py --headless --randomise --seed 7   # and so must a random lab scenario
 ```
@@ -199,6 +201,8 @@ python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry
 python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
 python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
 python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
+python -m evaluation.observability          # rank / Gramian per marker case, P growth with no marker, rank along the path -> results/observability.*
+python -m evaluation.sweep_lqr --n 20       # LQR weight R x10, x1, /10 on the EKF: tracking error vs effort -> results/sweep_lqr.*
 ```
 
 Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
@@ -246,6 +250,41 @@ sim odometry has the model's exact wheel radius; the real encoders over-count by
 
 All simulation numbers above were regenerated on 30 Oct on the code after the 28 Oct docking and avoidance changes (Linux, Mesa
 software rendering, `--workers 4`).
+
+`sweep_lqr` (31 Oct; EKF, case centre, seeds 1-20 with a random true start and encoder scale error; Q fixed, R = 1 / d_omega_max^2 scaled;
+every LQR in the mission changes: tracking, avoidance and the docking approach):
+
+| R | K [e_y, e_theta] | Docked | Cross-track RMS (max), true pose | RMS w | Jitter RMS (w[k]-w[k-1])/Ts | Linear peak d_omega from 20 cm |
+|---|---|---|---|---|---|---|
+| R x10 (d_omega_max 0.16 rad/s) | [3.05, 1.41] | 20 / 20 | 3.13 +- 0.11 cm (6.35) | 0.098 rad/s | 0.28 rad/s^2 | 0.61 rad/s |
+| R (config, 0.5 rad/s) | [9.16, 3.25] | 20 / 20 | 1.73 +- 0.12 cm (5.03) | 0.077 rad/s | 0.38 rad/s^2 | 1.83 rad/s |
+| R / 10 (1.58 rad/s) | [24.84, 7.78] | 20 / 20 | 1.42 +- 0.12 cm (4.87) | 0.070 rad/s | 0.57 rad/s^2 | 4.97 rad/s (above the 1.82 rad/s limit) |
+
+Only LQR tracking steps count (state TRACK with v > 0). A 10x smaller R buys 0.3 cm of tracking error for 1.5x the
+command jitter (the larger gain passes more of the EKF's estimate noise to the wheels); a 10x larger R doubles the
+tracking error. No run saturated at 1.82 rad/s, because the tracking errors stay near 1-6 cm, far below the 20 cm of the
+linear test. RMS w does not rise with the gain: the low gain leaves a larger standing error (no integral action), so it
+keeps steering against it. The slow closed-loop pole (|z| 0.965) hardly moves with R, so the settling distance from
+20 cm stays 1.15-1.21 m; R mostly moves the faster pole (|z| 0.96, 0.87, 0.64).
+
+`observability` (31 Oct; EKF's own F_jac and H_rb at (1.5, 1.25) facing the left panel, 1 s = 20 frames):
+
+| Markers in view | Rank of O, 1 frame | Rank, 1 s of driving | Best sd, weakest direction (1 s) |
+|---|---|---|---|
+| none | 0 | 0 | unobservable (P grows) |
+| one, range + bearing (still, straight or arc) | 2 | 2 | unobservable: turning the pose about the marker |
+| one, range only | 1 | 2 | unobservable |
+| markers 1 + 2 together | 3 | 3 | 1.35 cm |
+| marker 2, then marker 1 | 2 | 3 | 1.77 cm |
+
+One marker gives 2 constraints on the 3-DOF pose, and driving does not add the third: odometry measures motion in the
+robot's own frame, so the whole run turned about the marker gives the same ranges and bearings. A second marker, at the
+same time or later, does. With no marker (predict only at 0.2 m/s, from the P the EKF reaches with markers 1 + 2) the
+3-sigma position bound passes the 3 cm dock tolerance after 3.5 s (0.7 m) and the heading bound passes 5 deg after
+4.9 s; the sd itself exceeds the 3 cm docking gate on P after 7.3 s. Along the recorded lab paths (25 Oct, marker_layout.py) the
+pose is observable within the next 1 s in 34 % (none) and 33 % (centre) of the frames; no marker is in view in 29 % /
+33 % of them; on the final approach only the dock marker is in view, so rank 2 there (docking steers on the camera's
+own range and bearing to that marker).
 
 ### Placeholders (numbers not measured yet)
 

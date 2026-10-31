@@ -7,7 +7,9 @@
    looks like truth code to a reader, so it has to go.
 2. The unit checks pass: src/estimation/estimation_test.py, src/control/control_test.py, the
    visual-servoing checks in src/control/visual_servo.py (Week 9 Jacobian against finite differences)
-   and the real-robot adapter checks in src/robot/real_robot_test.py (fake rosbridge link, no robot).
+   the real-robot adapter checks in src/robot/real_robot_test.py (fake rosbridge link, no robot), the
+   observability ranks in src/estimation/observability_test.py and the LQR at the sweep weights in
+   src/control/lqr_weights_test.py (K against control.dlqr).
 
 Exit code 0 = all pass. Pure Python, so it runs the same in PowerShell and in a Linux shell.
 
@@ -61,7 +63,7 @@ if __name__ == "__main__":
     else:
         print("[PASS] no ground truth in src/estimation, src/control, src/perception, real_robot.py or main.py")
     for module in ("src.estimation.estimation_test", "src.control.control_test", "src.control.visual_servo",
-                   "src.robot.real_robot_test"):
+                   "src.robot.real_robot_test", "src.estimation.observability_test", "src.control.lqr_weights_test"):
         passed, last = run(module)
         ok &= passed
         print(f"[{'PASS' if passed else 'FAIL'}] {module}: {last}")
