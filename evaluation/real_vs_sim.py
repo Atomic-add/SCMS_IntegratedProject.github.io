@@ -2,6 +2,7 @@
 
     python -m evaluation.real_vs_sim                 # one sim run per real run (middle 3, the others 1)
     python -m evaluation.real_vs_sim --n 5           # 5 seeds per condition, to see the sim spread
+    python -m evaluation.real_vs_sim --view middle --seed 2   # watch one twin in the MuJoCo viewer (no files written)
 
 The real runs (30 Oct, lab track, 20 cm box) are in results/hardware/final_pose_tape_30oct.csv, one row per
 docked run: the box centre, how far the robot was turned off the start mark, and four tape readings at the end
@@ -82,7 +83,7 @@ def real_control_cfg():
     return apply_control_overrides(copy.deepcopy(load_control_config()), {"control": real["control"]})
 
 
-def one_run(job):
+def one_run(job, view=False):
     """One sim twin run: box, hidden start rotation, small placement / encoder errors; returns the end pose."""
     cond, box, yaw_off_deg, seed = job
     task = load_task()
@@ -107,8 +108,8 @@ def one_run(job):
         rows.append((np.asarray(true_pose(robot), float), contacts(robot)))
 
     est = EKF(task["start"], marker_map=task["markers"])
-    info, t_end = run_mission("none", seed=seed, verbose=False, estimator=est, on_step=on_step, setup=setup,
-                              task=task, cfg=real_control_cfg())
+    info, t_end = run_mission("none", seed=seed, verbose=view, estimator=est, on_step=on_step, setup=setup,
+                              task=task, cfg=real_control_cfg(), view=view, label=f"{cond} twin, seed {seed}")
     truth = np.array([r[0] for r in rows])
     gx, gy, gth = task["dock"]["goal_pose"]
     x, y, th = truth[-1]
@@ -173,8 +174,17 @@ if __name__ == "__main__":
                     help="sim seeds per condition (default: as many as real runs of that condition)")
     ap.add_argument("--workers", type=int, default=DEFAULT_WORKERS,
                     help=f"sim runs in parallel (default {DEFAULT_WORKERS}; each renders the camera)")
+    ap.add_argument("--view", metavar="CONDITION", help="watch one twin (middle / left / right) in the viewer")
+    ap.add_argument("--seed", type=int, default=1, help="seed for --view (default 1)")
     args = ap.parse_args()
     real = read_tape()
+    if args.view:
+        r = next(r for r in real if r["condition"] == args.view)
+        s = one_run((args.view, r["box"], r["start_yaw_offset_deg"], args.seed), view=True)
+        print(f"{s['stop_reason']} after {s['time_s']} s: along {s['along_cm']} cm, lat {s['lat_cm']:+} cm, "
+              f"yaw {s['yaw_deg']:+} deg (real {args.view}: along {r['along_cm']} cm, lat {r['lat_cm']:+} cm, "
+              f"yaw {r['yaw_deg']:+} deg)")
+        sys.exit(0)
     conds = {r["condition"]: (r["box"], r["start_yaw_offset_deg"]) for r in real}
     n_real = {c: sum(r["condition"] == c for r in real) for c in conds}
     jobs = [(c, box, yaw, seed) for c, (box, yaw) in conds.items() for seed in range(1, (args.n or n_real[c]) + 1)]

@@ -295,6 +295,17 @@ pose is observable within the next 1 s in 34 % (none) and 33 % (centre) of the f
 33 % of them; on the final approach only the dock marker is in view, so rank 2 there (docking steers on the camera's
 own range and bearing to that marker).
 
+### Known limitations
+
+- **Pass side around a box.** `avoidance.py` prefers the side with the larger nearest LiDAR return in the
+  15-75 deg sectors (`left_clear` / `right_clear`). When avoidance triggers, the box (about 1 m ahead) is inside
+  +-15 deg, so both sectors see only the corridor panels: 0.76 m vs 0.77 m for a box 15 cm to the left, 15 cm to
+  the right or in the middle of the lane (sim, robot at x = 3.7). The side is then set by about 1 cm of noise,
+  not by the gap beside the box, and a box shifted 15 cm to one side is sometimes passed on its narrow side
+  (still safe: about 0.5 m to the panel, and the swept-lane check refuses a side without room). Fix, not made
+  because the real-robot results were taken with the current code: prefer the side with the smaller required
+  offset |d| (`d_left`, `d_right` from the box edges) and keep the sector clearances as the tie-break.
+
 ### Placeholders (numbers not measured yet)
 
 | Value | Where | Replaced by |
