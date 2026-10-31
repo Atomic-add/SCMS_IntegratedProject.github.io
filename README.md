@@ -158,6 +158,15 @@ python experiments/umbmark.py --cw --runs 5        # right turns; then --ccw --r
 python experiments/umbmark.py --analyse 'results/hardware/umbmark_*.json'
 ```
 
+Sim vs real (30 Oct): the docked pose of five real runs, taped at both wheels
+(`results/hardware/final_pose_tape_30oct.csv`), against the same runs in the sim with the real control
+overrides. Lateral error agrees within 0.6 cm and heading within 0.2 deg on average; the real robot stops
+1.2 cm closer to the marker (its coast after the stop command, which `stop_early` compensates).
+
+```bash
+python -m evaluation.real_vs_sim      # -> results/real_vs_sim.png / .json
+```
+
 `--real` requires `--task`, caps the speed at `v_max` / `w_max` from `config/robot_real.json`, stops the
 robot when `/joint_states` or `/scan` goes quiet, when the link drops, on Ctrl+C, or when a second robot
 publishes on the same topics, and saves the run to `results/hardware/run_<time>.npz` (estimate, P,

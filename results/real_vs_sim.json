@@ -1,0 +1,277 @@
+{
+ "tape": "results/hardware/final_pose_tape_30oct.csv",
+ "seeds": {
+  "middle": [
+   1,
+   2,
+   3
+  ],
+  "left": [
+   1
+  ],
+  "right": [
+   1
+  ]
+ },
+ "summary": {
+  "middle": {
+   "box": [
+    2.75,
+    1.25
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "real": {
+    "n": 3,
+    "along_cm": {
+     "mean": 35.5,
+     "std": 0.2
+    },
+    "lat_cm": {
+     "mean": 0.73,
+     "std": 0.18
+    },
+    "yaw_deg": {
+     "mean": 0.02,
+     "std": 0.86
+    }
+   },
+   "sim": {
+    "n": 3,
+    "docked": 3,
+    "stops": {
+     "docked": 3
+    },
+    "along_cm": {
+     "mean": 36.56,
+     "std": 0.02
+    },
+    "lat_cm": {
+     "mean": 0.48,
+     "std": 0.0
+    },
+    "yaw_deg": {
+     "mean": -0.8,
+     "std": 0.01
+    },
+    "time_s": {
+     "mean": 44.9,
+     "std": 0.0
+    }
+   }
+  },
+  "left": {
+   "box": [
+    2.75,
+    1.1
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "real": {
+    "n": 1,
+    "along_cm": {
+     "mean": 35.0,
+     "std": 0.0
+    },
+    "lat_cm": {
+     "mean": -0.1,
+     "std": 0.0
+    },
+    "yaw_deg": {
+     "mean": -2.22,
+     "std": 0.0
+    }
+   },
+   "sim": {
+    "n": 1,
+    "docked": 1,
+    "stops": {
+     "docked": 1
+    },
+    "along_cm": {
+     "mean": 36.51,
+     "std": 0.0
+    },
+    "lat_cm": {
+     "mean": 0.45,
+     "std": 0.0
+    },
+    "yaw_deg": {
+     "mean": -0.75,
+     "std": 0.0
+    },
+    "time_s": {
+     "mean": 43.9,
+     "std": 0.0
+    }
+   }
+  },
+  "right": {
+   "box": [
+    2.75,
+    1.4
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "real": {
+    "n": 1,
+    "along_cm": {
+     "mean": 35.25,
+     "std": 0.0
+    },
+    "lat_cm": {
+     "mean": 0.5,
+     "std": 0.0
+    },
+    "yaw_deg": {
+     "mean": -1.06,
+     "std": 0.0
+    }
+   },
+   "sim": {
+    "n": 1,
+    "docked": 1,
+    "stops": {
+     "docked": 1
+    },
+    "along_cm": {
+     "mean": 36.56,
+     "std": 0.0
+    },
+    "lat_cm": {
+     "mean": 0.48,
+     "std": 0.0
+    },
+    "yaw_deg": {
+     "mean": -0.8,
+     "std": 0.0
+    },
+    "time_s": {
+     "mean": 45.7,
+     "std": 0.0
+    }
+   }
+  }
+ },
+ "real": [
+  {
+   "name": "Middle First Trial",
+   "condition": "middle",
+   "box": [
+    2.75,
+    1.25
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "along_cm": 35.75,
+   "lat_cm": 0.75,
+   "yaw_deg": 1.08
+  },
+  {
+   "name": "Middle Second Trial",
+   "condition": "middle",
+   "box": [
+    2.75,
+    1.25
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "along_cm": 35.25,
+   "lat_cm": 0.95,
+   "yaw_deg": -1.03
+  },
+  {
+   "name": "Middle Third Trial",
+   "condition": "middle",
+   "box": [
+    2.75,
+    1.25
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "along_cm": 35.5,
+   "lat_cm": 0.5,
+   "yaw_deg": 0.0
+  },
+  {
+   "name": "Left",
+   "condition": "left",
+   "box": [
+    2.75,
+    1.1
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "along_cm": 35.0,
+   "lat_cm": -0.1,
+   "yaw_deg": -2.22
+  },
+  {
+   "name": "Right",
+   "condition": "right",
+   "box": [
+    2.75,
+    1.4
+   ],
+   "start_yaw_offset_deg": 0.0,
+   "along_cm": 35.25,
+   "lat_cm": 0.5,
+   "yaw_deg": -1.06
+  }
+ ],
+ "sim": [
+  {
+   "condition": "left",
+   "seed": 1,
+   "docked": true,
+   "stop_reason": "docked",
+   "time_s": 43.9,
+   "collisions": [],
+   "along_cm": 36.51,
+   "lat_cm": 0.45,
+   "yaw_deg": -0.75,
+   "pass_y_m": 1.494
+  },
+  {
+   "condition": "middle",
+   "seed": 1,
+   "docked": true,
+   "stop_reason": "docked",
+   "time_s": 44.9,
+   "collisions": [],
+   "along_cm": 36.57,
+   "lat_cm": 0.47,
+   "yaw_deg": -0.79,
+   "pass_y_m": 1.642
+  },
+  {
+   "condition": "middle",
+   "seed": 2,
+   "docked": true,
+   "stop_reason": "docked",
+   "time_s": 44.9,
+   "collisions": [],
+   "along_cm": 36.58,
+   "lat_cm": 0.48,
+   "yaw_deg": -0.79,
+   "pass_y_m": 1.648
+  },
+  {
+   "condition": "middle",
+   "seed": 3,
+   "docked": true,
+   "stop_reason": "docked",
+   "time_s": 44.9,
+   "collisions": [],
+   "along_cm": 36.53,
+   "lat_cm": 0.48,
+   "yaw_deg": -0.81,
+   "pass_y_m": 0.863
+  },
+  {
+   "condition": "right",
+   "seed": 1,
+   "docked": true,
+   "stop_reason": "docked",
+   "time_s": 45.7,
+   "collisions": [],
+   "along_cm": 36.56,
+   "lat_cm": 0.48,
+   "yaw_deg": -0.8,
+   "pass_y_m": 1.73
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+name,condition,box_x,box_y,start_yaw_offset_deg,dP_cm,dT_cm,sP_cm,sT_cm
+Middle First Trial,middle,2.75,1.25,0,35.5,36,12.5,14
+Middle Second Trial,middle,2.75,1.25,0,35.5,35,13,14.9
+Middle Third Trial,middle,2.75,1.25,0,35.5,35.5,13,14
+Left,left,2.75,1.1,0,35.5,34.5,13,12.8
+Right,right,2.75,1.4,0,35.5,35,13,14
