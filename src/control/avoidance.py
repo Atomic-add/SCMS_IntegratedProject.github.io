@@ -10,9 +10,11 @@ same LQR tracks the shifted line:
 Phases:
   (TRACK)  behaviour.py asks blocked(obs, ...) every step; when the box is in the swept corridor ahead
            and before the next waypoint, it pauses waypoints.py and calls start().
-  AVOID    choose the side (wider of left_clear / right_clear first, the other one if the first has no
-           room), check the shifted lane is free for the robot's footprint, then ramp d from 0 to the
-           pass offset over ramp_len metres of travel, and hold it while passing.
+  AVOID    choose the side: the one the box sticks out less to (the smaller offset |d|) first; when both
+           need about the same offset (a box in the middle of the lane), the wider of left_clear /
+           right_clear; the other side if the first has no room. Check the shifted lane is free for the
+           robot's footprint, then ramp d from 0 to the pass offset over ramp_len metres of travel, and
+           hold it while passing.
   REJOIN   once the LiDAR shows the original lane free beside and behind the robot, ramp d back to 0
            over ramp_len (smooth, no jerk), then DONE: behaviour.py resumes waypoints.py.
   STOP     no side has room, or the scan is invalid / too old (missing returns do not prove clearance),
@@ -23,7 +25,7 @@ with the ESTIMATED pose x_hat (never the truth). The footprint is the robot half
 
 Adapted from 41014 Week 6 A.5 (LQR tracking, here of a shifted reference line) and Week 2 C.1
 (points from the sensor frame into a path frame, h_lidar / invert).
-Additions: the pass side and offset from the LiDAR, the swept-lane check with the offset ramping in, the
+Additions: the pass side (smaller offset, then sector clearance) and offset from the LiDAR, the swept-lane check with the offset ramping in, the
 half-cosine ramp (no heading step), the rejoin test behind the robot, the STOP reasons.
 """
 import sys
@@ -133,9 +135,17 @@ class AvoidanceController:
         # Offsets that put the robot's lane just beside the box, plus clearance.
         d_left = l_max + self.half + self.p["clearance"]
         d_right = l_min - self.half - self.p["clearance"]
-        # Prefer the side the LiDAR says is wider (nan = no return = unknown, treated as not wider).
+        # Prefer the side the box sticks out less to: the smaller sideways shift. left_clear / right_clear
+        # alone cannot tell: when avoidance triggers, the box is about 1 m ahead, inside +-15 deg, so both
+        # sectors see only the corridor walls (0.76 vs 0.77 m for a box 15 cm left, right or centred).
+        # When both shifts are about equal (a centred box), the side the LiDAR says is wider breaks the tie
+        # (nan = no return = unknown, treated as not wider).
         lc, rc = obs["left_clear"], obs["right_clear"]
-        order = [d_left, d_right] if np.nan_to_num(lc, nan=0.0) >= np.nan_to_num(rc, nan=0.0) else [d_right, d_left]
+        excess = abs(d_left) - abs(d_right)                    # > 0: the left pass needs the bigger shift
+        if abs(excess) > self.p["side_tie"]:
+            order = [d_left, d_right] if excess < 0 else [d_right, d_left]
+        else:
+            order = [d_left, d_right] if np.nan_to_num(lc, nan=0.0) >= np.nan_to_num(rc, nan=0.0) else [d_right, d_left]
 
         for d in order:
             # The shifted lane must be free from here to past the box, for the robot's full footprint,

@@ -228,12 +228,12 @@ export MUJOCO_GL=egl __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.
 python -m evaluation.sweep_r --n 20 --workers 1
 ```
 
-Random lab scenarios (`random_trials`, seeds 1-20, re-run 30 Oct on the current code):
+Random lab scenarios (`random_trials`, seeds 1-20, re-run 31 Oct after the pass-side change):
 
 | Run | Docked | Contacts | Notes |
 |---|---|---|---|
-| EKF | 19 / 20 | 0 | 40.8 +- 6.8 s, dock lateral 0.25 +- 0.40 cm, yaw -0.42 +- 0.69 deg, ANEES 3.6; seed 5 stops `too_close` at the box after 12.5 s, no contact (20 / 20 before the 28 Oct avoidance change) |
-| Odometry only | 8 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+| EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
+| Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
 
 Fixed track (`run_demo`, re-run 30 Oct; repeated trials = 10 seeds of a random true start and encoder scale error):
 
@@ -294,17 +294,6 @@ same time or later, does. With no marker (predict only at 0.2 m/s, from the P th
 pose is observable within the next 1 s in 34 % (none) and 33 % (centre) of the frames; no marker is in view in 29 % /
 33 % of them; on the final approach only the dock marker is in view, so rank 2 there (docking steers on the camera's
 own range and bearing to that marker).
-
-### Known limitations
-
-- **Pass side around a box.** `avoidance.py` prefers the side with the larger nearest LiDAR return in the
-  15-75 deg sectors (`left_clear` / `right_clear`). When avoidance triggers, the box (about 1 m ahead) is inside
-  +-15 deg, so both sectors see only the corridor panels: 0.76 m vs 0.77 m for a box 15 cm to the left, 15 cm to
-  the right or in the middle of the lane (sim, robot at x = 3.7). The side is then set by about 1 cm of noise,
-  not by the gap beside the box, and a box shifted 15 cm to one side is sometimes passed on its narrow side
-  (still safe: about 0.5 m to the panel, and the swept-lane check refuses a side without room). Fix, not made
-  because the real-robot results were taken with the current code: prefer the side with the smaller required
-  offset |d| (`d_left`, `d_right` from the box edges) and keep the sector clearances as the tie-break.
 
 ### Placeholders (numbers not measured yet)
 

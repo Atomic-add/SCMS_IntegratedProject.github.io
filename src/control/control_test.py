@@ -262,5 +262,25 @@ ok = a.start(box_obs(), np.array([0.0, 0.0, 0.0]), Segment([0, 0], [3, 0]))
 check("avoidance: picks a side with room and an offset that clears the box",
       ok and a.phase == avoidance.AVOID and abs(a.d_pass) >= 0.2 + 0.15, f"offset {getattr(a, 'd_pass', None)}")
 
+
+def shifted_box_obs(centre_l, walls=0.75):
+    """box_obs with the 0.3 m box centred centre_l [m] to the left (+) / right (-) of the lane; equal walls."""
+    o = box_obs(walls=walls)
+    o["points_B"][1, :7] = np.linspace(centre_l - 0.15, centre_l + 0.15, 7)
+    return o
+
+
+for centre_l, want, why in [(-0.15, +1, "box shifted right -> passes LEFT, the side it sticks out less to"),
+                            (+0.15, -1, "box shifted left -> passes RIGHT, the side it sticks out less to")]:
+    a = avoidance.AvoidanceController(cfg=CFG)
+    ok = a.start(shifted_box_obs(centre_l), np.array([0.0, 0.0, 0.0]), Segment([0, 0], [3, 0]))
+    check(f"avoidance: {why}", ok and np.sign(a.d_pass) == want, f"offset {getattr(a, 'd_pass', None)}")
+o = shifted_box_obs(0.0)
+o["right_clear"] = 0.9                                         # centred box: the wider side breaks the tie
+a = avoidance.AvoidanceController(cfg=CFG)
+ok = a.start(o, np.array([0.0, 0.0, 0.0]), Segment([0, 0], [3, 0]))
+check("avoidance: centred box -> the wider side (right_clear > left_clear) breaks the tie",
+      ok and a.d_pass < 0, f"offset {getattr(a, 'd_pass', None)}")
+
 print(f"\n{len(FAILS)} failed" + (": " + ", ".join(FAILS) if FAILS else " - all checks passed"))
 sys.exit(len(FAILS))

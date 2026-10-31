@@ -132,19 +132,19 @@
      "docked": 1
     },
     "along_cm": {
-     "mean": 36.56,
+     "mean": 36.57,
      "std": 0.0
     },
     "lat_cm": {
-     "mean": 0.48,
+     "mean": 0.43,
      "std": 0.0
     },
     "yaw_deg": {
-     "mean": -0.8,
+     "mean": -0.72,
      "std": 0.0
     },
     "time_s": {
-     "mean": 45.7,
+     "mean": 43.8,
      "std": 0.0
     }
    }
@@ -266,12 +266,12 @@
    "seed": 1,
    "docked": true,
    "stop_reason": "docked",
-   "time_s": 45.7,
+   "time_s": 43.8,
    "collisions": [],
-   "along_cm": 36.56,
-   "lat_cm": 0.48,
-   "yaw_deg": -0.8,
-   "pass_y_m": 1.73
+   "along_cm": 36.57,
+   "lat_cm": 0.43,
+   "yaw_deg": -0.72,
+   "pass_y_m": 1.014
   }
  ]
 }
