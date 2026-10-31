@@ -6,7 +6,8 @@
 
 The real runs (30 Oct, lab track, 20 cm box) are in results/hardware/final_pose_tape_30oct.csv, one row per
 docked run: the box centre, how far the robot was turned off the start mark, and four tape readings at the end
-(the two wheels, P = right, T = left; the robot faces the dock marker, i.e. -y):
+(the two wheels, P = right, T = left; the robot faces the dock marker, i.e. -y), and the run's log in
+results/hardware (run_log):
     dP, dT  wheel to the marker wall (the plane y = 0 of marker 0)   [cm]
     sP, sT  wheel to the dock centre line x = 0.5, each on its own side [cm]
 They give the pose of the wheel axle centre, whatever point of the tyre the tape touched (same on both sides):
@@ -69,9 +70,9 @@ def read_tape(path=TAPE):
     rows = []
     with open(path, newline="") as f:
         for r in csv.DictReader(f):
-            num = {k: float(v) for k, v in r.items() if k not in ("name", "condition")}
+            num = {k: float(v) for k, v in r.items() if k not in ("name", "condition", "run_log")}
             along, lat, yaw = tape_pose(num["dP_cm"], num["dT_cm"], num["sP_cm"], num["sT_cm"])
-            rows.append(dict(name=r["name"], condition=r["condition"], box=[num["box_x"], num["box_y"]],
+            rows.append(dict(name=r["name"], condition=r["condition"], run_log=r["run_log"], box=[num["box_x"], num["box_y"]],
                              start_yaw_offset_deg=num["start_yaw_offset_deg"],
                              along_cm=round(along, 2), lat_cm=round(lat, 2), yaw_deg=round(yaw, 2)))
     return rows

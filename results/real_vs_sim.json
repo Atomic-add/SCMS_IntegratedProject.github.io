@@ -154,6 +154,7 @@
   {
    "name": "Middle First Trial",
    "condition": "middle",
+   "run_log": "run_20261030_092814",
    "box": [
     2.75,
     1.25
@@ -166,6 +167,7 @@
   {
    "name": "Middle Second Trial",
    "condition": "middle",
+   "run_log": "run_20261030_093249",
    "box": [
     2.75,
     1.25
@@ -178,6 +180,7 @@
   {
    "name": "Middle Third Trial",
    "condition": "middle",
+   "run_log": "run_20261030_093635",
    "box": [
     2.75,
     1.25
@@ -190,6 +193,7 @@
   {
    "name": "Left",
    "condition": "left",
+   "run_log": "run_20261030_105928",
    "box": [
     2.75,
     1.1
@@ -202,6 +206,7 @@
   {
    "name": "Right",
    "condition": "right",
+   "run_log": "run_20261030_105431",
    "box": [
     2.75,
     1.4
