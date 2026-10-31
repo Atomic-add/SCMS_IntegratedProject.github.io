@@ -88,7 +88,7 @@
     "min_coverage": 0.8
   },
   "avoidance": {
-    "_doc": "avoidance.py. trigger_dist [m]: start avoiding when free_ahead is below this; end_ignore [m]: ignore returns this close to the segment's end waypoint (the wall at the end of a leg). side_margin [m]: added to the robot half width (0.153 m) for its swept lane; clearance [m]: extra gap kept from the box. look_ahead [m]: how far ahead points count as the obstacle; box_depth [m]: assumed depth of an obstacle we cannot see behind; max_offset [m]: largest sideways shift allowed. ramp_len [m]: travel over which the offset ramps in and out; rejoin_ahead [m]: the original lane must be free this far ahead before rejoining. stop_dist [m]: stop if something is this close in front; max_scan_age [s]: do not move on an older scan (LiDAR 5 Hz). v_avoid [m/s]: speed while avoiding.",
+    "_doc": "avoidance.py. trigger_dist [m]: start avoiding when free_ahead is below this; end_ignore [m]: ignore returns this close to the segment's end waypoint (the wall at the end of a leg). side_margin [m]: added to the robot half width (0.153 m) for its swept lane; clearance [m]: extra gap kept from the box. look_ahead [m]: how far ahead points count as the obstacle; box_depth [m]: assumed depth of an obstacle we cannot see behind; max_offset [m]: largest sideways shift allowed. ramp_len [m]: travel over which the offset ramps in and out; rejoin_ahead [m]: the original lane must be free this far ahead before rejoining. stop_dist [m]: stop if something is this close in front; max_scan_age [s]: do not move on an older scan (LiDAR 5 Hz). v_avoid [m/s]: speed while avoiding. side_tie [m]: pass on the side needing the smaller offset |d| unless the two offsets differ by less than this, then on the wider side (left_clear / right_clear).",
     "trigger_dist": 0.8,
     "end_ignore": 0.3,
     "side_margin": 0.05,
@@ -100,6 +100,8 @@
     "rejoin_ahead": 0.5,
     "stop_dist": 0.08,
     "max_scan_age": 0.5,
-    "v_avoid": 0.15
+    "v_avoid": 0.15,
+    "side_tie": 0.05,
+    "_side_tie": "m, 0.05: the box edges come from LiDAR returns 1 deg apart (1.7 cm at 1 m) with about 1 cm range noise, so a centred box gives |d_left| - |d_right| within a few cm and stays a tie; a box shifted 15 cm gives 0.30 m (avoidance.start)"
   }
 }
