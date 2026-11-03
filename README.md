@@ -2,17 +2,24 @@
 
 ## 1. Overview
 **Task**
+
 This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
 - 2D LiDAR
 - Camera
 - Wheel-encoder odometry
 This task’s constraint is that the controller must use the estimated state, never the ground truth
 
-INSERT PIPELINE DIAGRAM
+**pipeline diagram**
 
-![Your Alt Text](./images/banner.png)
+I.O.U
 
-![Your Alt Text](./images/banner.png)
+**simulation**
+
+![Your Alt Text](./Overview_Simulation.png)
+
+**hardware appliance**
+
+![Your Alt Text](./Overview_Real.png)
 
 
 **what is included in coursework**
