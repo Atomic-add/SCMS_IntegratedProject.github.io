@@ -21,7 +21,10 @@ run_demo.trial_setup(seed) (random true start and encoder scale error, so there 
 Metrics, from the TRUE pose (on_step), only in LQR-driven tracking steps (state TRACK and v > 0: the
 TRACK state also holds the waypoint tracker's turns on the spot, where v = 0 and w comes from k_turn):
   cross-track RMS / max to run_demo.reference_path();  RMS w, peak |w|;  jitter = RMS of (w[k]-w[k-1])/Ts
-  (a high gain amplifies the EKF's estimate noise into the command);  share of steps with |w| >= OMEGA_MAX.
+  (a high gain amplifies the EKF's estimate noise into the command);  share of steps with |w| >= OMEGA_MAX;
+  mean SIGNED cross-track error (+ = left of the path: the steady offset, Assessment 3 S2);
+  over the whole run, the EKF's NEES = e^T P^-1 e (truth - estimate, heading wrapped): ANEES and the share
+  of steps with NEES <= 7.81, the 95 % point of chi-square(3) (Assessment 3 S4), and the position RMSE.
 Plus docked, stop_reason, time and contacts (random_trials.contacts).
 
 Linear prediction per condition (no simulator, src/control/lqr.py): K, |closed-loop eig| at v_nom and at
@@ -34,7 +37,8 @@ the controller still drives on the EKF estimate (run_mission), and the truth goe
 Adapted from 41014 Week 6 A.5 / C.2 (Bryson's rule, the trade-off curve over R, saturation) and Week 8
 C.3 (steering on the estimate, RMS cross-track).
 Additions: the sweep run on the whole mission with the EKF, effort and jitter from the commanded w, the
-linear prediction next to the simulated result.
+linear prediction next to the simulated result, the Assessment 3 S1 - S4 columns (RMS, mean offset, effort,
+NEES) on this mission.
 """
 import argparse
 import copy
@@ -59,6 +63,7 @@ from src.control.behaviour import TRACK, run_mission           # noqa: E402
 from src.control.lqr import _linear_response, design_lqr, design_weights   # noqa: E402
 from src.control.models import OMEGA_MAX, TS, V_NOM, error_model, load_control_config   # noqa: E402
 from src.estimation.ekf import EKF                              # noqa: E402
+from src.estimation.odometry import wrap                        # noqa: E402
 from src.robot.task import load_task                            # noqa: E402
 from src.robot.sim_robot import PROJECT_ROOT                    # noqa: E402
 
@@ -66,6 +71,28 @@ OUT = PROJECT_ROOT / "results"
 CONDITIONS = [("R x10", 10.0), ("R (config)", 1.0), ("R / 10", 0.1)]   # (label, scale on R)
 E0 = 0.20           # m, initial cross-track error of the linear response (as lqr.py's design report)
 V_SLOW = 0.05       # m/s, a slow speed where the fixed gain is weakest (lqr.py's design report)
+NEES_95 = 7.81      # 95 % point of chi-square with 3 dof (Assessment 3 S4)
+
+
+def signed_cte(p, poly):
+    """Signed distance [m] from point p to the nearest segment of poly: + when p is LEFT of its direction."""
+    best, sign = np.inf, 1.0
+    for a, b in zip(poly[:-1], poly[1:]):
+        ab = b - a
+        s = np.clip(np.dot(p - a, ab) / np.dot(ab, ab), 0.0, 1.0)
+        d = np.linalg.norm(p - (a + s * ab))
+        if d < best:
+            best, sign = d, (1.0 if ab[0] * (p - a)[1] - ab[1] * (p - a)[0] >= 0 else -1.0)
+    return sign * best
+
+
+def estimate_metrics(truth, xh, P):
+    """ANEES, share of steps with NEES <= NEES_95, and the position RMSE [cm] of the estimate over a run."""
+    e = truth - xh
+    e[:, 2] = wrap(e[:, 2])
+    ne = np.array([ei @ np.linalg.solve(Pi, ei) for ei, Pi in zip(e, P)])
+    return dict(anees=round(float(ne.mean()), 3), nees_le_781=round(float(np.mean(ne <= NEES_95)), 4),
+                pos_rmse_cm=round(100 * float(np.sqrt(np.mean(np.sum(e[:, :2] ** 2, axis=1)))), 3))
 
 
 def scaled_cfg(scale):
@@ -103,7 +130,8 @@ def one_run(job):
     rows = []
 
     def on_step(robot, row):
-        rows.append((np.asarray(true_pose(robot), float)[:2], row["state"], row["v"], row["w"], contacts(robot)))
+        tp = np.asarray(true_pose(robot), float)
+        rows.append((tp[:2], row["state"], row["v"], row["w"], contacts(robot), tp, row["xh"], row["P"]))
 
     info, t_end = run_mission(case, seed=seed, verbose=False, estimator=ekf, on_step=on_step,
                               setup=trial_setup(seed), cfg=scaled_cfg(scale))
@@ -113,6 +141,9 @@ def one_run(job):
     w = np.array([r[3] for r in rows])
     lqr = (state == TRACK) & (v > 0.0)                       # LQR-driven tracking steps only
     cte = np.array([dist_to_polyline(p, ref) for p in xy[lqr]])
+    cte_s = np.array([signed_cte(p, ref) for p in xy[lqr]])
+    est = estimate_metrics(np.array([r[5] for r in rows]), np.array([r[6] for r in rows]),
+                           np.array([r[7] for r in rows]))
     w_l = w[lqr]
     dw = np.diff(w)[lqr[1:] & lqr[:-1]] / TS                 # consecutive tracking steps only
     hits = sorted(set().union(*[r[4] for r in rows]))
@@ -120,10 +151,10 @@ def one_run(job):
                 stop_reason=info["stop_reason"], time_s=round(float(t_end), 1), collisions=hits,
                 track_steps=int(lqr.sum()),
                 cte_rms_cm=round(100 * float(np.sqrt(np.mean(cte**2))), 3),
-                cte_max_cm=round(100 * float(cte.max()), 3),
+                cte_max_cm=round(100 * float(cte.max()), 3), cte_mean_cm=round(100 * float(cte_s.mean()), 3),
                 w_rms=round(float(np.sqrt(np.mean(w_l**2))), 4), w_peak=round(float(np.abs(w_l).max()), 4),
                 jitter_rms=round(float(np.sqrt(np.mean(dw**2))), 4) if dw.size else None,
-                sat_share=round(float(np.mean(np.abs(w_l) >= OMEGA_MAX - 1e-6)), 4))
+                sat_share=round(float(np.mean(np.abs(w_l) >= OMEGA_MAX - 1e-6)), 4), **est)
 
 
 def summarise(runs):
@@ -136,7 +167,8 @@ def summarise(runs):
         s = dict(n=len(rs), scale=scale, success_rate=round(float(np.mean([r["docked"] for r in rs])), 3),
                  contacts=sum(bool(r["collisions"]) for r in rs),
                  failures=[(r["seed"], r["stop_reason"]) for r in rs if not r["docked"]])
-        for k in ("cte_rms_cm", "cte_max_cm", "w_rms", "w_peak", "jitter_rms", "sat_share", "time_s"):
+        for k in ("cte_rms_cm", "cte_max_cm", "cte_mean_cm", "w_rms", "w_peak", "jitter_rms", "sat_share",
+                  "anees", "nees_le_781", "pos_rmse_cm", "time_s"):
             vals = np.array([r[k] for r in rs if r[k] is not None], float)
             s[k] = dict(mean=round(float(vals.mean()), 4), std=round(float(vals.std()), 4))
         out[label] = s
@@ -202,7 +234,7 @@ if __name__ == "__main__":
         for r in pool.imap_unordered(one_run, jobs):
             runs.append(r)
             print(f"  {r['label']:11s} seed {r['seed']:3d}: {'docked' if r['docked'] else 'FAILED ' + str(r['stop_reason']):22s} "
-                  f"cte rms {r['cte_rms_cm']:.2f} cm  w rms {r['w_rms']:.3f}  jitter {r['jitter_rms']}  "
+                  f"cte rms {r['cte_rms_cm']:.2f} cm (mean {r['cte_mean_cm']:+.2f})  NEES<=7.81 {100 * r['nees_le_781']:.0f} %  w rms {r['w_rms']:.3f}  jitter {r['jitter_rms']}  "
                   f"sat {100 * r['sat_share']:.1f} %  contacts {r['collisions'] or 'none'}")
     runs.sort(key=lambda r: ([l for l, _ in CONDITIONS].index(r["label"]), r["seed"]))
     summary = summarise(runs)
@@ -217,6 +249,7 @@ if __name__ == "__main__":
     for label, s in summary.items():
         print(f"{label:11s} n {s['n']}  docked {100 * s['success_rate']:.0f} %  cte rms {s['cte_rms_cm']['mean']:.2f} ± "
               f"{s['cte_rms_cm']['std']:.2f} cm (max {s['cte_max_cm']['mean']:.2f})  w rms {s['w_rms']['mean']:.3f}  "
-              f"peak {s['w_peak']['mean']:.2f}  jitter {s['jitter_rms']['mean']:.2f}  sat {100 * s['sat_share']['mean']:.2f} %  "
+              f"mean {s['cte_mean_cm']['mean']:+.2f} cm  NEES<=7.81 {100 * s['nees_le_781']['mean']:.1f} %  "
+              f"ANEES {s['anees']['mean']:.2f}  peak {s['w_peak']['mean']:.2f}  jitter {s['jitter_rms']['mean']:.2f}  sat {100 * s['sat_share']['mean']:.2f} %  "
               f"failures {s['failures']}")
     print("\nsaved results/sweep_lqr.json and results/sweep_lqr.png")

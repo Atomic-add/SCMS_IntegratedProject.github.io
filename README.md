@@ -213,6 +213,7 @@ python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs
 python -m evaluation.plot_like_a3          # Assessment 3 style: EKF error +-2 sigma, 2x2 summary, sim and real clips -> results/ekf_*, real_anim_*
 python -m evaluation.observability          # rank / Gramian per marker case, P growth with no marker, rank along the path -> results/observability.*
 python -m evaluation.sweep_lqr --n 20       # LQR weight R x10, x1, /10 on the EKF: tracking error vs effort -> results/sweep_lqr.*
+python -m evaluation.model_limits --n 20    # fixed K: |eig| vs speed, linear vs nonlinear, mission at 0.10/0.20/0.26 m/s -> results/model_limits.*
 ```
 
 Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
@@ -261,21 +262,37 @@ sim odometry has the model's exact wheel radius; the real encoders over-count by
 All simulation numbers above were regenerated on 30 Oct on the code after the 28 Oct docking and avoidance changes (Linux, Mesa
 software rendering, `--workers 4`).
 
-`sweep_lqr` (31 Oct; EKF, case centre, seeds 1-20 with a random true start and encoder scale error; Q fixed, R = 1 / d_omega_max^2 scaled;
-every LQR in the mission changes: tracking, avoidance and the docking approach):
+`sweep_lqr` (re-run 31 Oct on e30cc12 with the Assessment 3 S2 / S4 columns; EKF, case centre, seeds 1-20 with a random true
+start and encoder scale error; Q fixed, R = 1 / d_omega_max^2 scaled; every LQR in the mission changes: tracking, avoidance
+and the docking approach):
 
-| R | K [e_y, e_theta] | Docked | Cross-track RMS (max), true pose | RMS w | Jitter RMS (w[k]-w[k-1])/Ts | Linear peak d_omega from 20 cm |
-|---|---|---|---|---|---|---|
-| R x10 (d_omega_max 0.16 rad/s) | [3.05, 1.41] | 20 / 20 | 3.13 +- 0.11 cm (6.35) | 0.098 rad/s | 0.28 rad/s^2 | 0.61 rad/s |
-| R (config, 0.5 rad/s) | [9.16, 3.25] | 20 / 20 | 1.73 +- 0.12 cm (5.03) | 0.077 rad/s | 0.38 rad/s^2 | 1.83 rad/s |
-| R / 10 (1.58 rad/s) | [24.84, 7.78] | 20 / 20 | 1.42 +- 0.12 cm (4.87) | 0.070 rad/s | 0.57 rad/s^2 | 4.97 rad/s (above the 1.82 rad/s limit) |
+| R | K [e_y, e_theta] | Docked | Cross-track RMS (max), true pose | Steady offset (mean) | RMS w | Jitter RMS (w[k]-w[k-1])/Ts | NEES <= 7.81 (ANEES) | Linear peak d_omega from 20 cm |
+|---|---|---|---|---|---|---|---|---|
+| R x10 (d_omega_max 0.16 rad/s) | [3.05, 1.41] | 20 / 20 | 3.13 +- 0.11 cm (6.35) | +0.36 cm | 0.098 rad/s | 0.28 rad/s^2 | 95.7 % (3.00) | 0.61 rad/s |
+| R (config, 0.5 rad/s) | [9.16, 3.25] | 20 / 20 | 1.73 +- 0.12 cm (5.03) | +0.57 cm | 0.077 rad/s | 0.38 rad/s^2 | 95.7 % (3.30) | 1.83 rad/s |
+| R / 10 (1.58 rad/s) | [24.84, 7.78] | 20 / 20 | 1.42 +- 0.12 cm (4.87) | +0.83 cm | 0.070 rad/s | 0.57 rad/s^2 | 93.4 % (3.50) | 4.97 rad/s (above the 1.82 rad/s limit) |
 
 Only LQR tracking steps count (state TRACK with v > 0). A 10x smaller R buys 0.3 cm of tracking error for 1.5x the
 command jitter (the larger gain passes more of the EKF's estimate noise to the wheels); a 10x larger R doubles the
 tracking error. No run saturated at 1.82 rad/s, because the tracking errors stay near 1-6 cm, far below the 20 cm of the
 linear test. RMS w does not rise with the gain: the low gain leaves a larger standing error (no integral action), so it
 keeps steering against it. The slow closed-loop pole (|z| 0.965) hardly moves with R, so the settling distance from
-20 cm stays 1.15-1.21 m; R mostly moves the faster pole (|z| 0.96, 0.87, 0.64).
+20 cm stays 1.15-1.21 m; R mostly moves the faster pole (|z| 0.96, 0.87, 0.64). The steady offset grows with the gain:
+the controller zeroes the ESTIMATED error, and a stiffer loop follows the estimate's encoder-scale bias more closely.
+
+`model_limits` (31 Oct; the K designed at 0.2 m/s is not redesigned; mission on the EKF, case centre, seeds 1-20, cruise speed
+passed at run time):
+
+| Cruise v | Docked | Cross-track RMS (max), true pose | Steady offset | RMS w | Position RMSE | ANEES | NEES <= 7.81 | Slow pole \|z\|, straight |
+|---|---|---|---|---|---|---|---|---|
+| 0.10 m/s | 20 / 20 | 1.65 +- 0.12 cm (4.93) | +0.64 cm | 0.055 rad/s | 0.74 cm | 3.63 | 89.2 % | 0.985 |
+| 0.20 m/s (design) | 20 / 20 | 1.73 +- 0.12 cm (5.03) | +0.57 cm | 0.077 rad/s | 0.79 cm | 3.30 | 95.7 % | 0.965 |
+| 0.26 m/s (MAX_V) | 20 / 20 | 1.80 +- 0.16 cm (5.08) | +0.68 cm | 0.092 rad/s | 0.69 cm | 2.95 | 98.5 % | 0.947 |
+
+The fixed gain corrects over a nearly fixed distance (k_theta / k_y = 0.35 m), so tracking barely depends on speed; it grows
+9 % from 0.10 to 0.26 m/s because the same heading noise integrates into e_y at rate v. The estimator degrades the other
+way: its process noise grows with distance driven, so at 0.10 m/s it is overconfident (NEES coverage 89 %). Linear vs
+nonlinear from a lateral offset at 0.2 m/s: within 1.2 % up to 20 cm, 11.7 % at 50 cm, where the 1.82 rad/s clip dominates.
 
 `observability` (31 Oct; EKF's own F_jac and H_rb at (1.5, 1.25) facing the left panel, 1 s = 20 frames):
 
