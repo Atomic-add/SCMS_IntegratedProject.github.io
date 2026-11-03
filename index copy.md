@@ -20,7 +20,40 @@
 ### 2.4 Model correctness: where the model breaks down and what that costs, e.g. closed-loop eigenvalues vs speed (adapt Assessment 3 D.4) [HD] (A has no hardware credit, so this is A's HD)
 
 ## 3. Sensing (B): calibration, noise handling and frame management
-### 3.1 Calibration: camera, plus LiDAR validated against ray-cast truth [D]
+The robot in this project uses three sensors including: wheel envodeer, a camera, and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions: read_encoders(), read_image() and read_scan(), with the real robot sends its data through rosbridge. These functions are used in both the simulator and the real robot to be processed using the same perception and estimation logic.  
+
+- Wheel encoders (20Hz): provide wheel rotation measurements for odometry calulation, which then use for EKF to predict the robot's pose
+
+- Pi camera (640 x 480 pixels, 20Hz): measures range and bearing to visible ArUco markers for EKF updates. Our track uses three markers from the DICT_4x4_50 dictionary, with a 100 mm side length. 
+
+- LDS-01 LiDAR (360 beams, 1° interval, 5Hz): measures the free distance ahead, obstacle's edges and side clearances for obstacle avoidane
+### 3.1 Calibration: camera, plus LiDAR validated against ray-cast truth 
+Camera intrinsics: We calibrated both caemeras using a 9 x 6 checkerboard with 25 mm squares, ([calibrate_camera.py](experiments/calibrate_camera.py)). 
+
+**Simulated camera**: In simulation, the board was palced at 20 random poses in front of the camera
+![Simulated Camera Calibration](results/camera_calibration.png) 
+*Simulated amera: Board found in 20 of 20 frames*.
+
+**Real camera**: For the real camera, the board was held by hand, trying different posision and angles in front of it. A set of 40 captured images were collected for calibration.
+![Real Camera Calibration](results/camera_calibration_real.png) 
+
+*Real camera: Board found in 40 of 51 captured images, with thoes 40 images used for calibration*
+
+These collected data was then used to estimate the camera matrix K and lens distortion. To assessed the calibration quality, reprojection error was used, with the table below compares the results from both cameras. 
+
+| Parameter | Simulation | Real camera |
+|---|---|---|
+| Frames used | 20 / 20 | 40 / 51 |
+| Reprojection RMS | 0.046 px | 0.41 px |
+| Focal lengths f<sub>x</sub>, f<sub>y</sub> | 692.07, 692.01 px | 691.5, 692.3 px |
+| Principal point (c<sub>x</sub>, c<sub>y</sub>) | (302.2, 245.2) px | (302.2, 245.2) px |
+
+The estimated simulated camera were then also compared with the true value from Mujoco camera. The estimated focal lengths matched the true value (692.00 px) within 0.010 %.
+
+**Camera mounting pose**: Both the simulated and real cameras use the URDF mounting position: 0.076 m forward and 0.103 m above the robot's base origin. For the real camera, we also estimated pose of the camera ([camera_pitch.py](experiments/camera_pitch.py)). Returning an estimation a downward tilt of 6.3 degree from 50 AruCO images taken at different distances with a fixed marker height ([camera tilt images data](results/hardware)). The simulation camera was then reconfigured with the same 6.3° tilt to match the real one. 
+
+**Real-camera range correction**: To verify the camera distances measurement, we compared the raw AruCo range estimates with the reference distances ([aruco_real_noise.py](experiments/aruco_real_noise.py)). The camera overestimated rage by approximately 0.6mm +3.2% of the reference distance, therefore a correction for this offset and scale error are used by [aruco.measure()](src/perception/aruco.py) to correct each range estimate before it is passed to the EKF for real robot
+
 ### 3.2 Noise handling: measured noise characterisation [D]
 ### 3.3 Noise handling: outlier rejection and marker-loss handling [D]
 ### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
