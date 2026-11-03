@@ -1,0 +1,40 @@
+{
+  "_doc": "Real TurtleBot3 Waffle Pi through rosbridge (src/robot/real_robot.py, UTS-RI/turtlebot_rosbridge). Check every value on the lab robot with python experiments/check_robot.py HOST before a mission.",
+  "host": "192.168.1.203",
+  "_host": "IP of the robot's rosbridge server, 192.168.1.2XX where XX is the TurtleBot ID (lab wifi turtlebot-MMR); main.py --real HOST and check_robot.py HOST override it",
+  "port": 9090,
+  "topics": {
+    "cmd_vel": "/cmd_vel",
+    "image": "/camera/image_raw/compressed",
+    "scan": "/scan",
+    "joint_states": "/joint_states"
+  },
+  "_topics": "rosbridge_api defaults; replace with the names from ros2 topic list on the robot if they differ",
+  "wheel_joints": ["wheel_left_joint", "wheel_right_joint"],
+  "_wheel_joints": "names in /joint_states, picked by name; seen on the lab robot on 23 Oct (results/hardware/20261023_*/report.json)",
+  "wheel_sign": [1, 1],
+  "_wheel_sign": "+1 when the joint position grows as the robot rolls forward; confirmed on 23 Oct: check_robot.py --drive gave +0.10 m on both wheels for a forward command (results/hardware/20261023_122823)",
+  "v_max": 0.10,
+  "w_max": 1.0,
+  "_w_max": "rad/s, see _v_max (safety cap on top of the Waffle Pi's 1.82 rad/s)",
+  "_v_max": "m/s and rad/s, first-run safety caps on top of the Waffle Pi limits (0.26, 1.82). Commands above a cap are scaled down together, so the turning radius v/w is kept. Raise them once the lab speed rule is known and the robot behaves",
+  "min_coverage": 0.2,
+  "_min_coverage": "fraction of the forward (+-90 deg) LiDAR beams that must return before the robot moves (config/control.json lidar_obs, 0.8 in the sim). The lab panels are black foam, which the LDS-01 does not see: on 28 Oct the forward coverage was 0.55 at the stage-1 start and 0.34-0.38 at the stage-2 start (nothing from -10 to +70 deg although the left panel was 1.5 m ahead), so the mission waited at 0.8 and at 0.4. 0.2 still stops the robot when the LiDAR is blocked or broken. The LiDAR sees the white marker stands and the orange box, not the panels: the panels are kept off by the waypoints, not the LiDAR",
+  "control": {
+    "_doc": "Overrides of config/control.json and the task file's control block, for the real robot only (main.py --real). 28 Oct: the lab lane between the panel rows is 1.05 m, not the designed 1.5 m, and the box is 10 x 10 cm. With side_margin 0.05 and clearance 0.10 the pass lane reached 0.60 m from the path and every run ended no_passage. With 0.03 and 0.05 the robot passes a centred 10 cm box 0.28 m off the path, its side 0.47 m from the path (the panels are 0.48 and 0.55 m away)",
+    "avoidance": {"side_margin": 0.03, "clearance": 0.08},
+    "_avoidance": "clearance 0.08 since 30 Oct (was 0.05): with the 20 cm box the planned pass offset was 0.333 m but the robot reached only 0.26 m (run_20261030_092357, LQR lag on the offset ramp). 0.08 plans 0.363 m; if the robot tracked it fully its side would be about 1 cm from the 1.05 m lane's panel, so do not raise it further",
+    "lidar_obs": {"margin": 0.01},
+    "docking": {"v_dock": 0.05, "stop_early": 0.015, "marker_max_age": 0.5,
+                "dock_lateral_tol": 0.04, "dock_heading_tol_deg": 8.0},
+    "_docking_tol": "28 Oct: the lowered dock marker is found in only 20-40 % of the frames near the 0.35 m stop, so a marker frame up to 0.5 s old still counts as fresh (0.2 in control.json). The team relaxed the dock tolerances for the real robot to 4 cm sideways and 8 deg: IBVS points the robot at the marker but cannot remove a sideways offset, and runs ended at 3.0 cm / 5.6 deg",
+    "_docking": "28 Oct, dock stop 0.30 m: the robot kept rolling 8 cm after the stop command (late commands over the wifi) and lost the marker at the bottom of the image. Docking at 5 cm/s and commanding the stop 1.5 cm early (inside the 2 cm range tolerance) keeps it short of that",
+    "_lidar_obs": "free_ahead's margin beside the robot (0.05 in control.json). Passing the box in the 1.05 m lane leaves about 8 cm on each side; with 0.05 the too_close stop fired on 4 cm of estimate error (28 Oct, two runs stopped beside the box). 0.01 still stops for anything in front of the body"
+  },
+  "max_sensor_age": 1.0,
+  "max_scan_silence": 3.0,
+  "_max_scan_silence": "s without /scan before step() stops the run (max_sensor_age still applies to /joint_states). The lab wifi drops /scan for more than 1 s now and then (28 Oct, four runs ended so); the navigation already holds v = w = 0 while the scan is older than avoidance.max_scan_age (0.5 s), so waiting up to 3 s for the next scan does not drive blind",
+  "_max_sensor_age": "s; step() stops the robot and raises if /joint_states or /scan is older than this (lost wifi, crashed driver)",
+  "connect_timeout": 10.0,
+  "_connect_timeout": "s to wait for the rosbridge connection and then for the first message on each sensor topic"
+}

@@ -1,0 +1,358 @@
+{
+ "task": "config/arena_lab.json",
+ "cases": [
+  "none",
+  "centre"
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19
+ ],
+ "fitted_noise": {
+  "range_bias_r2": 0.0051,
+  "range_sd": [
+   0.01754,
+   0.00585
+  ],
+  "bearing_sd_deg": 0.056,
+  "_doc": "EKF marker noise of this camera, fitted by evaluation/consistency_sweep.py on 40 recorded runs of config/arena_lab.json against the truth: range bias 5.10 mm * r^2; residual range sd 1.37 mm + 2.17 mm * r^2 plus 5.1 mm left by the bias model; bearing sd 0.0118 deg. Errors repeat over tau = 7.3 frames (range) and 22.5 frames (bearing), so the variances are multiplied by tau (sd by sqrt(tau))."
+ },
+ "fitted_scores": {
+  "q_scale": 1.0,
+  "r_scale": 1.0,
+  "anees": 2.95,
+  "anis": 0.092,
+  "coverage": 1.0,
+  "rms_cm": 0.92,
+  "n_updates": 37353
+ },
+ "scales": [
+  0.1,
+  0.3,
+  1.0,
+  3.0,
+  10.0
+ ],
+ "current_params": {
+  "k_wheel": 0.06,
+  "range_sd": [
+   0.00911,
+   0.00563
+  ],
+  "bearing_sd_deg": 0.0571
+ },
+ "grid": [
+  {
+   "q_scale": 0.1,
+   "r_scale": 0.1,
+   "anees": 15.732,
+   "anis": 0.95,
+   "coverage": 0.311,
+   "rms_cm": 0.987,
+   "n_updates": 37087
+  },
+  {
+   "q_scale": 0.1,
+   "r_scale": 0.3,
+   "anees": 11.474,
+   "anis": 0.416,
+   "coverage": 0.395,
+   "rms_cm": 0.876,
+   "n_updates": 37314
+  },
+  {
+   "q_scale": 0.1,
+   "r_scale": 1.0,
+   "anees": 8.849,
+   "anis": 0.172,
+   "coverage": 0.541,
+   "rms_cm": 0.725,
+   "n_updates": 37348
+  },
+  {
+   "q_scale": 0.1,
+   "r_scale": 3.0,
+   "anees": 7.656,
+   "anis": 0.085,
+   "coverage": 0.584,
+   "rms_cm": 0.621,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 0.1,
+   "r_scale": 10.0,
+   "anees": 6.585,
+   "anis": 0.041,
+   "coverage": 0.66,
+   "rms_cm": 0.595,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 0.3,
+   "r_scale": 0.1,
+   "anees": 11.47,
+   "anis": 0.888,
+   "coverage": 0.411,
+   "rms_cm": 0.981,
+   "n_updates": 37089
+  },
+  {
+   "q_scale": 0.3,
+   "r_scale": 0.3,
+   "anees": 7.799,
+   "anis": 0.369,
+   "coverage": 0.538,
+   "rms_cm": 0.863,
+   "n_updates": 37315
+  },
+  {
+   "q_scale": 0.3,
+   "r_scale": 1.0,
+   "anees": 5.435,
+   "anis": 0.138,
+   "coverage": 0.657,
+   "rms_cm": 0.708,
+   "n_updates": 37348
+  },
+  {
+   "q_scale": 0.3,
+   "r_scale": 3.0,
+   "anees": 4.244,
+   "anis": 0.061,
+   "coverage": 0.695,
+   "rms_cm": 0.592,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 0.3,
+   "r_scale": 10.0,
+   "anees": 3.531,
+   "anis": 0.028,
+   "coverage": 0.798,
+   "rms_cm": 0.544,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 1.0,
+   "r_scale": 0.1,
+   "anees": 7.815,
+   "anis": 0.848,
+   "coverage": 0.576,
+   "rms_cm": 0.978,
+   "n_updates": 37090
+  },
+  {
+   "q_scale": 1.0,
+   "r_scale": 0.3,
+   "anees": 4.835,
+   "anis": 0.341,
+   "coverage": 0.802,
+   "rms_cm": 0.855,
+   "n_updates": 37315
+  },
+  {
+   "q_scale": 1.0,
+   "r_scale": 1.0,
+   "anees": 3.002,
+   "anis": 0.118,
+   "coverage": 0.979,
+   "rms_cm": 0.692,
+   "n_updates": 37348
+  },
+  {
+   "q_scale": 1.0,
+   "r_scale": 3.0,
+   "anees": 2.098,
+   "anis": 0.047,
+   "coverage": 1.0,
+   "rms_cm": 0.567,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 1.0,
+   "r_scale": 10.0,
+   "anees": 1.573,
+   "anis": 0.019,
+   "coverage": 1.0,
+   "rms_cm": 0.496,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 3.0,
+   "r_scale": 0.1,
+   "anees": 5.685,
+   "anis": 0.829,
+   "coverage": 0.766,
+   "rms_cm": 0.993,
+   "n_updates": 37095
+  },
+  {
+   "q_scale": 3.0,
+   "r_scale": 0.3,
+   "anees": 3.205,
+   "anis": 0.327,
+   "coverage": 0.94,
+   "rms_cm": 0.855,
+   "n_updates": 37315
+  },
+  {
+   "q_scale": 3.0,
+   "r_scale": 1.0,
+   "anees": 1.743,
+   "anis": 0.109,
+   "coverage": 0.996,
+   "rms_cm": 0.684,
+   "n_updates": 37348
+  },
+  {
+   "q_scale": 3.0,
+   "r_scale": 3.0,
+   "anees": 1.096,
+   "anis": 0.04,
+   "coverage": 1.0,
+   "rms_cm": 0.549,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 3.0,
+   "r_scale": 10.0,
+   "anees": 0.737,
+   "anis": 0.014,
+   "coverage": 1.0,
+   "rms_cm": 0.464,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 10.0,
+   "r_scale": 0.1,
+   "anees": 4.308,
+   "anis": 0.816,
+   "coverage": 0.865,
+   "rms_cm": 1.009,
+   "n_updates": 37102
+  },
+  {
+   "q_scale": 10.0,
+   "r_scale": 0.3,
+   "anees": 2.26,
+   "anis": 0.319,
+   "coverage": 0.958,
+   "rms_cm": 0.866,
+   "n_updates": 37315
+  },
+  {
+   "q_scale": 10.0,
+   "r_scale": 1.0,
+   "anees": 1.047,
+   "anis": 0.104,
+   "coverage": 0.996,
+   "rms_cm": 0.686,
+   "n_updates": 37348
+  },
+  {
+   "q_scale": 10.0,
+   "r_scale": 3.0,
+   "anees": 0.563,
+   "anis": 0.037,
+   "coverage": 1.0,
+   "rms_cm": 0.539,
+   "n_updates": 37353
+  },
+  {
+   "q_scale": 10.0,
+   "r_scale": 10.0,
+   "anees": 0.332,
+   "anis": 0.012,
+   "coverage": 1.0,
+   "rms_cm": 0.435,
+   "n_updates": 37353
+  }
+ ],
+ "current": {
+  "q_scale": 1.0,
+  "r_scale": 1.0,
+  "anees": 3.002,
+  "anis": 0.118,
+  "coverage": 0.979,
+  "rms_cm": 0.692,
+  "n_updates": 37348
+ },
+ "best": {
+  "q_scale": 10.0,
+  "r_scale": 0.1,
+  "anees": 4.308,
+  "anis": 0.816,
+  "coverage": 0.865,
+  "rms_cm": 1.009,
+  "n_updates": 37102
+ },
+ "suggestion": {
+  "k_wheel": 0.1897,
+  "range_sd": [
+   0.00288,
+   0.00178
+  ],
+  "bearing_sd_deg": 0.0181
+ },
+ "results": [
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked",
+  "docked"
+ ],
+ "script": "evaluation/consistency_sweep.py"
+}

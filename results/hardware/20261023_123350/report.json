@@ -1,0 +1,46 @@
+{
+  "host": "192.168.1.203",
+  "joints": [
+    "wheel_left_joint",
+    "wheel_right_joint"
+  ],
+  "rates_hz": {
+    "joint_states": 24.328863130174938,
+    "scan": 5.838927151241985,
+    "image": 36.9798719578659
+  },
+  "scan": {
+    "n_beams": 360,
+    "angle_min_deg": 0.0,
+    "angle_max_deg": 358.99998836115276,
+    "angle_increment_deg": 0.9999999922536332,
+    "range_min": 0.11999999731779099,
+    "range_max": 3.5,
+    "scan_time": 0.20134228467941284,
+    "zero": 115,
+    "inf": 0,
+    "nan": 0,
+    "out_of_range": 7,
+    "valid_after_resampling": 238,
+    "range_at_deg": {
+      "0": 1.0169999599456787,
+      "90": 0.6079999804496765,
+      "180": null,
+      "270": 0.375
+    }
+  },
+  "image_size": [
+    640,
+    480
+  ],
+  "markers_in_view": [
+    0
+  ],
+  "drive": {
+    "commanded_m": 0.5,
+    "left_m": 0.5169454610759999,
+    "right_m": 0.5176035389250001,
+    "distance_m": 0.5172745000005,
+    "turn_deg": 0.1309204282595762
+  }
+}
