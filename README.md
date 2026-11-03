@@ -45,6 +45,61 @@ INSERT VIDEO
 
 ## 4. Estimation (C): EKF design, tuning and reported performance
 
+### EKF design
+The estimation section is adapted from Week 7 C.3 / C.4, and Assessment 3, Task B.3
+
+
+### Tuning
+
+### Reported performance
+Below is the testing for the estimation.
+
+-----------------------------------------------------------------------------------
+
+PASS  baseline: the first encoder sample does not move the estimate
+
+PASS  straight: equal wheel turns move 1 m along x, heading unchanged
+
+PASS  turn: opposite wheel turns spin +90 deg on the spot
+
+PASS  repeated encoder timestamp: no second prediction
+
+PASS  wrap: 179 deg - (-179 deg) is -2 deg, not 358 deg
+
+PASS  bearing residual is wrapped near +-180 deg   (bearing 1.57 deg)
+
+PASS  F matches finite differences
+
+PASS  H matches finite differences
+
+PASS  missing data: empty markers dict leaves the estimate unchanged
+
+PASS  missing data: unknown ID 7 leaves the estimate unchanged
+
+PASS  missing data: nan measurement leaves the estimate unchanged
+
+PASS  repeated frame: fused once only
+
+PASS  old frame (1 s behind the encoders): not fused
+
+PASS  correction: 11 cm / 3 deg off, markers 0 and 2 in view -> below 1 cm and 0.5 deg   (0.63 cm, 0.23 deg, 58/58 fused)
+
+PASS  gate: a 1 m range outlier is rejected   (NIS 311)
+
+PASS  1000 random steps: x_hat finite, P symmetric, eigenvalues >= 0   (min eig 1.9e-04)
+
+PASS  config: by default the sim camera's ekf_noise replaces range bias, range sd and bearing sd   ({'range_bias_r2': 0.0045, 'range_sd': [0.00911, 0.00563], 'bearing_sd_deg': 0.0571})
+
+PASS  config: the real camera's range_correction drops the sim bias (never subtracted twice)
+
+0 failed - all checks passed
+
+------------------------------------------------------------------------------------
+
+
+### Tuning trade-off
+
+### Comparison with 2nd estimator
 
 
 ## 5. Control (D): controller design, tuning and tracking results
