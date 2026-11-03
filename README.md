@@ -46,7 +46,29 @@ INSERT VIDEO
 ## 4. Estimation (C): EKF design, tuning and reported performance
 
 ### EKF design
-The estimation section is adapted from Week 7 C.3 / C.4, and Assessment 3, Task B.3
+The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3, Task B.3**, borrowing the following variables:
+- ekf_predict
+- ekf_update
+- F_uni
+- h_rb
+- H_rb
+- Qd reasoning
+
+#### state
+
+State x = [x, y, theta]
+
+xh, P = ekf.step(encoders, marker_frame = None)
+
+#### inputs
+
+#### motion model (predict)
+
+#### measurement model (update)
+
+#### safeguards
+
+With the 
 
 
 ### Tuning
