@@ -1,17 +1,12 @@
 # SCMS Track A Project (Team 12)
 
-**TEAM 12**
-- Addison Possamai (25840164)
-- Nguyen Kim Uyen Phan (25596519)
-- Nhat Thien Mai (25161391)
-
 ## 1. Overview
 **Task**
-This is Track A, mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo, and in real life. Utilising: 
+This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
 - 2D LiDAR
 - Camera
 - Wheel-encoder odometry
-This task’s constraint is that the controller must use the estimated state, never  the ground truth
+This task’s constraint is that the controller must use the estimated state, never the ground truth
 
 INSERT PIPELINE DIAGRAM
 
@@ -27,7 +22,7 @@ INSERT REAL PHOTO
 
 
 **repo:**
-INSERT REPO
+(https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git)
 
 **video link**
 INSERT VIDEO
@@ -75,18 +70,18 @@ INSERT VIDEO
 
 ### individual contributions
 
-Table1
 |   Task                             | Person          |
 | :--------------------------------- | :-------------- |
-|    Overview                        |                 | 
-|    Modelling (A)                   |                 | 
-|    Sensing (B)                     |                 | 
-|    Estimation (C)                  |                 | 
-|    Control (D)                     |                 | 
-|    Integration and Robustness (E)  |                 | 
-|    Independent Contribution Summary|                 | 
-|    Limitations and Lessons         |                 | 
-|    Reproducibility                 |                 | 
+|    Overview                        | Addison         | 
+|    Modelling (A)                   | Kim             | 
+|    Sensing (B)                     | Thien           | 
+|    Estimation (C)                  | Addison         | 
+|    Control (D)                     | Kim             | 
+|    Integration and Robustness (E)  | Kim             | 
+|    Real Robot                      | Thien           |
+|    Independent Contribution Summary| Kim             | 
+|    Limitations and Lessons         | Addison         | 
+|    Reproducibility                 | Addison         | 
 
 
 
