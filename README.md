@@ -10,9 +10,10 @@ This task’s constraint is that the controller must use the estimated state, ne
 
 INSERT PIPELINE DIAGRAM
 
-INSERT PHOTO
+![Your Alt Text](./images/banner.png)
 
-INSERT REAL PHOTO
+![Your Alt Text](./images/banner.png)
+
 
 **what is included in coursework**
 
