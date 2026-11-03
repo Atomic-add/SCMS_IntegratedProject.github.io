@@ -31,11 +31,17 @@ The robot in this project uses three sensors including: wheel envodeer, a camera
 Camera intrinsics: We calibrated both caemeras using a 9 x 6 checkerboard with 25 mm squares, ([calibrate_camera.py](experiments/calibrate_camera.py)). 
 
 **Simulated camera**: In simulation, the board was palced at 20 random poses in front of the camera
-![Simulated Camera Calibration](results/camera_calibration.png) 
+<p align="center">
+  <img src="results/camera_calibration.png" width="80%" alt="Simulated camera calibration">
+  <br><em>Simulated camera: board found in 20 of 20 frames.</em>
+</p>
 *Simulated amera: Board found in 20 of 20 frames*.
 
 **Real camera**: For the real camera, the board was held by hand, trying different posision and angles in front of it. A set of 40 captured images were collected for calibration.
-![Real Camera Calibration](results/camera_calibration_real.png) 
+<p align="center">
+  <img src="results/page/camera_calibration_real.png" width="80%" alt="Real camera calibration">
+  <br><em>Real camera: board found in 40 of 51 captured images; those 40 were used for calibration.</em>
+</p>
 
 *Real camera: Board found in 40 of 51 captured images, with thoes 40 images used for calibration*
 
@@ -54,9 +60,40 @@ The estimated simulated camera were then also compared with the true value from 
 
 **Real-camera range correction**: To verify the camera distances measurement, we compared the raw AruCo range estimates with the reference distances ([aruco_real_noise.py](experiments/aruco_real_noise.py)). The camera overestimated rage by approximately 0.6mm +3.2% of the reference distance, therefore a correction for this offset and scale error are used by [aruco.measure()](src/perception/aruco.py) to correct each range estimate before it is passed to the EKF for real robot
 
-### 3.2 Noise handling: measured noise characterisation [D]
+**Simulated LiDAR validation**: To check whether our LiDar measurement, noise and dropout behaviour matched the configured model, we compared its range with reference distances calcualted by a seperate 2D ray caster using the same map geometry, at five poses on the robot route (([check_sensor_lab.py](evaluation/check_sensors_lab.py)), ray caster in [grouth_truth.py](evaluation/ground_truth.py)).
+The result show that, tange-noise standard deviation was 9.95 mm, close to the configured 10 mm. The beam dropout rate was 1.01%, compared with the configured 1%
+<p align="center">
+  <img src="results/page/ray_cast_test.png" width="65%" alt="Simulated LiDAR vs ray caster">
+</p>
+
+### 3.2 Noise handling: measured noise characterisation 
+
+
+**Planar-pose ambiguity**:
+We use ArUco range and bearing for the EKF correction measurement. This is because, for a flat marker viewed nearly straight on, IPPE can return two similar pose solution with different marker orientation. Therefore, we exclude the marker yaw and evaluate the range and bearing below. 
+**ArUco measurement errors in simulation.**: 
+We tested how ArUco range and bearing errors change with distance to check the EKF’s range-bias correction and measurement-noise settings in R<sub>n</sub>. This is done by using 20 frames with different robot poses then compare it with simulation grouth truth
+
+The result showing that simulated camera tended to overestimate marker distance, with mean range errors of around 65 mm at 3 m and 131 mm at 4.5 m. Bearing bias remained below 0.02° at the tested poses. 
+Because similar measurement accross consecutive frames can still share the same bias. consistent reading are not always accurate. To solve this, EKF first subtrach the know bias (4.5 mmr^2) and its range noise is set larger than the frame to frame spread to reduce it overcondident on repeated readings.  
+<p align="center">
+  <img src="results/page/lab_aruco.png" width="90%" alt="ArUco errors on the lab track">
+</p>
+
+**Real-camera range measurements**:
+We tested the camera range reading at seven different distance, keeping the robot and marker stationary between each distance. Between these trial, the range standard deviation across repeated image was 0.05-3.4 mm. We then used tape-measured distances as reference value and fitted a linear correction to the raw ArUco ranges using ([aruco_real_noise.py](experiments/aruco_real_noise.py)). This removes a fixed offset and adjust the range scale. After appying it, the mean diffeerence was within +- 3mm for the datasets used to fit the EKF correction. 
+<p align="center">
+  <img src="results/page/aruco_real_simple.png" width="60%" alt="Real camera ArUco range">
+</p>
+
+**Wheel-encoder evaluation**:
+To evaluate the robot wheel odometry, we used [ubmmark.py](experiments/umbmark.py) to assess it errors. The robot drove 0.5 m squres three times in clockwise and counter-clockwise. With each run we measure the final position and heading errors. 
+
+The result showing that a right to left wheel size ratio is 1.006 and a wheel seperation of 292.6 mm, compared with the nomina 288 mm. The wheel distance noise estimate was 5.2%, to include manual measurement error, we kepth k_wheel=6%. We kept the nominal wheel parameters and used Aruco updates to reduce pose drift. 
 ### 3.3 Noise handling: outlier rejection and marker-loss handling [D]
+
 ### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
+
 ### 3.5 Simulated vs real sensor noise, and why they differ [HD-hw]
 
 ## 4. Estimation (C): EKF design, tuning and reported performance
