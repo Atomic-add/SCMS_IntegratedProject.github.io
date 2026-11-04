@@ -202,6 +202,22 @@ To evaluate the robot wheel odometry, we used [ubmmark.py](experiments/umbmark.p
 The result showing that a right to left wheel size ratio is 1.006 and a wheel seperation of 292.6 mm, compared with the nomina 288 mm. The wheel distance noise estimate was 5.2%, to include manual measurement error, we kepth k_wheel=6%. We kept the nominal wheel parameters and used Aruco updates to reduce pose drift. 
 ### 3.3 Noise handling: outlier rejection and marker-loss handling [D]
 
+Before every measurements reaches the EKF, it need to passes the checks below. The robot also stop when the dock marker is unavailable during docking ([docking.py](src/control/docking.py)), or when LiDAR data return cover less than 80% in simulation or 20% on the real robot ([lidar_obs.py](src/control/lidar_obs.py)) 
+
+<p align="center">
+  <img src="results/page/camera_measurement_flow.png" width="30%" alt="Camera Measurement">
+</p>
+
+(Frame age, bias, NIS gate from [ekf.py](src/estimation/ekf.py)), 
+(Detection, IPPE from [aruco.py](src/perception/aruco.py)).
+
+**Real-robot validation**: To test our noise handling method on the real robot, we compared the marker 0 marker with it normal position and it have been moved. During a normal run, 96% of 1,092 marker measurement passed the NIS check. On the other hand 30 detections from the same marker exceeded the NIS threshold were rejected, while measurements from marker 1 and 2 still pass. The robot then waited 3 seconds and stopped with marker loss in this case 
+
+<p align="center">
+  <img src="results/page/real_nis.png" width="100%" alt="NIS TEST">
+</p>
+ 
+ **LIDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in forward section.The real robot's Lidar coverage threshold was reduced from 80% to 20% because the lab's black foam panels using in the lab return very few to the LDS-01. However, this does not mean that obstacle detection's accuracy will be decreased, the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)).
 ### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
 
 ### 3.5 Simulated vs real sensor noise, and why they differ [HD-hw]
