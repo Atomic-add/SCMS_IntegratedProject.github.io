@@ -47,7 +47,7 @@ ESTIMATION_CONFIG = PROJECT_ROOT / "config" / "estimation.json"
 def load_estimation_config(path=ESTIMATION_CONFIG, camera=SIM_INTRINSICS):
     """The EKF tuning as a dict (config/estimation.json).
 
-    camera: the intrinsics file the ArUco ranges come from (default the sim camera, config/camera_sim.json;
+    camera: the intrinsics file the ArUco ranges come from (Fdefault the sim camera, config/camera_sim.json;
     None = estimation.json alone). When it has its own "range_correction" (the
     real camera, experiments/aruco_real_noise.py), aruco.measure has already removed that bias, so
     range_bias_r2 (the sim camera's bias) becomes 0, not subtracted twice, and range_sd is the camera's.
