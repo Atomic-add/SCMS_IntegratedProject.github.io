@@ -45,7 +45,7 @@ INSERT VIDEO
 
 ## 4. Estimation (C): EKF design, tuning and reported performance
 
-### EKF design
+### 4.1 EKF design
 The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3, Task B.3**, borrowing the following variables:
 - ekf_predict
 - ekf_update
@@ -54,27 +54,36 @@ The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3,
 - H_rb
 - Qd reasoning
 
-#### state
+The design has 2 main functions, predict, and update.
 
-State x = [x, y, theta]
+predict is generated once per new encoder sample. Utilised to move the estimate, with the wheel increments, and grow P by the wheel noise. 
 
-xh, P = ekf.step(encoders, marker_frame = None)
+Update is generated once per new camera frame. This fuses one marker's range and bearing, and returns its NIS.
 
-#### inputs
+### 4.2 Tuning: Q, R and P0, and where each value comes from [D]
 
-#### motion model (predict)
+- **Q (process noise)**: This refers to noise generated from the robot's environment. Some include the roughness of the floor, and the radi of the wheels.
 
-#### measurement model (update)
+- **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting accuracy and reliability of measurements
 
-#### safeguards
+- **P0 (initial/reference position)**: This is the starting position of the robot.
 
-With the 
+The table below is an expansion upon these 3 variable groups. Illustrating what each variable belongs to, and what it does.
 
+|  Group   |    Variable     |                    What it is                    |
+| :------- | :-------------- |  :---------------------------------------------- |
+|   Q      | k_wheel         | Wheel error, which grows with distance travelled |
+|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    |          |                 | positive                                         |
+|   R      | range_sd [a,b]  | range noise = a + b*r^2                          |
+|          | bearing_sd_deg  | bearing noise                                    |
+|          | range_bias_r2   | Known camera rnage bias.                         |
+|   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
 
-### Tuning
+All variables come from (([estimation.json](config/estimation.json))
 
-### Reported performance
-Below is the testing for the estimation.
+### 4.3 Reported performance
+
+To begin, below is a simple pass/fail check from (([estimation_test.py](src/estimation/estimation_test.py)). This serves to be a quick and efficient method of checking if it is able to pass everything or not.
 
 -----------------------------------------------------------------------------------
 
@@ -119,9 +128,18 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 ------------------------------------------------------------------------------------
 
 
-### Tuning trade-off
 
-### Comparison with 2nd estimator
+
+### 4.4 Tuning trade-off
+
+
+### 4.5 Comparison with 2nd estimator
+This compares the EKF to odometry through 20 random tests. Observing through simulation if they are able to successfully dock
+
+| Run | Docked | Contacts | Notes |
+|---|---|---|---|
+| EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
+| Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
 
 
 ## 5. Control (D): controller design, tuning and tracking results
