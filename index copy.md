@@ -256,8 +256,60 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 
 ## 7. Real Robot
 ### 7.1 Setup and differences from simulation [HD-hw]
+We tested the system using a TurtleBot3 Waffle Pi that running ROS 2, with an LDS-01 LiDAR and a Pi camera. Our laptop receives sensor data and sends velocity commands over the lab wifi and through the rosbeidge (UTS-RI rosbridge_api). The real robot ([real_robot.py](src/robot/real_robot.py)) provide the sensor reading and command function as the simulation, allowing the EKF, controllers, and mission logic to run on both platforms with the same logic. Wheel joint data from /joint_states is used to calculate odometry, camera images are used to detect ArUco markers, LiDAR data from /scan is used for obstacle avoidance. 
+
+The laptop can control linear, angular velocity of the robot through /cmd_vel. 
+The real rrack contained three 100 mm ArUco markers and a 20cm box (obstacle). 
+
+The run command is python main.py --real --task config/arena_lab.json. 
+
+<p align="center">
+  <img src="results/page/robot_start.jpg" width="30%" alt="Frame chain">
+  <br><em>The real robot is on its start mark, marker 1 and 2 on the front wall with the obstacle (box) in the driving lane.</em>
+</p>
+
+
+| Setting | Simulation | Real robot | Why the different| 
+|---|---|---|---|
+|Speed limits| Linear: 0.26 m/s / Angular: 1.82 rad/s | Linear: 0.1 m/s / Angular: 1.0 rad/s|  Lower speeds on real robot were used to improve marker detection and control reliability by reducing motion blure and communication delays' effect|
+|Minimum valid LiDAR forward coverage| 80% | 20% | Real LiDAR can not receive many returns from every surface. the return quality depends on different factor, as material, distance. In our test black foam panels even produced few returns|
+|Docking state| v: 0.8 m/s/ Lateral tolerance: 3 cm/ Heading Tolerance: 5°|v: 0.05 m/s/ Lateral tolerance: 4 cm/ Heading Tolerance: 8°, stop 1.5 cm early| The real robot move more slowly and stop early to reduce overshoot at the docking position. Wider tolerances allow for localisation and control errors observed during hardware calibration| 
+|Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| Smaller clearance and side margins allow the planned avoidance path to fit within the lab narrower real corridor| 
 ### 7.2 Real-robot results with the same metrics: tracking (D), docking (D), number of runs under real noise (E) [HD-hw]
+
+**Real-robot trials** We filmed 9 full tracks runs on 30 October. In three runs, the box was centred in the lane. In the other sex, it was shifeted 15 cm left or right. 
+
+The real robot also drive without external ground truth system using EKF during track mode. Therefore, the real distance error between the robot and track was not independently verified. For six successful docks, we measure the robot's final position and heading to compare it with simulation environment.
+
+| Run | Box position | Outcome | Run time | Estimated cross-track RMS during TRACK | Marker measurements accepted |
+|---|---|---|---|---|---|
+| 09:28 | Centre | Docked | 62.4 s | 1.9 cm | 96% |
+| 09:32 | Centre | Docked | 62.2 s | 2.4 cm | 95% |
+| 09:36 | Centre | Docked | 62.3 s | 2.1 cm | 98% |
+| 09:40 | Right | marker_lost | 53.5 s | 1.7 cm | 93% |
+| 09:41 | Right | marker_lost | 53.3 s | 1.2 cm | 93% |
+| 09:43 | Left | marker_lost | 56.4 s | 2.6 cm | 83% |
+| 10:48 | Right | Docked | 60.8 s | 1.4 cm | 96% |
+| 10:54 | Right | Docked | 61.8 s | 1.4 cm | 96% |
+| 10:59 | Left | Docked | 61.5 s | 1.7 cm | 99% |
+
+The three unsucessful runs (9:40-9:43) occuring during the final approach, where the side markers were all out of view and the EKF relied completely on wheel odometry. The robot caught on a raised floor vent coer, causing turing motion stuck. Therefore, the estimated pose become inaccurate, and as a result dock-marker measurement were missing or rejected by the NIS gate. The robot than stopped safel
+
+After the track was moved away from the vent cover, the next three runs docked without code changes.This support that the NIS helps protect the estimate from bad measurements, but when the estimate is wrong, it cannot recover it self without aany visible markers
+
 ### 7.3 Quantitative simulation vs real comparison [HD-hw]
+The below table show the different between the simulation and real robot docking stage. 
+| Metric (5 measured hardware docks and their simulation counterparts) | Simulation | Real robot |
+|---|---|---|
+| Final distance to dock marker — target: 35 cm | 36.55 ± 0.03 cm | 35.35 ± 0.25 cm |
+| Lateral docking error | +0.46 ± 0.02 cm | +0.52 ± 0.35 cm |
+| Heading docking error | −0.77 ± 0.03° | −0.65 ± 1.11° |
+| Completion time | 43.8–44.9 s | Approximately 61–62 s |
+
+Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, at about36.5 cm from the marker. While the simulation stopped at 36.55 cm near to the intended value, the real robot stopped at 35.35 cm. Proving that there is a chance real robot still moving after docking complete. The real robot took longer to finish as the it interface limits speed to 0.10 m/s, while the simulation uses speed of 0.2 m/s
+
+
+
 
 ## 8. Independent Contribution Summary (only list what has results) Core (needed):
 ### 8.1 Real-robot implementation (section 7): HD evidence for B, D, E [HD-hw]
