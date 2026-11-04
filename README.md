@@ -54,36 +54,37 @@ The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3,
 - H_rb
 - Qd reasoning
 
-The design has 2 main functions, predict, and update.
+The design has 2 main functions: predict and update.
 
-predict is generated once per new encoder sample. Utilised to move the estimate, with the wheel increments, and grow P by the wheel noise. 
+**Predict** is generated once per new encoder sample. Utilised to move the estimate with the wheel increments and grow P by the wheel noise. 
 
-Update is generated once per new camera frame. This fuses one marker's range and bearing, and returns its NIS.
+**Update** is generated once per new camera frame. This fuses one marker's range and bearing, and returns its NIS.
 
 ### 4.2 Tuning: Q, R and P0, and where each value comes from [D]
 
-- **Q (process noise)**: This refers to noise generated from the robot's environment. Some include the roughness of the floor, and the radi of the wheels.
+- **Q (process noise)**: This refers to uncertainty in the motion prediction at each step. This includes wheel slip and radius error, which grows with the distance travelled.
+  
+- **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting the accuracy and reliability of measurements
 
-- **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting accuracy and reliability of measurements
-
-- **P0 (initial/reference position)**: This is the starting position of the robot.
+- **P0 (starting uncertainty)**
 
 The table below is an expansion upon these 3 variable groups. Illustrating what each variable belongs to, and what it does.
 
 |  Group   |    Variable     |                    What it is                    |
 | :------- | :-------------- |  :---------------------------------------------- |
 |   Q      | k_wheel         | Wheel error, which grows with distance travelled |
-|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    |          |                 | positive                                         |
+|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    
+|          |                 | positive                                         |
 |   R      | range_sd [a,b]  | range noise = a + b*r^2                          |
 |          | bearing_sd_deg  | bearing noise                                    |
-|          | range_bias_r2   | Known camera rnage bias.                         |
+|          | range_bias_r2   | Known camera range bias.                         |
 |   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
 
-All variables come from ([estimation.json](config/estimation.json))
+All variables listed come from ([estimation.json](config/estimation.json))
 
 ### 4.3 Reported performance
 
-To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves to be a quick and efficient method of checking if it is able to pass everything or not.
+To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves as a quick and efficient method of checking whether it is able to pass everything or not in a simulated environment.
 
 -----------------------------------------------------------------------------------
 
@@ -127,15 +128,76 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ------------------------------------------------------------------------------------
 
-Expanding beyond this, sweep_lqr g
+
 
 
 ### 4.4 Tuning trade-off
 
-This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watching NEES, NIS, and the error.
+This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
 
 These test results are from ([sweep_r](evaluation/sweep_r.py))
 
+------------------------------------------------------------------------------------
+
+R x10                    seed   2: ANEES   1.46  NIS  0.02  gated   0  worst error 0.80 cm  docked
+
+R x10                    seed   1: ANEES   1.53  NIS  0.02  gated   0  worst error 0.73 cm  docked
+
+R x10                    seed   3: ANEES   1.52  NIS  0.02  gated   0  worst error 0.84 cm  docked
+
+R x10                    seed   4: ANEES   1.48  NIS  0.02  gated   0  worst error 0.80 cm  docked
+
+R x10                    seed   6: ANEES   1.55  NIS  0.02  gated   0  worst error 0.74 cm  docked
+
+R x10                    seed   5: ANEES   1.57  NIS  0.02  gated   0  worst error 0.76 cm  docked
+
+R x10                    seed   7: ANEES   1.57  NIS  0.02  gated   0  worst error 0.78 cm  docked
+
+R x10                    seed   8: ANEES   1.53  NIS  0.02  gated   0  worst error 0.74 cm  docked
+
+R x10                    seed   9: ANEES   1.40  NIS  0.02  gated   0  worst error 0.78 cm  docked
+
+R x10                    seed  11: ANEES   1.56  NIS  0.02  gated   0  worst error 0.88 cm  docked
+
+R x10                    seed  10: ANEES   1.56  NIS  0.02  gated   0  worst error 0.97 cm  docked
+
+R x10                    seed  12: ANEES   1.56  NIS  0.02  gated   0  worst error 0.77 cm  docked
+
+R x10                    seed  13: ANEES   1.60  NIS  0.02  gated   0  worst error 1.02 cm  docked
+
+R x10                    seed  14: ANEES   1.55  NIS  0.02  gated   0  worst error 0.74 cm  docked
+
+R x10                    seed  16: ANEES   1.62  NIS  0.02  gated   0  worst error 0.92 cm  docked
+
+R x10                    seed  15: ANEES   1.45  NIS  0.02  gated   0  worst error 0.82 cm  docked
+
+R x10                    seed  19: ANEES   1.51  NIS  0.02  gated   0  worst error 0.73 cm  docked
+
+R x10                    seed  18: ANEES   1.61  NIS  0.02  gated   0  worst error 0.75 cm  docked
+
+R x10                    seed  17: ANEES   1.52  NIS  0.02  gated   0  worst error 0.81 cm  docked
+
+R x10                    seed  20: ANEES   1.57  NIS  0.02  gated   0  worst error 0.93 cm  docked
+
+R (config)               seed   2: ANEES   3.21  NIS  0.10  gated   0  worst error 1.68 cm  docked
+
+R (config)               seed   1: ANEES   3.35  NIS  0.11  gated   1  worst error 1.08 cm  docked
+
+R (config)               seed   3: ANEES   3.26  NIS  0.16  gated   1  worst error 2.94 cm  docked
+
+R (config)               seed   4: ANEES   2.57  NIS  0.14  gated   0  worst error 1.44 cm  docked
+
+R (config)               seed   5: ANEES   2.54  NIS  0.17  gated   1  worst error 1.99 cm  docked
+
+R (config)               seed   6: ANEES   3.50  NIS  0.09  gated   0  worst error 1.13 cm  docked
+
+R (config)               seed   7: ANEES   3.54  NIS  0.12  gated   0  worst error 1.08 cm  docked
+
+R (config)               seed   8: ANEES   2.71  NIS  0.16  gated   1  worst error 2.57 cm  docked
+
+R (config)               seed   9: ANEES   3.78  NIS  0.11  gated   1  worst error 1.72 cm  docked
+
+------------------------------------------------------------------------------------
 
 ### 4.5 Comparison with 2nd estimator
 This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
@@ -144,6 +206,13 @@ This compares the EKF to odometry through 20 random tests. Observing through sim
 |---|---|---|---|
 | EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
 | Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+
+To expand upon this through ([run_demo](evaluation/run_demo.py)). An illustration is created. This showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
+
+![Your Alt Text](./results/demo_compare.png)
+
+From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only having a higher success rate of docking. But also producing fewer errors.
+
 
 ## 5. Control (D): controller design, tuning and tracking results
 
@@ -188,8 +257,6 @@ This compares the EKF to odometry through 20 random tests. Observing through sim
 |    Independent Contribution Summary| Kim             | 
 |    Limitations and Lessons         | Addison         | 
 |    Reproducibility                 | Addison         | 
-
-
 
 ### Generative AI delaration
 **Claude (Anthropic)** was used to scaffold the simulation environment, the sensor
