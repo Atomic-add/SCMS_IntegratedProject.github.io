@@ -79,11 +79,11 @@ The table below is an expansion upon these 3 variable groups. Illustrating what 
 |          | range_bias_r2   | Known camera rnage bias.                         |
 |   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
 
-All variables come from (([estimation.json](config/estimation.json))
+All variables come from ([estimation.json](config/estimation.json))
 
 ### 4.3 Reported performance
 
-To begin, below is a simple pass/fail check from (([estimation_test.py](src/estimation/estimation_test.py)). This serves to be a quick and efficient method of checking if it is able to pass everything or not.
+To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves to be a quick and efficient method of checking if it is able to pass everything or not.
 
 -----------------------------------------------------------------------------------
 
@@ -127,20 +127,23 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ------------------------------------------------------------------------------------
 
-
+Expanding beyond this, sweep_lqr g
 
 
 ### 4.4 Tuning trade-off
 
+This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watching NEES, NIS, and the error.
+
+These test results are from ([sweep_r](evaluation/sweep_r.py))
+
 
 ### 4.5 Comparison with 2nd estimator
-This compares the EKF to odometry through 20 random tests. Observing through simulation if they are able to successfully dock
+This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
 
 | Run | Docked | Contacts | Notes |
 |---|---|---|---|
 | EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
 | Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
-
 
 ## 5. Control (D): controller design, tuning and tracking results
 
