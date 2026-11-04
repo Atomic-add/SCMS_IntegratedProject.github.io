@@ -3,17 +3,17 @@
     "success": true,
     "stop_reason": "docked",
     "time_s": 37.4,
-    "cross_track_rms_cm": 1.09,
-    "cross_track_max_cm": 5.1,
-    "dock_lateral_err_cm": 0.42,
+    "cross_track_rms_cm": 1.01,
+    "cross_track_max_cm": 5.09,
+    "dock_lateral_err_cm": 0.43,
     "dock_along_err_cm": 0.34,
     "dock_heading_err_deg": -0.71,
     "estimate_err_final_cm": 0.26,
-    "estimate_err_max_cm": 2.01,
-    "estimate_rmse_cm": 0.69,
+    "estimate_err_max_cm": 0.92,
+    "estimate_rmse_cm": 0.43,
     "min_centre_to_wall_m": 0.353,
     "collisions": [],
-    "anees": 2.79,
+    "anees": 2.61,
     "anees_bounds": [
       2.827,
       3.178
@@ -22,8 +22,8 @@
       0.216,
       9.348
     ],
-    "nees_inside_95": 0.902,
-    "marker_updates": 962,
+    "nees_inside_95": 0.881,
+    "marker_updates": 961,
     "anis": 0.1,
     "anis_bounds": [
       1.876,
@@ -33,25 +33,25 @@
       0.051,
       7.378
     ],
-    "nis_inside_95": 0.467,
+    "nis_inside_95": 0.455,
     "mean_nis": 0.1
   },
   "left": {
     "success": true,
     "stop_reason": "docked",
     "time_s": 37.2,
-    "cross_track_rms_cm": 1.01,
-    "cross_track_max_cm": 5.06,
+    "cross_track_rms_cm": 1.06,
+    "cross_track_max_cm": 5.07,
     "dock_lateral_err_cm": 0.43,
     "dock_along_err_cm": 0.33,
     "dock_heading_err_deg": -0.71,
     "estimate_err_final_cm": 0.26,
-    "estimate_err_max_cm": 1.04,
-    "estimate_rmse_cm": 0.42,
+    "estimate_err_max_cm": 2.0,
+    "estimate_rmse_cm": 0.58,
     "min_centre_to_wall_m": 0.353,
     "collisions": [],
-    "min_centre_to_box_m": 0.404,
-    "anees": 2.62,
+    "min_centre_to_box_m": 0.407,
+    "anees": 2.66,
     "anees_bounds": [
       2.826,
       3.179
@@ -60,8 +60,8 @@
       0.216,
       9.348
     ],
-    "nees_inside_95": 0.849,
-    "marker_updates": 944,
+    "nees_inside_95": 0.885,
+    "marker_updates": 936,
     "anis": 0.09,
     "anis_bounds": [
       1.874,
@@ -71,25 +71,25 @@
       0.051,
       7.378
     ],
-    "nis_inside_95": 0.426,
+    "nis_inside_95": 0.435,
     "mean_nis": 0.09
   },
   "centre": {
     "success": true,
     "stop_reason": "docked",
-    "time_s": 43.2,
-    "cross_track_rms_cm": 1.27,
-    "cross_track_max_cm": 4.95,
-    "dock_lateral_err_cm": 0.43,
-    "dock_along_err_cm": 0.34,
+    "time_s": 43.3,
+    "cross_track_rms_cm": 1.58,
+    "cross_track_max_cm": 5.1,
+    "dock_lateral_err_cm": 0.42,
+    "dock_along_err_cm": 0.33,
     "dock_heading_err_deg": -0.71,
-    "estimate_err_final_cm": 0.27,
-    "estimate_err_max_cm": 2.13,
-    "estimate_rmse_cm": 0.73,
-    "min_centre_to_wall_m": 0.337,
+    "estimate_err_final_cm": 0.26,
+    "estimate_err_max_cm": 1.8,
+    "estimate_rmse_cm": 0.83,
+    "min_centre_to_wall_m": 0.32,
     "collisions": [],
-    "min_centre_to_box_m": 0.301,
-    "anees": 3.66,
+    "min_centre_to_box_m": 0.311,
+    "anees": 3.5,
     "anees_bounds": [
       2.839,
       3.166
@@ -98,36 +98,36 @@
       0.216,
       9.348
     ],
-    "nees_inside_95": 0.76,
-    "marker_updates": 940,
-    "anis": 0.17,
+    "nees_inside_95": 0.893,
+    "marker_updates": 875,
+    "anis": 0.13,
     "anis_bounds": [
-      1.874,
-      2.13
+      1.87,
+      2.135
     ],
     "nis_bounds": [
       0.051,
       7.378
     ],
-    "nis_inside_95": 0.467,
-    "mean_nis": 0.17
+    "nis_inside_95": 0.409,
+    "mean_nis": 0.13
   },
   "right": {
     "success": true,
     "stop_reason": "docked",
     "time_s": 37.4,
-    "cross_track_rms_cm": 1.09,
-    "cross_track_max_cm": 5.1,
-    "dock_lateral_err_cm": 0.42,
+    "cross_track_rms_cm": 1.01,
+    "cross_track_max_cm": 5.09,
+    "dock_lateral_err_cm": 0.43,
     "dock_along_err_cm": 0.34,
     "dock_heading_err_deg": -0.71,
     "estimate_err_final_cm": 0.26,
-    "estimate_err_max_cm": 2.01,
-    "estimate_rmse_cm": 0.69,
+    "estimate_err_max_cm": 0.92,
+    "estimate_rmse_cm": 0.43,
     "min_centre_to_wall_m": 0.353,
     "collisions": [],
-    "min_centre_to_box_m": 0.389,
-    "anees": 2.79,
+    "min_centre_to_box_m": 0.396,
+    "anees": 2.61,
     "anees_bounds": [
       2.827,
       3.178
@@ -136,8 +136,8 @@
       0.216,
       9.348
     ],
-    "nees_inside_95": 0.902,
-    "marker_updates": 962,
+    "nees_inside_95": 0.881,
+    "marker_updates": 961,
     "anis": 0.1,
     "anis_bounds": [
       1.876,
@@ -147,7 +147,7 @@
       0.051,
       7.378
     ],
-    "nis_inside_95": 0.467,
+    "nis_inside_95": 0.455,
     "mean_nis": 0.1
   }
 }

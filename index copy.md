@@ -23,7 +23,9 @@ $$\dot e_y = v\sin e_\theta, \qquad \dot e_\theta = \omega - \frac{v\kappa\cos e
 
 $$A = \left.\frac{\partial f}{\partial e}\right|_{e=0}, \qquad B = \left.\frac{\partial f}{\partial\,\delta\omega}\right|_{e=0}$$
 
-$$\dot e = \begin{bmatrix}0 & v\\ -v\kappa^2 & 0\end{bmatrix} e + \begin{bmatrix}0\\ 1\end{bmatrix}\delta\omega$$
+```math
+\dot e = \begin{bmatrix}0 & v\\ -v\kappa^2 & 0\end{bmatrix} e + \begin{bmatrix}0\\ 1\end{bmatrix}\delta\omega
+```
 
 On the lab's straight segments κ = 0, so A = [[0, v], [0, 0]] and B = [0, 1]: v sits inside A, and at v = 0 the robot cannot steer out a lateral error.
 
@@ -33,11 +35,15 @@ $$A_d = e^{AT_s}, \qquad B_d = \int_0^{T_s} e^{A\tau}B\,d\tau$$
 
 Because A² = 0 on a straight, the series e<sup>AT<sub>s</sub></sup> = I + AT<sub>s</sub> + (AT<sub>s</sub>)²/2 + … stops after two terms, so the result is exact:
 
-$$A_d = I + AT_s = \begin{bmatrix}1 & vT_s\\ 0 & 1\end{bmatrix}, \qquad e^{A\tau}B = \begin{bmatrix}v\tau\\ 1\end{bmatrix} \;\Rightarrow\; B_d = \begin{bmatrix}vT_s^2/2\\ T_s\end{bmatrix}$$
+```math
+A_d = I + AT_s = \begin{bmatrix}1 & vT_s\\ 0 & 1\end{bmatrix}, \qquad e^{A\tau}B = \begin{bmatrix}v\tau\\ 1\end{bmatrix} \;\Rightarrow\; B_d = \begin{bmatrix}vT_s^2/2\\ T_s\end{bmatrix}
+```
 
 At v = 0.2 m/s:
 
-$$A_d = \begin{bmatrix}1 & 0.01\\ 0 & 1\end{bmatrix}, \qquad B_d = \begin{bmatrix}0.00025\\ 0.05\end{bmatrix}, \qquad e[k+1] = A_d\,e[k] + B_d\,\delta\omega[k]$$
+```math
+A_d = \begin{bmatrix}1 & 0.01\\ 0 & 1\end{bmatrix}, \qquad B_d = \begin{bmatrix}0.00025\\ 0.05\end{bmatrix}, \qquad e[k+1] = A_d\,e[k] + B_d\,\delta\omega[k]
+```
 
 Steering changes e<sub>θ</sub> directly (T<sub>s</sub> = 0.05 per unit δω), but moves e<sub>y</sub> only by turning the heading first, with coupling vT<sub>s</sub> = 0.01, so the authority over e<sub>y</sub> shrinks with speed and vanishes at v = 0.
 
@@ -63,17 +69,21 @@ The rank test only says whether the system is controllable, not how easy it is t
 
 **Rank test:** A linear model with sensor matrix C (y = Cx) is observable when the observability matrix has full rank:
 
-$$\mathcal{O} = \begin{bmatrix}C\\ CA\\ \vdots\\ CA^{n-1}\end{bmatrix}, \qquad \mathrm{rank}(\mathcal{O}) = n$$
+```math
+\mathcal{O} = \begin{bmatrix}C\\ CA\\ \vdots\\ CA^{n-1}\end{bmatrix}, \qquad \mathrm{rank}(\mathcal{O}) = n
+```
 
-In the EKF, the measurement Jacobian H<sub>k</sub> and the motion Jacobian F<sub>k</sub> change every frame, so the same idea is written frame by frame. Each frame's measurement is predicted from the initial pose x<sub>0</sub>:
+In the EKF, the measurement Jacobian H<sub>k</sub> and the motion Jacobian F<sub>k</sub> change every frame, so the same idea is applied to the linearised EKF, frame by frame. A small error δx<sub>0</sub> in the initial pose changes each frame's predicted measurement by:
 
-$$z_0 = H_0x_0, \qquad z_1 = H_1F_0\,x_0, \qquad z_2 = H_2F_1F_0\,x_0, \ \dots$$
+$$\delta z_0 = H_0\,\delta x_0, \qquad \delta z_1 = H_1F_0\,\delta x_0, \qquad \delta z_2 = H_2F_1F_0\,\delta x_0, \ \dots$$
 
 Stacking these gives
 
-$$\begin{bmatrix}z_0\\ z_1\\ z_2\\ \vdots\end{bmatrix} = \mathcal{O}_N\,x_0, \qquad \mathcal{O}_N = \begin{bmatrix}H_0\\ H_1F_0\\ H_2F_1F_0\\ \vdots\end{bmatrix}$$
+```math
+\begin{bmatrix}\delta z_0\\ \delta z_1\\ \delta z_2\\ \vdots\end{bmatrix} = \mathcal{O}_N\,\delta x_0, \qquad \mathcal{O}_N = \begin{bmatrix}H_0\\ H_1F_0\\ H_2F_1F_0\\ \vdots\end{bmatrix}
+```
 
-If rank(O<sub>N</sub>) = 3, x<sub>0</sub> can be solved from the measurements.
+If rank(O<sub>N</sub>) = 3, any small pose error δx<sub>0</sub> shows up in the measurements, so the pose is locally observable along that trajectory.
 
 The rank says whether the pose is recoverable, and the null space shows what stays hidden. Test pose (1.5, 1.25) m on the lab lane, 1 s = 20 frames ([observability.py](evaluation/observability.py), results in [observability.json](results/observability.json)).
 
@@ -121,12 +131,12 @@ so they depend on v. The decay time shortens 3.5 times from 0.10 to 0.26 m/s (3.
 | 20 cm | 1.83 rad/s (limit reached) | 26° | 1.2 % |
 | 50 cm | 4.6 rad/s (clipped) | 64° | 12 % |
 
-In the full runs, the cross-track error peaks at about 5 cm (5.2 cm in the worst of 60 runs), well inside the range where the linear model holds; it breaks down only for large offsets, where the command is clipped at 1.82 rad/s and the heading error is too large for sin e<sub>θ</sub> ≈ e<sub>θ</sub>.
+In the full runs, the cross-track error peaks at about 5 cm (5.2 cm in the worst of 60 runs), well inside the range where the linear model holds. The gap grows steadily with the offset (3.7 % at 30 cm) and becomes significant from about 50 cm, where the command is clipped at 1.82 rad/s and the heading error is too large for sin e<sub>θ</sub> ≈ e<sub>θ</sub>. This test covers only these two effects; the effects listed below can cause errors at any offset.
 
 **Interpretation:**
 
 - **Controller: robust to speed.** An error is always corrected over roughly the same distance, so tracking RMS rises only 9 % from 0.10 to 0.26 m/s. The same K works at every tested speed without redesigning.
-- **Estimator: degrades first, at low speed.** We follow the Assessment 3 specification S4: samples with NEES inside the 95 % χ²<sub>3</sub> bound (7.81) ≥ 90 %. Position RMSE does not change with speed (0.74, 0.79, 0.69 cm), but at 0.10 m/s NEES coverage falls to 89 %, below A3's 90 %, so the filter is overconfident. A likely cause, not yet tested on its own, is that Q<sub>d</sub> (process noise covariance) was tuned around the design speed and does not grow enough at low speed, so the filter becomes overconfident.
+- **Estimator: the first component to breach the A3 specification, at low speed.** A3's S4 requires at least 90 % of samples to have NEES ≤ 7.81, the 95th percentile of χ²<sub>3</sub>; a consistent filter would give about 95 %. Position RMSE does not change with speed (0.74, 0.79, 0.69 cm), but at 0.10 m/s NEES coverage falls to 89 %, below A3's 90 %, so the filter is overconfident. A likely cause, not yet tested on its own, is that Q<sub>d</sub> (process noise covariance) was tuned around the design speed and does not grow enough at low speed, so the filter becomes overconfident.
 - **What the model leaves out.** The linear model ignores the per-wheel speed limit (saturation), camera latency (lag) and a +0.6 cm steady offset (persistent error). An LQI could remove an offset caused by an outside disturbance. However, if the EKF estimate itself is biased, the LQI cannot remove that offset, as it integrates the estimated e<sub>y</sub> and sees no error to correct.
 
 ## 3. Sensing (B): calibration, noise handling and frame management
@@ -243,11 +253,151 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 ### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] (C has no hardware credit, so this is C's HD; re-run, current files identical)
 
 ## 5. Control (D): controller design, tuning and tracking results
-### 5.1 Controller design: LQR [D]
+### 5.1 Controller design: LQR, turn and IBVS [D]
+The robot switches between three controllers according to its mode. All three controllers use only EKF-estimated states or camera measurements (for IBVS), never the ground-truth pose.
+
+| Mode | Controller | Command | Why this controller |
+|---|---|---|---|
+| Path following | Discrete LQR | ω = vκ − Kê | Balances tracking error against steering effort |
+| Obstacle avoidance (LiDAR) | Same LQR, shifted line | ω = vκ − Kê, with e<sub>y</sub> → e<sub>y</sub> − d | No new controller: the reference is shifted by d and rejoined |
+| Turning (corners > 30°) | P-controller | v = 0, ω = −k<sub>turn</sub>e<sub>θ</sub> | Allows the robot to rotate in place. At v = 0, the path-following model cannot control e<sub>y</sub> (rank C = 1, Section 2.2). |
+| Docking (< 0.55 m from the marker) | IBVS | (v, ω) = λ J<sub>mr</sub><sup>+</sup>(p* − p) | Minimises the image-feature errors directly. |
+
+**LQR (path following):** The LQR gain K is calculated from the discrete state-space model in Section 2.1 (ct.dlqr). It is combined with curvature feedforward and clipped to the motor limit:
+
+$$\omega = v\kappa - K\hat e$$
+
+At v = 0.20 m/s, the calculated gain is K = [9.16, 3.25], and the angular velocity is limited to |ω| ≤ 1.82 rad/s.
+
+- **Stability check:** The closed-loop eigenvalue magnitudes are below 1 for both the straight path (0.965, 0.871) and a test arc of radius 0.5 m (0.960, 0.875). This confirms stability of the nominal linear model, while motor saturation, estimation errors and nonlinear dynamics are checked separately in simulation (Sections 2.4 and 5.3).
+- **Approaching the dock:** After the pre-dock waypoint W3 (about 0.70 m from the marker), the LQR gain is recalculated at v<sub>dock</sub> = 0.08 m/s, which gives K = [9.25, 2.92]. It drives the robot until the marker is 0.55 m away, where IBVS takes over.
+- **Why LQI is not used:** An LQI controller was also implemented in the code but disabled because the LQR already shows no large steady-state offset (mean cross-track error ≤ 0.83 cm, Section 5.4). Furthermore, LQI integrates the estimated cross-track error ê<sub>y</sub>, so it cannot reliably remove an offset caused by the estimation bias (Section 2.4).
+
+**Obstacle avoidance:** When LiDAR detects an obstacle in the robot's path, the robot shifts its reference path sideways by an offset d to avoid it. The same LQR controller follows this shifted path using the modified cross-track error ê<sub>y</sub> − d. If neither side has enough clearance, or the LiDAR scan is invalid, the robot stops for safety (src/control/avoidance.py).
+
+**Proportional turn (corners):** At a corner sharper than 30°, the robot stops and turns on the spot:
+
+$$v = 0, \qquad \omega = -k_{turn}\, e_\theta$$
+
+with k<sub>turn</sub> = 2.0 s⁻¹ and |ω| ≤ 1.0 rad/s. Control returns to the LQR once |e<sub>θ</sub>| < 3° (src/control/waypoints.py).
+
+**IBVS (final docking):**
+
+- **Switching:** The LQR first drives the robot onto the marker's normal, because IBVS alone may leave a unicycle facing the marker but offset sideways. IBVS takes over once the marker is less than 0.55 m from the robot and all four corners and a valid PnP pose are detected. However, the system does not verify the robot's alignment with the marker before switching, so perfect alignment is not guaranteed.
+- **Control law:** IBVS uses the four marker corners to minimise image-feature errors:
+
+  $$(v, \omega) = \lambda\, J_{mr}^{+}\,(p^* - p)$$
+
+  with λ = 0.8 s⁻¹, |v| ≤ 0.08 m/s and |ω| ≤ 0.5 rad/s. Here p is the current positions of the four marker corners in the camera image, and p* is the desired positions when the robot is docked. J<sub>mr</sub> is the image Jacobian adapted to the robot's two control inputs (v, ω). The corner depths are estimated from the PnP pose in each frame.
+- **Stopping:** IBVS ends at whichever comes first: the corner error falls below 1.5 px RMS, the camera-measured range reaches the stop range, the commands stay near zero for 1 s, or IBVS would command the robot backwards.
+
+Docking is confirmed only after the SETTLE checks verify that the robot's docking position, heading, EKF uncertainty and wheel speed remain within tolerance for the required hold time. These checks use camera measurements and EKF estimates, never the true pose (src/control/visual_servo.py, src/control/docking.py).
+
+**Interpretation:** LQR was chosen because it balances tracking errors and steering effort through the weighting matrices Q and R. Since our waypoint path consists mainly of straight segments (κ = 0), steering is primarily controlled by LQR feedback.
+
+For obstacle avoidance, the same LQR follows a shifted reference path without requiring a new controller. The P-controller handles sharp turns in place, while IBVS handles the final docking by minimising image-feature errors. Together, the three controllers handle different operating conditions of the robot.
+
 ### 5.2 Tuning: weights, why, and what limits the gains [D]
-### 5.3 Tracking results in sim [D] (real-robot numbers: see 7.2)
-### 5.4 Tuning trade-off: control effort vs tracking error (weight sweep, 3 values over a factor of 10; adapt Assessment 3 D.3) [D] MISSING
-### 5.5 (Optional) Controller extension compared against baseline: IBVS vs PBVS docking [HD]
+**LQR tuning: where Q and R come from.** We used Bryson's rule to select the weighting matrices Q and R. Each tracking error and control input is weighted by the inverse square of its maximum acceptable value:
+
+$$Q = \mathrm{diag}\left(\frac{1}{e_{y,max}^2}, \frac{1}{e_{\theta,max}^2}\right) = \mathrm{diag}\left(\frac{1}{0.05^2}, \frac{1}{0.1745^2}\right) = \mathrm{diag}(400,\ 32.8)$$
+
+$$R = \frac{1}{\delta\omega_{max}^2} = \frac{1}{0.5^2} = 4$$
+
+with e<sub>θ,max</sub> = 10° = 0.1745 rad. Q penalises the cross-track and heading errors, while R penalises the steering effort. The selected limits are justified below.
+
+| Limit | Value | Why |
+|---|---|---|
+| e<sub>y,max</sub> | 0.05 m | Reduces the distance needed to correct a 20 cm offset from ~2.3 m (e<sub>y,max</sub> = 0.10 m), longer than the 1.6 m between W1 and W2, to ~1.2 m (src/control/lqr.py, design_weights). |
+| e<sub>θ,max</sub> | 10° | Limits heading errors to help keep the docking marker visible in the camera |
+| δω<sub>max</sub> | 0.5 rad/s | Limits steering effort to avoid overly aggressive corrections, well below the 1.82 rad/s motor limit |
+
+**LQR: what limits the gains.**
+
+1. **Motor saturation:** For a 20 cm lateral offset with zero heading error on a straight path, the calculated unsaturated LQR command is 1.83 rad/s, slightly above the Waffle Pi's 1.82 rad/s maximum angular velocity. The steering command is therefore clipped (Section 2.4).
+2. **Estimation noise:** LQR uses tracking errors estimated by the EKF. Higher gains make the steering command more sensitive to the estimation noise. In our tests, higher gains were also associated with a slightly lower NEES pass rate (Section 5.4).
+3. **Forward speed:** LQR corrects cross-track error more slowly at lower speed. In Section 2.4, the cross-track error e<sub>y</sub> takes 3.2 s to decay at v = 0.10 m/s, compared with 0.92 s at 0.26 m/s. Therefore, sharp corners are handled by the P-controller, which rotates the robot in place at v = 0, rather than using the path-following LQR at low speeds.
+
+**P-turn parameters:** The proportional gain is k<sub>turn</sub> = 2.0 s⁻¹. The angular velocity is limited to 1.0 rad/s and the angular acceleration is limited to 2 rad/s². These limits prevent the robot from turning aggressively and keep the angular velocity below the motor's limit of 1.82 rad/s.
+
+**IBVS parameters:** The gain is λ = 0.8 to provide gradual correction of image-feature errors without reacting too aggressively to camera noise.
+
+### 5.3 Tracking Results in Simulation [D]
+This section evaluates how accurately the LQR makes the robot follow the path and how effectively IBVS performs docking. The controllers use only the estimated states and the camera measurements, while the ground-truth pose is used to evaluate their performance.
+
+**Path tracking: how accurately does LQR follow the path?**
+
+| Run | Box | Docked | Cross-track RMS | Dock lateral error | Source |
+|---|---|---|---|---|---|
+| None | none | Yes (37.4 s) | 1.01 cm | 0.43 cm | [demo_metrics_ekf.json](results/demo_metrics_ekf.json) |
+| Left | left of lane | Yes (37.2 s) | 1.06 cm | 0.43 cm | [demo_metrics_ekf.json](results/demo_metrics_ekf.json) |
+| Right | right of lane | Yes (37.4 s) | 1.01 cm | 0.43 cm | [demo_metrics_ekf.json](results/demo_metrics_ekf.json) |
+| Centre | in the lane | Yes (43.1 s) | 1.7 cm (outside avoidance) | 0.45 cm | [a3style_centre.npz](results/a3style_centre.npz) |
+
+All four cases were run on the final code with the EKF in the loop (seed 0).
+
+<p align="center">
+  <img src="results/ekf_summary_centre.png" width="90%" alt="Centre case summary">
+  <br><em>Figure 5.3a: Centre case: robot trajectory and reference path (top left), true and estimated cross-track errors (top right), and EKF estimation results (bottom, discussed in Section 4.3).</em>
+</p>
+
+**Results:** In the none, left and right cases, the box did not completely block the lane, so the robot stayed on the path and the LQR maintained the cross-track RMS at 1.0–1.1 cm. In the centre case, the box blocked the lane, and the robot had to avoid it. The cross-track RMS was 1.7 cm (excluding the avoidance process). This slightly higher value likely came from rejoining the original track after avoiding the box (top right, Figure 5.3a, after about 22 s).
+
+During obstacle avoidance, the robot intentionally moved about 40 cm away from the original path to pass the box, as shown by the shaded region (top right, Figure 5.3a). This deviation is intentional rather than a failure of LQR tracking, because the controller follows a laterally shifted reference path during obstacle avoidance and then drives the robot back to the original path.
+
+The estimated cross-track error closely followed the true error (top right, Figure 5.3a), supporting the use of EKF estimates for LQR feedback in this run.
+
+**Docking: does IBVS improve docking performance?**
+
+| Controller | Docked | Lateral error | Yaw error | Docking time |
+|---|---|---|---|---|
+| PBVS | 10/10 | 0.26 ± 0.45 cm | −0.4 ± 0.7° | 8.25 s |
+| IBVS | 10/10 | 0.26 ± 0.45 cm | −0.4 ± 0.7° | 7.10 s |
+
+Source: [ibvs_docking.json](results/ibvs_docking.json).
+
+<p align="center">
+  <img src="results/ibvs_docking.png" width="80%" alt="IBVS docking">
+  <br><em>Figure 5.3b: IBVS docking: (a) marker corner movement towards the desired image positions; (b) image-feature error during IBVS; (c) control commands during the LQR-to-IBVS transition; and (d) final docking errors of IBVS and PBVS.</em>
+</p>
+
+**Results:** The centre case successfully docked with a lateral error of 0.45 cm. To compare docking performance, IBVS and PBVS were tested using the same 10 random seeds with hidden placement errors.
+
+Both controllers successfully docked in all 10 trials, with almost identical final lateral and heading errors. However, IBVS completed docking 1.15 s faster on average (7.10 s compared with PBVS's 8.25 s).
+
+The image-feature errors decreased from approximately 93 to 57 px, but IBVS stopped when the robot reached a camera-based stopping distance, before the image-feature error reached the 1.5 px tolerance (Figure 5.3b). This suggests the final docking accuracy also depended on the earlier LQR alignment and the camera-based stopping distance.
+
+Overall, IBVS reduced docking time in these 10 tests but did not show a measurable improvement in the final docking accuracy. Under the randomised 20 runs, the system also achieved 20/20 successful dockings (Section 6.1).
+
+### 5.4 Tuning trade-off: control effort vs tracking error [D]
+The LQR weight R was tested at three values with Q fixed: R = 40, R = 4 (chosen) and R = 0.4. Each value was tested on the centre case with 20 seeds, each seed adding a random initial position and encoder-scale error, with LQR using EKF-estimated states for feedback rather than ground truth. All 60 runs completed docking successfully. Cross-track errors were evaluated using the ground-truth pose, while control effort was evaluated using the steering commands. The tracking and steering metrics include only LQR path-tracking periods, while docking success and the NEES share are computed over the whole run (evaluation/sweep_lqr.py).
+
+| R | Cross-track RMS | Steady offset | RMS feedback steering | NEES ≤ 7.81 | Command rate |
+|---|---|---|---|---|---|
+| 40 | 3.13 cm | +0.36 cm | 0.098 rad/s | 96 % | 0.28 rad/s² |
+| 4 (chosen) | 1.73 cm | +0.57 cm | 0.077 rad/s | 96 % | 0.38 rad/s² |
+| 0.4 | 1.42 cm | +0.83 cm | 0.070 rad/s | 93 % | 0.57 rad/s² |
+
+Source: [sweep_lqr.json](results/sweep_lqr.json).
+
+<p align="center">
+  <img src="results/sweep_lqr.png" width="100%" alt="LQR weight sweep">
+  <br><em>Figure 5.4: LQR weight sweep. R x10, R (config) and R / 10 correspond to R = 40, 4 and 0.4. (a) Linear-model response to a 20 cm offset at 0.2 m/s, with the resulting gains K. (b) Cross-track error against steering effort; error bars show the spread over seeds. (c) Docking success rate (green) and RMS rate of change of the angular velocity command (amber).</em>
+</p>
+
+**Interpretation:**
+
+**1. How did R affect tracking?** Reducing R places less penalty on control effort, allowing LQR to correct cross-track errors more aggressively. The feedback gain increased (K = [3.05, 1.41], [9.16, 3.25] and [24.84, 7.78]) and errors are corrected faster (Figure 5.4a). The cross-track RMS fell from 3.13 cm at R = 40 to 1.73 cm at R = 4. However, reducing R by another factor of 10, from 4 to 0.4, decreased cross-track RMS error by only 0.31 cm.
+
+**2. What did the higher gain cost?** At R = 0.4, the command rate increased from 0.38 to 0.57 rad/s², indicating less smooth steering (Figure 5.4c). The percentage of NEES samples below 7.81 also fell from 96 % to 93 %.
+
+Meanwhile, RMS feedback steering decreased slightly from 0.077 to 0.070 rad/s. Although the steering commands had a lower RMS magnitude, they changed more rapidly. The higher gain therefore improved tracking accuracy at the cost of steering smoothness.
+
+**3. Why R = 4?** All three R values docked in every run. However, R = 40 produced a much higher cross-track RMS error (3.13 cm) than R = 4 (1.73 cm). Reducing R from 4 to 0.4 improved the cross-track RMS error by only 0.31 cm, while increasing the command rate from 0.38 to 0.57 rad/s². R = 4 therefore provided a better balance between tracking accuracy and steering smoothness.
+
+**4. What remains uncertain?** The steady-state offset increased from +0.36 to +0.83 cm as R decreased. Although reducing R improved the cross-track RMS error, it did not reduce the steady-state offset. The reason for this behaviour was not determined.
+
+The weight sweep also kept Q fixed to isolate the effect of R, so the effect of changing Q was not evaluated.
 
 ## 6. Integration and Robustness (E): performance under disturbance and noise
 ### 6.1 Performance under disturbance and noise: trials per condition, completion rate, docking success rate, collision rate, in sim [D] (real runs: see 7.2)
