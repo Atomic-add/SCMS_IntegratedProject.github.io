@@ -22,9 +22,11 @@ I.O.U
 ![Your Alt Text](./Overview_Real.png)
 
 
-**what is included in coursework**
+** What is beyond the coursework?*
 
-**Results**
+
+** Simulation vs. Real Robot Results **
+![Your Alt Text](./results/real_vs_sim.png)
 
 **Marker's Guide**
 
@@ -134,7 +136,6 @@ INSERT RUN DEMO OUTCOMES
 
 This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
 
-
 ![Your Alt Text](./results/sweep_r.png)
 
 These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI to improve readability.
@@ -154,11 +155,11 @@ This compares the EKF to odometry through 20 random tests. Observing through sim
 | EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
 | Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
 
-To expand upon this through ([run_demo](evaluation/run_demo.py)). An illustration is created. This showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
+To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create a graph. This showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
 
 ![Your Alt Text](./results/demo_compare.png)
 
-From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only having a higher success rate of docking. But also producing fewer errors.
+From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also producing fewer errors.
 
 
 ## 5. Control (D): controller design, tuning and tracking results
@@ -176,11 +177,21 @@ From these 2 points, it is made clear that the EKF outperforms the odometry as a
 
 
 ## 9. Limitations and Lessons
-**What do and dont the results support?**
+### What the results do, and don't support
 
-**What failed during development? How was it diagnosed**
+### What failed during development, and how was it diagnosed?
+
 
 ## 10. Reproducibility
+
+### Install and run from a fresh environment
+
+
+### Commands to regenerate each figure and table
+
+
+### Ground truth rule
+The controller must use the estimated state, never the ground truth. Ground truth can only be read in evaluation/
 
 
 ## 11. Team and Declarations 
@@ -190,7 +201,7 @@ From these 2 points, it is made clear that the EKF outperforms the odometry as a
 - Nguyen Kim Uyen Phan (25596519)
 - Nhat Thien Mai (25161391)
 
-### individual contributions
+### Individual contributions
 
 |   Task                             | Person          |
 | :--------------------------------- | :-------------- |
@@ -205,7 +216,7 @@ From these 2 points, it is made clear that the EKF outperforms the odometry as a
 |    Limitations and Lessons         | Addison         | 
 |    Reproducibility                 | Addison         | 
 
-### Generative AI delaration
+### Generative AI declaration
 **Claude (Anthropic)** was used to scaffold the simulation environment, the sensor
 models and their checks; see the project page's GenAI declaration.
 
