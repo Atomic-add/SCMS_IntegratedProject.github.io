@@ -15,9 +15,119 @@
 
 ## 2. Modelling (A): state-space model, controllability and observability analysis
 ### 2.1 State-space model: derived for the TurtleBot3, with stated assumptions [D]
+**Error dynamics.** Path following regulates the error to the path. With cross-track error e<sub>y</sub>, heading error e<sub>θ</sub> and curvature κ, the error dynamics are (A3 A.1)
+
+$$\dot e_y = v\sin e_\theta, \qquad \dot e_\theta = \omega - \frac{v\kappa\cos e_\theta}{1-\kappa e_y}$$
+
+**Linearisation.** Substituting ω = vκ + δω and writing the error dynamics above as ė = f(e, δω), A and B are the Jacobians of f at the operating point e = 0, δω = 0 (W5):
+
+$$A = \left.\frac{\partial f}{\partial e}\right|_{e=0}, \qquad B = \left.\frac{\partial f}{\partial\,\delta\omega}\right|_{e=0}$$
+
+$$\dot e = \begin{bmatrix}0 & v\\ -v\kappa^2 & 0\end{bmatrix} e + \begin{bmatrix}0\\ 1\end{bmatrix}\delta\omega$$
+
+On the lab's straight segments κ = 0, so A = [[0, v], [0, 0]] and B = [0, 1]: v sits inside A, and at v = 0 the robot cannot steer out a lateral error.
+
+**Discretisation.** The controller runs every T<sub>s</sub> = 0.05 s and holds each command until the next, so the model is discretised with a zero-order hold:
+
+$$A_d = e^{AT_s}, \qquad B_d = \int_0^{T_s} e^{A\tau}B\,d\tau$$
+
+Because A² = 0 on a straight, the series e<sup>AT<sub>s</sub></sup> = I + AT<sub>s</sub> + (AT<sub>s</sub>)²/2 + … stops after two terms, so the result is exact:
+
+$$A_d = I + AT_s = \begin{bmatrix}1 & vT_s\\ 0 & 1\end{bmatrix}, \qquad e^{A\tau}B = \begin{bmatrix}v\tau\\ 1\end{bmatrix} \;\Rightarrow\; B_d = \begin{bmatrix}vT_s^2/2\\ T_s\end{bmatrix}$$
+
+At v = 0.2 m/s:
+
+$$A_d = \begin{bmatrix}1 & 0.01\\ 0 & 1\end{bmatrix}, \qquad B_d = \begin{bmatrix}0.00025\\ 0.05\end{bmatrix}, \qquad e[k+1] = A_d\,e[k] + B_d\,\delta\omega[k]$$
+
+Steering changes e<sub>θ</sub> directly (T<sub>s</sub> = 0.05 per unit δω), but moves e<sub>y</sub> only by turning the heading first, with coupling vT<sub>s</sub> = 0.01, so the authority over e<sub>y</sub> shrinks with speed and vanishes at v = 0.
+
+**Assumptions.** Kinematics only (no slip, no motor lag), constant v, small errors (checked in 2.4), nominal track width 288 mm (UMBmark: 292.6 mm). The controller sees only the EKF estimate.
+
+**Open-loop behaviour.** On a straight, the open loop has a repeated eigenvalue at z = 1, so it is unstable: a constant heading error makes e<sub>y</sub> grow linearly. Our lab path is straight segments (κ = 0) with corners turned on the spot, but to check the model on a curve we also test an arc of R = 0.5 m (κ = 2 /m). There the eigenvalues are s = ±j vκ = ±0.4j rad/s (on the unit circle in z), so it is marginally stable but not asymptotically stable. Feedback is needed in both cases, and because v sits inside A, everything below depends on speed.
+
 ### 2.2 Controllability analysis [D]
+With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = [[0, v], [1, 0]], so det C = −v.
+
+| Speed | Rank of C | det C |
+|---|---|---|
+| 0.20 m/s (cruise) | 2 | −0.20 |
+| 0.05 m/s (docking) | 2 | −0.05 |
+| 0 (turn on the spot) | **1** | 0 |
+
+**Interpretation.** Controllable at every speed except zero: at v = 0, the only path from steering to e<sub>y</sub> (ė<sub>y</sub> = v e<sub>θ</sub>) is cut, so rank C drops to 1. This is the nonholonomic constraint: the robot cannot move sideways.
+
+The rank test only says whether the system is controllable, not how easy it is to control. The singular values of C are 1 and v (calculated in the code). Therefore, slow driving is weakly controllable, not uncontrollable. So, the LQR is used only when the robot is driving on a straight. At the corners, the robot stops and turns on the spot with a P-controller, as e<sub>θ</sub> stays controllable at v = 0.
+
 ### 2.3 Observability analysis, including marker lost [D] MISSING
+**Measurement.** The EKF measures range and bearing to each marker centre, not the full ArUco pose, so each marker in view adds two rows to the measurement Jacobian H<sub>k</sub>. The pose has three states, (x, y, θ).
+
+**Rank test.** A linear model with sensor matrix C (y = Cx) is observable when the observability matrix has full rank:
+
+$$\mathcal{O} = \begin{bmatrix}C\\ CA\\ \vdots\\ CA^{n-1}\end{bmatrix}, \qquad \mathrm{rank}(\mathcal{O}) = n$$
+
+In the EKF, the measurement Jacobian H<sub>k</sub> and the motion Jacobian F<sub>k</sub> change every frame, so the same idea is written frame by frame. Each frame's measurement is predicted from the initial pose x<sub>0</sub>:
+
+$$z_0 = H_0x_0, \qquad z_1 = H_1F_0\,x_0, \qquad z_2 = H_2F_1F_0\,x_0, \ \dots$$
+
+Stacking these gives
+
+$$\begin{bmatrix}z_0\\ z_1\\ z_2\\ \vdots\end{bmatrix} = \mathcal{O}_N\,x_0, \qquad \mathcal{O}_N = \begin{bmatrix}H_0\\ H_1F_0\\ H_2F_1F_0\\ \vdots\end{bmatrix}$$
+
+If rank(O<sub>N</sub>) = 3, x<sub>0</sub> can be solved from the measurements.
+
+The rank says whether the pose is recoverable, and the null space shows what stays hidden. Test pose (1.5, 1.25) m on the lab lane, 1 s = 20 frames ([observability.py](evaluation/observability.py), results in [observability.json](results/observability.json)).
+
+| Markers in view | Rank, 1 frame | Rank, 1 s driving | Hidden direction |
+|---|---|---|---|
+| none | 0 | 0 | everything (not detectable) |
+| one | 2 | 2 | rotation about the marker |
+| two | 3 | 3 | none |
+
+**Marker lost.** With no marker in view, the EKF only predicts:
+
+$$P_{k+1} = F_kP_kF_k^T + Q_d$$
+
+From the converged P, the position standard deviation σ (worst horizontal direction) grows with every prediction step. If the robot kept driving at 0.2 m/s, the 3σ bound would pass the 3 cm dock tolerance after 3.5 s (0.7 m).
+
+**Interpretation.** One marker gives two measurements, range and bearing, but the pose has three states, so one direction is always missing. That direction is a rotation of the robot about the marker: every pose on a circle around the marker, with the heading turned by the same angle, gives the same range and bearing. Odometry only measures motion in the robot's own frame, so the same run started anywhere on that circle gives the same measurements and the same wheel counts, and the rank stays 2.
+
+A second marker at a different place breaks the circle and results in rank 3. This works whether both markers are seen at the same time or one after the other, with odometry linking the two views.
+
+With no marker, nothing is measured and the error drifts instead of decaying, so the pose is not even detectable. Driving blind would let the 3σ bound pass the 3 cm tolerance after about 3.5 s, so docking never drives without a marker. It stops at once, waits for the marker, and declares failure if none returns within 3 s ([docking.py](src/control/docking.py), `marker_lost_timeout` = 3 s in [control.json](config/control.json)).
+
 ### 2.4 Model correctness: where the model breaks down and what that costs, e.g. closed-loop eigenvalues vs speed (adapt Assessment 3 D.4) [HD] (A has no hardware credit, so this is A's HD)
+The robot was run at three speeds without redesigning K (20 runs each, [model_limits.py](evaluation/model_limits.py)). For δω = −(k<sub>y</sub> e<sub>y</sub> + k<sub>θ</sub> e<sub>θ</sub>) on a straight, the closed-loop poles satisfy:
+
+$$\lambda^2 + k_\theta\lambda + k_y v = 0$$
+
+so they depend on v. The decay time shortens 3.5 times from 0.10 to 0.26 m/s (3.2 to 0.92 s), but the distance over which an error decays changes much less, from 0.32 to 0.24 m.
+
+| Speed | Slow pole \|z\|, straight / test arc (R = 0.5 m) | S1 cross-track RMS | NEES ≤ 7.81 | Docked |
+|---|---|---|---|---|
+| 0.10 m/s | 0.985 / 0.984 | 1.65 cm | **89 %** | 20 / 20 |
+| 0.20 m/s (design) | 0.965 / 0.960 | 1.73 cm | 96 % | 20 / 20 |
+| 0.26 m/s (top speed) | 0.947 / 0.933 | 1.80 cm | 99 % | 20 / 20 |
+
+<p align="center">
+  <img src="results/model_limits.png" width="90%" alt="Model limits">
+  <br><em>Closed-loop poles, linear vs nonlinear response, and tracking and NEES against speed.</em>
+</p>
+
+**Linear vs nonlinear.** Both models start from the same lateral offset at 0.2 m/s on a straight, with the same K. The nonlinear model uses sin e<sub>θ</sub> and clips ω at the robot's 1.82 rad/s (same script; values in [model_limits.json](results/model_limits.json), "validity").
+
+| Initial offset | Peak command | Peak heading error | Linear vs nonlinear gap |
+|---|---|---|---|
+| 5 cm (maximum in the full runs) | 0.46 rad/s | 6° | 0.13 % |
+| 20 cm | 1.83 rad/s (limit reached) | 26° | 1.2 % |
+| 50 cm | 4.6 rad/s (clipped) | 64° | 12 % |
+
+In the full runs, the cross-track error peaks at about 5 cm (5.2 cm in the worst of 60 runs), well inside the range where the linear model holds; it breaks down only for large offsets, where the command is clipped at 1.82 rad/s and the heading error is too large for sin e<sub>θ</sub> ≈ e<sub>θ</sub>.
+
+**Interpretation.**
+
+- **Controller: robust to speed.** An error is always corrected over roughly the same distance, so tracking RMS rises only 9 % from 0.10 to 0.26 m/s. The same K works at every tested speed without redesigning.
+- **Estimator: degrades first, at low speed.** We follow the Assessment 3 specification S4: samples with NEES inside the 95 % χ²<sub>3</sub> bound (7.81) ≥ 90 %. Position RMSE does not change with speed (0.74, 0.79, 0.69 cm), but at 0.10 m/s NEES coverage falls to 89 %, below A3's 90 %, so the filter is overconfident. A likely cause, not yet tested on its own, is that Q<sub>d</sub> (process noise covariance) was tuned around the design speed and does not grow enough at low speed, so the filter becomes overconfident.
+- **What the model leaves out.** The linear model ignores the per-wheel speed limit (saturation), camera latency (lag) and a +0.6 cm steady offset (persistent error). An LQI could remove an offset caused by an outside disturbance. However, if the EKF estimate itself is biased, the LQI cannot remove that offset, as it integrates the estimated e<sub>y</sub> and sees no error to correct.
 
 ## 3. Sensing (B): calibration, noise handling and frame management
 The robot in this project uses three sensors including: wheel envodeer, a camera, and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions: read_encoders(), read_image() and read_scan(), with the real robot sends its data through rosbridge. These functions are used in both the simulator and the real robot to be processed using the same perception and estimation logic.  
