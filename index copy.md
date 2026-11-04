@@ -181,6 +181,7 @@ The result show that, tange-noise standard deviation was 9.95 mm, close to the c
 
 **Planar-pose ambiguity**:
 We use ArUco range and bearing for the EKF correction measurement. This is because, for a flat marker viewed nearly straight on, IPPE can return two similar pose solution with different marker orientation. Therefore, we exclude the marker yaw and evaluate the range and bearing below. 
+
 **ArUco measurement errors in simulation.**: 
 We tested how ArUco range and bearing errors change with distance to check the EKF’s range-bias correction and measurement-noise settings in R<sub>n</sub>. This is done by using 20 frames with different robot poses then compare it with simulation grouth truth
 
@@ -217,11 +218,23 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
   <img src="results/page/real_nis.png" width="100%" alt="NIS TEST">
 </p>
  
- **LIDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in forward section.The real robot's Lidar coverage threshold was reduced from 80% to 20% because the lab's black foam panels using in the lab return very few to the LDS-01. However, this does not mean that obstacle detection's accuracy will be decreased, the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)).
+ **LIDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in forward section.The real robot's Lidar coverage threshold was reduced from 80% to 20% because the lab's black foam panels using in the lab return very few to the LDS-01. However, this does not mean that obstacle detection's accuracy will be decreased, the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)). If a scan is more than 0.5 seconds old, the robot will also stops. 
 ### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
+<p align="center">
+  <img src="results/page/frame_chain_3_4.png" width="80%" alt="Frame chain">
+  <br><em>Blue: known or estimated transforms, Red: T<sub>C</sub><sup>M</sup>, measured every camera frame by ArUco + PnP.</em>
+</p>
 
+**Frame chain**: Camera and LiDAR sensors start their measurements in their own coordinate frames, {C} and {S}. We then use each sensor's mounting pose to calculated and transfer each sensor data to the robot's base frame {B}, centred between the two drive wheels T<sub>B</sub><sup>C</sup> or T<sub>B</sub><sup>S</sup>. Then, the EKF combines the marker range and bearing with the wheel encoders to estimate the robot pose T<sub>W</sub><sup>B</sup> in the map {W}, with the know marker poses T<sub>W</sub><sup>M</sup>. This estimate then used by the path tracker to compute the cross-track and heading errors, and the LiDAR points in {B} are used for obstacle avoidance. 
 ### 3.5 Simulated vs real sensor noise, and why they differ [HD-hw]
+**Sensor performance: simulation vs real robot**
 
+| Check | Simulation | Real robot | Why the different| 
+|---|---|---|---|
+|Camera calibration (reprojection RMS)| 0.046 px | 0.41 px | The simulated camera uses an ideal pinhole m. While real images involve lens distortion, board imperfection and hand-held board|
+|ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncercertainty may effect the result| 
+|LIdar forward coverage| 88-100% | about 23% | The real LiDAR received fewer returns as a black foam panels|
+|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differencces|
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design [D]
 ### 4.2 Tuning: Q, R and P0, and where each value comes from [D]
