@@ -128,76 +128,23 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ------------------------------------------------------------------------------------
 
-
-
+INSERT RUN DEMO OUTCOMES
 
 ### 4.4 Tuning trade-off
 
 This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
 
-These test results are from ([sweep_r](evaluation/sweep_r.py))
 
-------------------------------------------------------------------------------------
+![Your Alt Text](./results/sweep_r.png)
 
-R x10                    seed   2: ANEES   1.46  NIS  0.02  gated   0  worst error 0.80 cm  docked
+These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI to improve readability.
 
-R x10                    seed   1: ANEES   1.53  NIS  0.02  gated   0  worst error 0.73 cm  docked
-
-R x10                    seed   3: ANEES   1.52  NIS  0.02  gated   0  worst error 0.84 cm  docked
-
-R x10                    seed   4: ANEES   1.48  NIS  0.02  gated   0  worst error 0.80 cm  docked
-
-R x10                    seed   6: ANEES   1.55  NIS  0.02  gated   0  worst error 0.74 cm  docked
-
-R x10                    seed   5: ANEES   1.57  NIS  0.02  gated   0  worst error 0.76 cm  docked
-
-R x10                    seed   7: ANEES   1.57  NIS  0.02  gated   0  worst error 0.78 cm  docked
-
-R x10                    seed   8: ANEES   1.53  NIS  0.02  gated   0  worst error 0.74 cm  docked
-
-R x10                    seed   9: ANEES   1.40  NIS  0.02  gated   0  worst error 0.78 cm  docked
-
-R x10                    seed  11: ANEES   1.56  NIS  0.02  gated   0  worst error 0.88 cm  docked
-
-R x10                    seed  10: ANEES   1.56  NIS  0.02  gated   0  worst error 0.97 cm  docked
-
-R x10                    seed  12: ANEES   1.56  NIS  0.02  gated   0  worst error 0.77 cm  docked
-
-R x10                    seed  13: ANEES   1.60  NIS  0.02  gated   0  worst error 1.02 cm  docked
-
-R x10                    seed  14: ANEES   1.55  NIS  0.02  gated   0  worst error 0.74 cm  docked
-
-R x10                    seed  16: ANEES   1.62  NIS  0.02  gated   0  worst error 0.92 cm  docked
-
-R x10                    seed  15: ANEES   1.45  NIS  0.02  gated   0  worst error 0.82 cm  docked
-
-R x10                    seed  19: ANEES   1.51  NIS  0.02  gated   0  worst error 0.73 cm  docked
-
-R x10                    seed  18: ANEES   1.61  NIS  0.02  gated   0  worst error 0.75 cm  docked
-
-R x10                    seed  17: ANEES   1.52  NIS  0.02  gated   0  worst error 0.81 cm  docked
-
-R x10                    seed  20: ANEES   1.57  NIS  0.02  gated   0  worst error 0.93 cm  docked
-
-R (config)               seed   2: ANEES   3.21  NIS  0.10  gated   0  worst error 1.68 cm  docked
-
-R (config)               seed   1: ANEES   3.35  NIS  0.11  gated   1  worst error 1.08 cm  docked
-
-R (config)               seed   3: ANEES   3.26  NIS  0.16  gated   1  worst error 2.94 cm  docked
-
-R (config)               seed   4: ANEES   2.57  NIS  0.14  gated   0  worst error 1.44 cm  docked
-
-R (config)               seed   5: ANEES   2.54  NIS  0.17  gated   1  worst error 1.99 cm  docked
-
-R (config)               seed   6: ANEES   3.50  NIS  0.09  gated   0  worst error 1.13 cm  docked
-
-R (config)               seed   7: ANEES   3.54  NIS  0.12  gated   0  worst error 1.08 cm  docked
-
-R (config)               seed   8: ANEES   2.71  NIS  0.16  gated   1  worst error 2.57 cm  docked
-
-R (config)               seed   9: ANEES   3.78  NIS  0.11  gated   1  worst error 1.72 cm  docked
-
-------------------------------------------------------------------------------------
+|R                      |	Docked | ANEES      |	NIS	|Gated|	Worst error [cm] |
+| :-------------------- | :----- | :--------- | :-- | :-- | :--------------- |
+|R x10	                |  100 % |1.54 ± 0.06	|0.02 |0.0  |	0.82 ± 0.08      |
+|R (config)	            | 100 %	 |3.08 ± 0.49 |0.12 |0.2  |	1.78 ± 0.65      |
+|R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
+|R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
 
 ### 4.5 Comparison with 2nd estimator
 This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
