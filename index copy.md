@@ -30,11 +30,11 @@ I.O.U
 
 **simulation**
 
-![Your Alt Text](./Overview_Simulation.png)
+![Your Alt Text](./results/page/Overview_Simulation.png)
 
 **hardware appliance**
 
-![Your Alt Text](./Overview_Real.png)
+![Your Alt Text](./results/page/Overview_Real.png)
 
 
 ### 1.3 What is new beyond the coursework (Assessment 3 covered path-error LQR/LQI and a range-only EKF): range+bearing ArUco EKF, LiDAR avoidance, IBVS docking, randomised trials, real robot [D]
@@ -278,9 +278,9 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 | Check | Simulation | Real robot | Why the different| 
 |---|---|---|---|
 |Camera calibration (reprojection RMS)| 0.046 px | 0.41 px | The simulated camera uses an ideal pinhole m. While real images involve lens distortion, board imperfection and hand-held board|
-|ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncercertainty may effect the result| 
+|ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncertainty may affect the result| 
 |LIdar forward coverage| 88-100% | about 23% | The real LiDAR received fewer returns as a black foam panels|
-|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differencces|
+|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differences |
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design [D]
 
@@ -304,25 +304,55 @@ The design has 2 main functions: predict and update.
   
 - **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting the accuracy and reliability of measurements
 
-- **P0 (starting uncertainty)**
+- **P0 (filter's starting uncertainty)**: A non-zero setup value for placement accuracy. Dictated by the trustworthiness of the robot's starting position. If it were 0, it would be overconfident and slow to correct any starting offsets. This can throw the robot off course if left unchecked.
 
-The table below is an expansion upon these 3 variable groups. Illustrating what each variable belongs to, and what it does.
+The table below is an expansion upon these 3 variable groups. It illustrates what each variable belongs to and what it does.
 
-|  Group   |    Variable     |                    What it is                    |
-| :------- | :-------------- |  :---------------------------------------------- |
-|   Q      | k_wheel         | Wheel error, which grows with distance travelled |
-|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    
-|          |                 | positive                                         |
-|   R      | range_sd [a,b]  | range noise = a + b*r^2                          |
-|          | bearing_sd_deg  | bearing noise                                    |
-|          | range_bias_r2   | Known camera range bias.                         |
-|   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
+|  Group   |    Variable     | Value             |                   What it is                     |
+| :------- | :-------------- | :---------------- |  :---------------------------------------------- |
+|   Q      | k_wheel         |   0.06            | Wheel error, which grows with distance travelled |
+|          | q_floor         |   1e-8            | noise, which is added to Qd every step. Keeps P positive |                                        
+|   R      | range_sd [a,b]  | [0.003, 0.004]    | range noise = a + b*r^2                          |
+|          | bearing_sd_deg  | 0.1               | bearing noise                                    |
+|          | range_bias_r2   | 0.0055            | Known camera range bias.                         |
+|   P0     | P0_sd           | [0.05, 0.05, 5.0] | Starting uncertainty: x, y, heading              |    
 
 All variables listed come from ([estimation.json](config/estimation.json))
 
 ### 4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds [D]
 
-To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves as a quick and efficient method of checking whether it is able to pass everything or not in a simulated environment.
+To analyse and report the performance, ([run_demo.py](evaluation/run_demo.py)) is utilised. Running a simulated test of the robot and reporting back both its odometry and EKF. This will be further compared within 4.5
+
+**RMSE (Root Mean Square Error)**: Reports the average distance between predicted values of the model and actual values.
+
+**NEES (Normalised Estimation Error Squared)**: Utilised to evaluate the consistency of the Kalman filter. Through comparing the estimation error to the expected covariance of the estimator.
+
+**NIS (Normalised Innovation Squared)**: Checks whether the Kalman filter's noise assumption aligns with the actual measurements.
+
+**Odometry** 
+
+![Your Alt Text](./results/demo_centre.png)
+
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | RMSE [cm]  | Dock lateral [cm]| Heading [deg] | Collisions |
+| :--------| :------| :--------| :--------------------| :--------- |:-----------------| :-------------| :----------|
+|   none   | Yes    | 37.4     | 1.37                 | 1.16       | +0.7             | -1.1          | None       |
+|   left   | Yes    | 37.2     | 1.32                 | 1.03       | +0.6             | -1.1          | None       |
+|   centre | Yes    | 43.1     | 1.62                 | 0.76       |+0.5              | -0.8          | None       |
+|   right  | Yes    | 37.4     | 1.37                 | 1.16       |+0.7              | -1.1          | None       |
+
+
+**EKF (nominal run, 4 cases)**
+
+![Your Alt Text](./results/demo_centre_ekf.png)
+ 
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | RMSE [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
+| :--------| :------| :--------| :--------------------| :-------- | :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
+|   none   | Yes    | 37.4     | 1.01                 | 0.43      | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+|   left   | Yes    | 37.2     | 1.06                 | 0.58      | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
+|   centre | Yes    | 43.3     | 1.58                 | 0.83      | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
+|   right  | Yes    | 37.4     | 1.01                 | 0.43      | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+
+To summarise. The robot performs relatively well. As displayed by this simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). Showcasing that it is able to reach its charging station, and pass every test.
 
 -----------------------------------------------------------------------------------
 
@@ -362,42 +392,25 @@ PASS  config: by default the sim camera's ekf_noise replaces range bias, range s
 
 PASS  config: the real camera's range_correction drops the sim bias (never subtracted twice)
 
-0 failed - all checks passed
+**0 failed - all checks passed**
 
 ------------------------------------------------------------------------------------
 
-Below an expansion upon the results from ([run_demo.py](evaluation/run_demo.py)). Observing the test results of both the EKF and odometry.
-
-Odometry only 
-
-![Your Alt Text](./results/demo_paths.png)
-
-|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions |
-| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------|
-|   none   | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
-|   left   | Yes    | 37.2     | 1.32                 | +0.6              | -1.1          | None       |
-|   centre | Yes    | 43.1     | 1.62                 | +0.5              | -0.8          | None       |
-|   right  | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
-
-EKF (nominal run, 4 cases)
-
-![Your Alt Text](./results/demo_paths_ekf.png)
- 
-|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
-| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
-|   none   | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
-|   left   | Yes    | 37.2     | 1.06                 | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
-|   centre | Yes    | 43.3     | 1.58                 | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
-|   right  | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
-
-
 ### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) [D]
 
-This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
+This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
 
-![Your Alt Text](./results/sweep_r.png)
+need to see if the graph updates (DELETE LATER)
 
-These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI to improve readability.
+To elaborate:
+
+**Consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. Further helping prevent collisions, at the cost of the robot's speed.
+
+**Responsiveness** refers to how fast the filter chases the measurements. A small R results in the filter reacting to every sighting, including noise. This results in more jitter. Whereas a large R results in a slower filter. This makes it slower to correct drift, but it is an overall smoother experience.
+
+![Your Alt text](./results/sweep_r.png)
+
+These test results are from ([sweep_r](evaluation/sweep_r.py)).
 
 |R                      |	Docked | ANEES      |	NIS	|Gated|	Worst error [cm] |
 | :-------------------- | :----- | :--------- | :-- | :-- | :--------------- |
@@ -406,7 +419,20 @@ These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI
 |R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
 |R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
 
-### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] (C has no hardware credit, so this is C's HD; re-run, current files identical)
+The table below is an expansion upon the data above. Analysing their consistency and responsiveness. Then concluding how that would impact the robot's performance on the track.
+
+| R setting              | Consistency       | Responsiveness   | Verdict                      |
+| :--------------------- | :---------------  | :--------------- | :--------------------------- | 
+|    R X10               | too cautious      | Unresponsive     | staggent                     |
+| R (config)             | consistent        | responsive       | slow but steady movement     |
+| R, measured bearing sd | too confident     | responsive       | fast but unreliable movement |
+| R / 10                 | overly confident  | Overly responsive| uncontrollable movement      |
+
+When taking into account track A. Where the robot's main objective is to reach the charging station without any collisions. No matter the time taken. R (config) would make the most logical sense. For, whilst slower. Being aligned with consistency means that it will measure less noise and move smoothly. At the cost of speed, which isn't a requirement for this track.
+
+As a result, **consistency succeeds reliability** for this track.
+
+### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] 
 
 This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
 
@@ -419,7 +445,9 @@ To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create
 
 ![Your Alt Text](./results/demo_compare.png)
 
-From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also producing fewer errors.
+From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
+
+
 
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, turn and IBVS [D]
@@ -569,9 +597,95 @@ Meanwhile, RMS feedback steering decreased slightly from 0.077 to 0.070 rad/s. A
 The weight sweep also kept Q fixed to isolate the effect of R, so the effect of changing Q was not evaluated.
 
 ## 6. Integration and Robustness (E): performance under disturbance and noise
-### 6.1 Performance under disturbance and noise: trials per condition, completion rate, docking success rate, collision rate, in sim [D] (real runs: see 7.2)
+
+### 6.1 Performance under disturbance and noise [D]
+
+This section tests whether the complete system can still navigate and dock when the starting position, the obstacle location and the sensor measurements vary. Twenty randomised scenarios were tested using both EKF and wheel odometry alone.
+
+Each of the 20 randomised scenarios (seeds 1–20) varied two types of conditions: those known to the robot and those hidden from it ([random_trials.py](evaluation/random_trials.py), [scenario.py](src/robot/scenario.py)).
+
+- **Known to the robot:** The initial position estimate provided to the EKF and the planned route (W1 and W2)
+- **Hidden from the robot:**
+  - Initial placement error: Random placement error (0.9-10.6 cm, up to 10°), sampled from N (0, P₀) and clipped at 2σ.
+  - The box position: Randomly placed within the lane.
+  - LiDAR noise: Noise scaled by 1–2, with 1–5% dropout.
+  - Camera noise: Gaussian intensity noise added to every pixel (SD 2–4 grey levels)
+  - Encoder-scale error: Up to ±1% per wheel.
+
+The robot only uses sensor measurements and estimated states. Ground-truth pose is used only for performance evaluation.
+
+A run is considered completed when the docking check passes. It is considered a docking success only if the docking check passes, the final ground-truth position and heading errors are within 3 cm and 5°, respectively, and no collision occurs with the walls or obstacle box.
+
+| Condition | Trials | Completed | Docking success | Runs with contact | Notes | Source |
+|---|---|---|---|---|---|---|
+| Nominal, 4 box cases (none, left, centre, right) | 4 (1 per case) | 4/4 | 4/4 | 0/4 | 37.2–43.1 s<br>Docking lateral error: 0.43–0.45 cm | [demo_metrics_ekf.json](results/demo_metrics_ekf.json) |
+| Disturbed, EKF | 20 | 20/20 | 20/20 | 0/20 | 42.0 ± 1.9 s<br>Docking lateral position error: 0.23 ± 0.44 cm<br>Docking heading error: −0.37 ± 0.76° | [random_trials.json](results/random_trials.json) |
+| Disturbed, odometry only | 20 | 9/20 | 9/20 | 2/20 | Estimate error at the end 33.7 ± 21.9 cm (max: 74 cm) | [random_trials_odometry.json](results/random_trials_odometry.json) |
+
+These trials evaluated the robustness of the complete system under multiple random disturbances. However, they did not isolate the individual effect of each disturbance.
+
+<p align="center">
+  <img src="results/random_trials.png" width="80%" alt="20 random scenarios on the EKF">
+  <br><em>Figure 6.1a: True paths of the 20 randomised trials with the EKF.</em>
+</p>
+
+<p align="center">
+  <img src="results/random_trials_odometry.png" width="80%" alt="The same 20 scenarios on odometry only">
+  <br><em>Figure 6.1b: The same 20 seeds steered on wheel odometry only.</em>
+</p>
+
+**Results:**
+
+All four nominal runs (none, left, right and centre box cases) docked successfully without collision, confirming that the system worked under nominal conditions.
+
+With EKF, all 20 random runs docked successfully without collision. The mean docking lateral error was 0.23 cm, with a standard deviation of 0.44 cm across the 20 trials. The maximum position estimation error during these trials was 10.9 cm (seed 14, with a 7.8 cm initial placement error). However, the error decreased to below 0.4 cm by the end of every run, as marker measurements helped correct the position estimates.
+
+In contrast, with wheel odometry alone, only 9 of the same 20 runs completed docking and two runs had collision. Without marker-based corrections, the initial placement error remained uncorrected, while small errors in the wheel encoder measurements accumulated as the robot moved. As a result, the position estimation error reached up to 74 cm.
+
+**Why it looks this way:** The main difference between the 20 EKF and odometry-only runs was the accuracy of their position estimates. Marker measurements helped EKF correct accumulated estimation errors, allowing the robot to follow the planned route accurately and complete docking reliably under multiple random disturbances.
+
 ### 6.2 Failure analysis traced to model, sensing, estimator or controller [D]
-### 6.3 (Optional) Robustness study beyond the brief, compared against nominal: sensor noise sweep (x1, x2, x4) MISSING, second obstacle in the narrow corridor (leg1-box), hidden placement and wheel-scale errors [HD]
+
+The observed failures and safety stops were investigated using the simulation ground truth and the real-robot sensor logs to identify their most likely causes. This section presents an analysis of failures and safety stops observed in the final tests, problems identified and fixed during development and remaining limitations.
+
+#### A. Failures and safety stops observed in the final tests
+
+| Observed issue          | Source                    | Evidence                                                                                        | Primary cause         |
+|-------------------------|---------------------------|-------------------------------------------------------------------------------------------------|-----------------------|
+| Odometry drift          | Simulation, odometry only | 11/20 failed; position estimation error: 20–74 cm                                               | Estimator             |
+| Displaced marker        | Real robot                | 30 measurements rejected by the NIS gate; `marker_lost` stop                                    | Sensing / environment |
+| Low LiDAR scan coverage | Real robot                | Forward scan coverage 0.34–0.55, below the required threshold of 0.8; robot waited at the start | Sensing               |
+
+**1. Odometry drift (estimator):** Using the same 20 random seeds, all 20 runs with EKF completed the task successfully, compared with only 9 out of 20 odometry-only runs. In the 11 failed odometry-only runs, the position estimation error ranged from 20 to 74 cm at the pre-dock point. These estimation errors led to three different stop reasons:
+
+| Stop reason   | Runs (seeds)            | What happened                                                                                                                                                                                                                                              |
+|---------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `marker_lost` | 6 (2, 5, 7, 13, 15, 19) | The docking marker was outside the camera view, so the robot waited and then gave up. Seeds 2 and 19 also collided with a corridor wall.                                                                                                                   |
+| `not_docked`  | 4 (3, 4, 18, 20)        | The final docking check failed because the robot relied on the estimated pose. In seeds 4 and 18, the robot’s ground-truth pose was within 1.6 cm and 2.0° of the goal, but its position estimate was 24–31 cm away from the true position                 |
+| `too_close`   | 1 (14)                  | The position estimation error reached 66cm on the long straight path. Because the robot used these incorrect estimated poses, it moved away from its planned path. Then, the LiDAR safety check detected an obstacle directly ahead and stopped the robot. |
+
+The comparison between EKF and odometry-only runs showed that accumulated position estimation errors were the primary cause of the odometry-only failures. Depending on the run, these errors caused the robot to lose sight of the docking marker, fail the final docking check or trigger the LiDAR safety stop.
+
+**2. Displaced marker (sensing / environment):** Marker 0 was moved from its designated position, causing the camera measurements to become inconsistent with the EKF predictions. The NIS gate rejected 30 measurements from Marker 0, while measurements from Markers 1 and 2 were still accepted. This prevented the EKF from updating its position estimate using the inconsistent measurements from Marker 0. During the test, the robot stopped docking and reported `marker_lost` as the reason. The recommended solution is to check the marker positions before each run.
+
+**3. Low LiDAR scan coverage (sensing):** During real-robot testing on 28 October, the forward LiDAR scan coverage was only 0.34-0.55, compared with 0.88-1.00 in simulation. This was likely because the LDS-01 received too few valid measurements from the black foam panels forming the corridor walls.
+
+Because the scan coverage was below the required threshold of 0.8, the robot remained at its starting position. The threshold was then reduced to 0.2 for real-robot operation. In subsequent tests, the robot showed multiple successful runs with LiDAR being able to detect obstacles and trigger AVOID state.
+
+#### B. Failures identified and fixed during development
+
+These problems were identified and addressed during development, before the final trials reported in Section 6.1.
+
+| Earlier problem                                                                  | Primary Cause                                                                                             | Fix                                                                                                                                         |
+|----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| EKF rejected marker measurements when the initial position was 11 cm off         | Estimator: initial covariance P0 too small (2 cm / 2° initial standard deviations), causing NIS rejection | Increased the EKF's initial position and heading uncertainty to 5 cm / 5° and generated random placement errors consistent with the new P0. |
+| Robot collided with the box corner when returning to the path (3/10 tested runs) | Controller: avoidance clearance too small (0.05 m)                                                        | Increased avoidance clearance to 0.10 m. All 20 subsequent runs completed the task successfully.                                            |
+| Robot selected the narrower side when avoiding a box (too_close, seed 5)         | Controller: Incorrect obstacle avoidance side selection                                                   | Changed the obstacle avoidance logic to select the side requiring less sideways movement ([avoidance.py](src/control/avoidance.py))         |
+
+#### C. Remaining limitations
+
+- **Model mismatch not confirmed:** No failures in the final trials were directly linked to differences between the mathematical model and the real robot's behaviour. Small docking errors remained in the nominal runs, but their causes were not determined. The limitations of the linear model are discussed in Section 2.4.
+- **Lower LiDAR coverage threshold not re-tested:** The threshold was reduced from 0.8 to 0.2 to allow the robot to operate despite the low LiDAR scan coverage caused by the black foam panels. Previously, the robot required at least 80% valid scan coverage to move, but after the change, only 20% was required. Although this allowed the robot to operate, it also meant that the robot could continue moving with less valid LiDAR data. The system was not re-tested with a blocked or faulty LiDAR, so its safety under these conditions remains unverified.
 
 ## 7. Real Robot
 ### 7.1 Setup and differences from simulation [HD-hw]
@@ -637,7 +751,14 @@ Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, 
 
 ## 9. Limitations and Lessons
 ### 9.1 What the results do and do not support [HD]
+
+Will get back to this
+
 ### 9.2 What failed during development, and how it was diagnosed [D]
+
+When the team was stuck with a problem. We would utilise AI to help break the problem down, and help guide us in the right direction. Acting almost as a tutor.
+
+For example, when it came to writing the estimation section of the report. AI was utilised to help lay out a general outline of what needed to be done, and how. Narrowing down on a section when there was confusion.
 
 ## 10. Reproducibility
 ### 10.1 Install and run from a fresh environment [D]
@@ -689,7 +810,7 @@ install line again.
 **Every time** you open a new terminal: go to the project folder and activate the environment
 (`source .venv_mujoco/bin/activate` or `.\.venv_mujoco\Scripts\Activate.ps1`).
 
-### 10.2 Commands that regenerate each figure and table [D]
+### 9.2 Commands that regenerate each figure and table [D]
 
 ```bash
 python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
@@ -710,20 +831,21 @@ Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_
 camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
 (`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
 
-### 10.3 Ground-truth rule: truth is read only in evaluation/ [D]
+### 9.3 Ground-truth rule: truth is read only in evaluation/ [D]
 
 The controller must use the estimated state, never the ground truth. Ground truth can only be read in evaluation/
 
 
-## 11. Team and Declarations (required; a missing item caps the affected criteria at Pass)
-### 11.1 Group number and team members
+## 10. Team and Declarations (required; a missing item caps the affected criteria at Pass)
+### 10.1 Group number and team members
 
 - Addison Possamai (25840164)
 - Nguyen Kim Uyen Phan (25596519)
 - Nhat Thien Mai (25161391)
 
-### 11.2 Individual contribution statement
+### 10.2 Individual contribution statement
 
+#### Contribution table
 |   Task                             | Person          |
 | :--------------------------------- | :-------------- |
 |    Overview                        | Addison + Kim   | 
@@ -736,13 +858,20 @@ The controller must use the estimated state, never the ground truth. Ground trut
 |    Limitations and Lessons         | Addison         | 
 |    Reproducibility                 | Addison         | 
 
+#### Addison's  statement
+I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
 
-### 11.3 Generative AI declaration: tools and purpose
+#### Kim's statement
 
-**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor
-models and their checks; see the project page's GenAI declaration. Additionally, it was utilised to make presented data easier to read and comprehend.
 
-### 11.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
+#### Thien's statement
+
+
+### 10.3 Generative AI declaration: tools and purpose
+
+**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration. In addition to this, it was also utilised to help guide the development of the project page. Not only outlining what needs to be done, and how, simply. It assisted in turning data outputs into tables. Improving their readability for the project page.
+
+### 10.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
 
 - Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
   Apache-2.0 (`models/robotis_tb3/LICENSE`); sensor poses from ROBOTIS `turtlebot3_waffle_pi.urdf`.
