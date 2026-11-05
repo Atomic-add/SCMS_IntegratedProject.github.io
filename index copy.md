@@ -8,10 +8,46 @@
 
 ## 1. Overview
 ### 1.1 Task, platform, the rule that the controller uses the estimated state only, plus repo and video links [D]
+
+This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
+- 2D LiDAR
+- Camera
+- Wheel-encoder odometry
+This task’s constraint is that the controller must use the estimated state, never the ground truth
+
+**repo:**
+(https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git)
+
+**video link:**
+(INSERT VIDEO)
+
+
 ### 1.2 Pipeline diagram, simulation and real-robot photos [D]
+
+**pipeline diagram**
+
+I.O.U
+
+**simulation**
+
+![Your Alt Text](./results/page/Overview_Simulation.png)
+
+**hardware appliance**
+
+![Your Alt Text](./results/page/Overview_Real.png)
+
+
 ### 1.3 What is new beyond the coursework (Assessment 3 covered path-error LQR/LQI and a range-only EKF): range+bearing ArUco EKF, LiDAR avoidance, IBVS docking, randomised trials, real robot [D]
+
+
+
 ### 1.4 Headline results: simulation vs real robot [HD]
+
+![Your Alt Text](./results/real_vs_sim.png)
+
 ### 1.5 Marker's guide: where each criterion is evidenced, plus video timestamps for the task completed, a disturbed trial, and the estimate with uncertainty vs ground truth [D]
+
+
 
 ## 2. Modelling (A): state-space model, controllability and observability analysis
 ### 2.1 State-space model: derived for the TurtleBot3, with stated assumptions [D]
@@ -247,10 +283,143 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 |Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differencces|
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design [D]
+
+The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3, Task B.3**, borrowing the following variables:
+- ekf_predict
+- ekf_update
+- F_uni
+- h_rb
+- H_rb
+- Qd reasoning
+
+The design has 2 main functions: predict and update.
+
+**Predict** is generated once per new encoder sample. Utilised to move the estimate with the wheel increments and grow P by the wheel noise. 
+
+**Update** is generated once per new camera frame. This fuses one marker's range and bearing, and returns its NIS.
+
 ### 4.2 Tuning: Q, R and P0, and where each value comes from [D]
+
+- **Q (process noise)**: This refers to uncertainty in the motion prediction at each step. This includes wheel slip and radius error, which grows with the distance travelled.
+  
+- **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting the accuracy and reliability of measurements
+
+- **P0 (starting uncertainty)**
+
+The table below is an expansion upon these 3 variable groups. Illustrating what each variable belongs to, and what it does.
+
+|  Group   |    Variable     |                    What it is                    |
+| :------- | :-------------- |  :---------------------------------------------- |
+|   Q      | k_wheel         | Wheel error, which grows with distance travelled |
+|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    
+|          |                 | positive                                         |
+|   R      | range_sd [a,b]  | range noise = a + b*r^2                          |
+|          | bearing_sd_deg  | bearing noise                                    |
+|          | range_bias_r2   | Known camera range bias.                         |
+|   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
+
+All variables listed come from ([estimation.json](config/estimation.json))
+
 ### 4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds [D]
+
+To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves as a quick and efficient method of checking whether it is able to pass everything or not in a simulated environment.
+
+-----------------------------------------------------------------------------------
+
+PASS  baseline: the first encoder sample does not move the estimate
+
+PASS  straight: equal wheel turns move 1 m along x, heading unchanged
+
+PASS  turn: opposite wheel turns spin +90 deg on the spot
+
+PASS  repeated encoder timestamp: no second prediction
+
+PASS  wrap: 179 deg - (-179 deg) is -2 deg, not 358 deg
+
+PASS  bearing residual is wrapped near +-180 deg   (bearing 1.57 deg)
+
+PASS  F matches finite differences
+
+PASS  H matches finite differences
+
+PASS  missing data: empty markers dict leaves the estimate unchanged
+
+PASS  missing data: unknown ID 7 leaves the estimate unchanged
+
+PASS  missing data: nan measurement leaves the estimate unchanged
+
+PASS  repeated frame: fused once only
+
+PASS  old frame (1 s behind the encoders): not fused
+
+PASS  correction: 11 cm / 3 deg off, markers 0 and 2 in view -> below 1 cm and 0.5 deg   (0.63 cm, 0.23 deg, 58/58 fused)
+
+PASS  gate: a 1 m range outlier is rejected   (NIS 311)
+
+PASS  1000 random steps: x_hat finite, P symmetric, eigenvalues >= 0   (min eig 1.9e-04)
+
+PASS  config: by default the sim camera's ekf_noise replaces range bias, range sd and bearing sd   ({'range_bias_r2': 0.0045, 'range_sd': [0.00911, 0.00563], 'bearing_sd_deg': 0.0571})
+
+PASS  config: the real camera's range_correction drops the sim bias (never subtracted twice)
+
+0 failed - all checks passed
+
+------------------------------------------------------------------------------------
+
+Below an expansion upon the results from ([run_demo.py](evaluation/run_demo.py)). Observing the test results of both the EKF and odometry.
+
+Odometry only 
+
+![Your Alt Text](./results/demo_paths.png)
+
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions |
+| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------|
+|   none   | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
+|   left   | Yes    | 37.2     | 1.32                 | +0.6              | -1.1          | None       |
+|   centre | Yes    | 43.1     | 1.62                 | +0.5              | -0.8          | None       |
+|   right  | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
+
+EKF (nominal run, 4 cases)
+
+![Your Alt Text](./results/demo_paths_ekf.png)
+ 
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
+| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
+|   none   | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+|   left   | Yes    | 37.2     | 1.06                 | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
+|   centre | Yes    | 43.3     | 1.58                 | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
+|   right  | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+
+
 ### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) [D]
+
+This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
+
+![Your Alt Text](./results/sweep_r.png)
+
+These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI to improve readability.
+
+|R                      |	Docked | ANEES      |	NIS	|Gated|	Worst error [cm] |
+| :-------------------- | :----- | :--------- | :-- | :-- | :--------------- |
+|R x10	                |  100 % |1.54 ± 0.06	|0.02 |0.0  |	0.82 ± 0.08      |
+|R (config)	            | 100 %	 |3.08 ± 0.49 |0.12 |0.2  |	1.78 ± 0.65      |
+|R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
+|R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
+
 ### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] (C has no hardware credit, so this is C's HD; re-run, current files identical)
+
+This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
+
+| Run | Docked | Contacts | Notes |
+|---|---|---|---|
+| EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
+| Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
+
+To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create a graph. This showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
+
+![Your Alt Text](./results/demo_compare.png)
+
+From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also producing fewer errors.
 
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, turn and IBVS [D]
@@ -492,8 +661,60 @@ These problems were identified and addressed during development, before the fina
 
 ## 7. Real Robot
 ### 7.1 Setup and differences from simulation [HD-hw]
+We tested the system using a TurtleBot3 Waffle Pi that running ROS 2, with an LDS-01 LiDAR and a Pi camera. Our laptop receives sensor data and sends velocity commands over the lab wifi and through the rosbeidge (UTS-RI rosbridge_api). The real robot ([real_robot.py](src/robot/real_robot.py)) provide the sensor reading and command function as the simulation, allowing the EKF, controllers, and mission logic to run on both platforms with the same logic. Wheel joint data from /joint_states is used to calculate odometry, camera images are used to detect ArUco markers, LiDAR data from /scan is used for obstacle avoidance. 
+
+The laptop can control linear, angular velocity of the robot through /cmd_vel. 
+The real rrack contained three 100 mm ArUco markers and a 20cm box (obstacle). 
+
+The run command is python main.py --real --task config/arena_lab.json. 
+
+<p align="center">
+  <img src="results/page/robot_start.jpg" width="30%" alt="Frame chain">
+  <br><em>The real robot is on its start mark, marker 1 and 2 on the front wall with the obstacle (box) in the driving lane.</em>
+</p>
+
+
+| Setting | Simulation | Real robot | Why the different| 
+|---|---|---|---|
+|Speed limits| Linear: 0.26 m/s / Angular: 1.82 rad/s | Linear: 0.1 m/s / Angular: 1.0 rad/s|  Lower speeds on real robot were used to improve marker detection and control reliability by reducing motion blure and communication delays' effect|
+|Minimum valid LiDAR forward coverage| 80% | 20% | Real LiDAR can not receive many returns from every surface. the return quality depends on different factor, as material, distance. In our test black foam panels even produced few returns|
+|Docking state| v: 0.8 m/s/ Lateral tolerance: 3 cm/ Heading Tolerance: 5°|v: 0.05 m/s/ Lateral tolerance: 4 cm/ Heading Tolerance: 8°, stop 1.5 cm early| The real robot move more slowly and stop early to reduce overshoot at the docking position. Wider tolerances allow for localisation and control errors observed during hardware calibration| 
+|Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| Smaller clearance and side margins allow the planned avoidance path to fit within the lab narrower real corridor| 
 ### 7.2 Real-robot results with the same metrics: tracking (D), docking (D), number of runs under real noise (E) [HD-hw]
+
+**Real-robot trials** We filmed 9 full tracks runs on 30 October. In three runs, the box was centred in the lane. In the other sex, it was shifeted 15 cm left or right. 
+
+The real robot also drive without external ground truth system using EKF during track mode. Therefore, the real distance error between the robot and track was not independently verified. For six successful docks, we measure the robot's final position and heading to compare it with simulation environment.
+
+| Run | Box position | Outcome | Run time | Estimated cross-track RMS during TRACK | Marker measurements accepted |
+|---|---|---|---|---|---|
+| 09:28 | Centre | Docked | 62.4 s | 1.9 cm | 96% |
+| 09:32 | Centre | Docked | 62.2 s | 2.4 cm | 95% |
+| 09:36 | Centre | Docked | 62.3 s | 2.1 cm | 98% |
+| 09:40 | Right | marker_lost | 53.5 s | 1.7 cm | 93% |
+| 09:41 | Right | marker_lost | 53.3 s | 1.2 cm | 93% |
+| 09:43 | Left | marker_lost | 56.4 s | 2.6 cm | 83% |
+| 10:48 | Right | Docked | 60.8 s | 1.4 cm | 96% |
+| 10:54 | Right | Docked | 61.8 s | 1.4 cm | 96% |
+| 10:59 | Left | Docked | 61.5 s | 1.7 cm | 99% |
+
+The three unsucessful runs (9:40-9:43) occuring during the final approach, where the side markers were all out of view and the EKF relied completely on wheel odometry. The robot caught on a raised floor vent coer, causing turing motion stuck. Therefore, the estimated pose become inaccurate, and as a result dock-marker measurement were missing or rejected by the NIS gate. The robot than stopped safel
+
+After the track was moved away from the vent cover, the next three runs docked without code changes.This support that the NIS helps protect the estimate from bad measurements, but when the estimate is wrong, it cannot recover it self without any visible markers
+
 ### 7.3 Quantitative simulation vs real comparison [HD-hw]
+The below table show the different between the simulation and real robot docking stage. 
+| Metric (5 measured hardware docks and their simulation counterparts) | Simulation | Real robot |
+|---|---|---|
+| Final distance to dock marker — target: 35 cm | 36.55 ± 0.03 cm | 35.35 ± 0.25 cm |
+| Lateral docking error | +0.46 ± 0.02 cm | +0.52 ± 0.35 cm |
+| Heading docking error | −0.77 ± 0.03° | −0.65 ± 1.11° |
+| Completion time | 43.8–44.9 s | Approximately 61–62 s |
+
+Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, at about36.5 cm from the marker. While the simulation stopped at 36.55 cm near to the intended value, the real robot stopped at 35.35 cm. Proving that there is a chance real robot still moving after docking complete. The real robot took longer to finish as the it interface limits speed to 0.10 m/s, while the simulation uses speed of 0.2 m/s
+
+
+
 
 ## 8. Limitations and Lessons
 ### 8.1 What the results do and do not support [HD]
@@ -501,15 +722,122 @@ These problems were identified and addressed during development, before the fina
 
 ## 9. Reproducibility
 ### 9.1 Install and run from a fresh environment [D]
+
+You need **Python 3.10** (64-bit) and **Git**. Each member creates their own virtual environment
+`.venv_mujoco` inside the project folder; it is never committed.
+
+##### Linux (Ubuntu)
+
+```bash
+git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
+cd IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+python3.10 -m venv .venv_mujoco            # Ubuntu: sudo apt install python3.10-venv if this fails
+source .venv_mujoco/bin/activate
+python -m pip install --upgrade pip
+python -m pip uninstall -y opencv-python  # only matters if it was installed before ("Skipping" is fine)
+python -m pip install -r requirements.txt
+```
+
+##### Windows (PowerShell)
+
+```powershell
+git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
+cd IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+py -3.10 -m venv .venv_mujoco
+.\.venv_mujoco\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip uninstall -y opencv-python
+python -m pip install -r requirements.txt
+```
+
+If PowerShell blocks `Activate.ps1`, skip activation and call the environment's Python directly,
+e.g. `.\.venv_mujoco\Scripts\python.exe main.py`. More detail: `mujoco_installation_guide/`.
+
+##### Check the installation
+
+```bash
+python -c "import sys, mujoco, cv2; print(sys.version.split()[0], mujoco.__version__, cv2.__version__)"
+```
+
+Expected: `3.10.x 3.15.0 4.10.0`.
+
+`requirements.txt` pins every package (cp310 wheels exist for Windows and Linux):
+mujoco 3.15.0, numpy 2.2.6, scipy 1.15.3, matplotlib 3.10.9, spatialmath-python 1.1.18,
+opencv-contrib-python 4.10.0.84 (the Week 3 pin). Never install `opencv-python` next to it: both
+provide `cv2` and break each other. After a `git pull` that changes `requirements.txt`, run the
+install line again.
+
+**Every time** you open a new terminal: go to the project folder and activate the environment
+(`source .venv_mujoco/bin/activate` or `.\.venv_mujoco\Scripts\Activate.ps1`).
+
 ### 9.2 Commands that regenerate each figure and table [D]
+
+```bash
+python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
+python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
+python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
+python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
+python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
+python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
+python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
+python -m evaluation.plot_like_a3          # Assessment 3 style: EKF error +-2 sigma, 2x2 summary, sim and real clips -> results/ekf_*, real_anim_*
+python -m evaluation.observability          # rank / Gramian per marker case, P growth with no marker, rank along the path -> results/observability.*
+python -m evaluation.sweep_lqr --n 20       # LQR weight R x10, x1, /10 on the EKF: tracking error vs effort -> results/sweep_lqr.*
+python -m evaluation.model_limits --n 20    # fixed K: |eig| vs speed, linear vs nonlinear, mission at 0.10/0.20/0.26 m/s -> results/model_limits.*
+```
+
+Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
+`demo_compare.*`). An EKF run takes about 2 min on a machine without a GPU, because rendering the
+camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
+(`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
+
 ### 9.3 Ground-truth rule: truth is read only in evaluation/ [D]
+
+The controller must use the estimated state, never the ground truth. Ground truth can only be read in evaluation/
+
 
 ## 10. Team and Declarations (required; a missing item caps the affected criteria at Pass)
 ### 10.1 Group number and team members
+
+- Addison Possamai (25840164)
+- Nguyen Kim Uyen Phan (25596519)
+- Nhat Thien Mai (25161391)
+
 ### 10.2 Individual contribution statement
+
+#### Contribution table
+|   Task                             | Person          |
+| :--------------------------------- | :-------------- |
+|    Overview                        | Addison + Kim   | 
+|    Modelling (A)                   | Kim             | 
+|    Sensing (B)                     | Thien           | 
+|    Estimation (C)                  | Addison         | 
+|    Control (D)                     | Kim             | 
+|    Integration and Robustness (E)  | Kim             | 
+|    Real Robot                      | Thien           |
+|    Limitations and Lessons         | Addison         | 
+|    Reproducibility                 | Addison         | 
+
+#### Addison's  statement
+I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
+
+#### Kim's statement
+
+
+#### Thien's statement
+
+
 ### 10.3 Generative AI declaration: tools and purpose
+
+**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration. In addition to this, it was also utilised to help guide the development of the project page. Not only outlining what needs to be done, and how, simply. It assisted in turning data outputs into tables. Improving their readability for the project page.
+
 ### 10.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
-Every results subsection ends with one sentence explaining why it looks that way.
+
+- Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
+  Apache-2.0 (`models/robotis_tb3/LICENSE`); sensor poses from ROBOTIS `turtlebot3_waffle_pi.urdf`.
+- Code adapted from the 41014 Week 2-9 tutorial solutions (cited in each module's docstring).
+- Real-robot link: [UTS-RI/turtlebot_rosbridge](https://github.com/UTS-RI/turtlebot_rosbridge) (`rosbridge_api`,
+  MIT), used unmodified; `src/robot/real_robot.py` hooks its message callbacks to keep arrival times.
 
 
 
