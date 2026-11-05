@@ -278,9 +278,9 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 | Check | Simulation | Real robot | Why the different| 
 |---|---|---|---|
 |Camera calibration (reprojection RMS)| 0.046 px | 0.41 px | The simulated camera uses an ideal pinhole m. While real images involve lens distortion, board imperfection and hand-held board|
-|ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncercertainty may effect the result| 
+|ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncertainty may affect the result| 
 |LIdar forward coverage| 88-100% | about 23% | The real LiDAR received fewer returns as a black foam panels|
-|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differencces|
+|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differences |
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design [D]
 
@@ -342,7 +342,6 @@ To analyse and report the performance, ([run_demo.py](evaluation/run_demo.py)) i
 |   right  | Yes    | 37.4     | 1.37                 | 1.16       |+0.7              | -1.1          | None       |
 
 
-
 **EKF (nominal run, 4 cases)**
 
 ![Your Alt Text](./results/demo_centre_ekf.png)
@@ -402,11 +401,15 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
 
+To elaborate:
 
+**consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. 
+
+**responsiveness** refers to how fast the filter chases the measurements. A small R results in the filter reacting to every sighting, including noise. This results in more jitter. Whereas a large R results in a slower filter. This makes it slower to correct drift, but it is an overall smoother experience.
 
 ![Your Alt Text](./results/sweep_r.png)
 
-These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI to improve readability.
+These test results are from ([sweep_r](evaluation/sweep_r.py)).
 
 |R                      |	Docked | ANEES      |	NIS	|Gated|	Worst error [cm] |
 | :-------------------- | :----- | :--------- | :-- | :-- | :--------------- |
@@ -418,7 +421,13 @@ These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI
 
 From this, **R x 10** appears to produce the best outcome. The measurement noise is in ANEES, has a small NIS spread, and its worst errors are smaller compared to the others. Especially R/10. Which features the widest, worst error spread.
 
-
+From these results, we can determine the following from each noise reading
+| R setting              | Consistency              | Responsiveness   | Verdict       |
+| :--------------------- | :---------------         | :--------------- | :------------ 
+|    R X10               | too cautious             | Unresponsive     | 
+| R (config)             | consistent               | responsive       |
+| R, measured bearing sd | too confident            | responsive       |
+| R / 10                 | overly confident         | Very responsive  | 
 
 
 
@@ -435,7 +444,7 @@ To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create
 
 ![Your Alt Text](./results/demo_compare.png)
 
-From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also producing fewer errors.
+From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
 
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, turn and IBVS [D]
