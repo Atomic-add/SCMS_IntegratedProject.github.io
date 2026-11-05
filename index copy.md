@@ -445,7 +445,7 @@ The real robot also drive without external ground truth system using EKF during 
 
 The three unsucessful runs (9:40-9:43) occuring during the final approach, where the side markers were all out of view and the EKF relied completely on wheel odometry. The robot caught on a raised floor vent coer, causing turing motion stuck. Therefore, the estimated pose become inaccurate, and as a result dock-marker measurement were missing or rejected by the NIS gate. The robot than stopped safel
 
-After the track was moved away from the vent cover, the next three runs docked without code changes.This support that the NIS helps protect the estimate from bad measurements, but when the estimate is wrong, it cannot recover it self without aany visible markers
+After the track was moved away from the vent cover, the next three runs docked without code changes.This support that the NIS helps protect the estimate from bad measurements, but when the estimate is wrong, it cannot recover it self without any visible markers
 
 ### 7.3 Quantitative simulation vs real comparison [HD-hw]
 The below table show the different between the simulation and real robot docking stage. 
