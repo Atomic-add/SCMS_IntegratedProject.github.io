@@ -400,6 +400,8 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
 
+need to see if the graph updates (DELETE LATER)
+
 To elaborate:
 
 **Consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. Further helping prevent collisions, at the cost of the robot's speed.
