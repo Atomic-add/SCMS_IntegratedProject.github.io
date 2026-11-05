@@ -403,11 +403,11 @@ This runs a test to compare Consistency to Responsiveness. For this test, **R (E
 
 To elaborate:
 
-**consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. 
+**Consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. Further helping prevent collisions, at the cost of the robot's speed.
 
-**responsiveness** refers to how fast the filter chases the measurements. A small R results in the filter reacting to every sighting, including noise. This results in more jitter. Whereas a large R results in a slower filter. This makes it slower to correct drift, but it is an overall smoother experience.
+**Responsiveness** refers to how fast the filter chases the measurements. A small R results in the filter reacting to every sighting, including noise. This results in more jitter. Whereas a large R results in a slower filter. This makes it slower to correct drift, but it is an overall smoother experience.
 
-![Your Alt Text](./results/sweep_r.png)
+![Your Alt text](./results/sweep_r.png)
 
 These test results are from ([sweep_r](evaluation/sweep_r.py)).
 
@@ -418,16 +418,18 @@ These test results are from ([sweep_r](evaluation/sweep_r.py)).
 |R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
 |R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
 
+The table below is an expansion upon the data above. Analysing their consistency and responsiveness. Then concluding how that would impact the robot's performance on the track.
 
-From this, **R x 10** appears to produce the best outcome. The measurement noise is in ANEES, has a small NIS spread, and its worst errors are smaller compared to the others. Especially R/10. Which features the widest, worst error spread.
+| R setting              | Consistency       | Responsiveness   | Verdict                      |
+| :--------------------- | :---------------  | :--------------- | :--------------------------- | 
+|    R X10               | too cautious      | Unresponsive     | staggent                     |
+| R (config)             | consistent        | responsive       | slow but steady movement     |
+| R, measured bearing sd | too confident     | responsive       | fast but unreliable movement |
+| R / 10                 | overly confident  | Overly responsive| uncontrollable movement      |
 
-From these results, we can determine the following from each noise reading
-| R setting              | Consistency              | Responsiveness   | Verdict       |
-| :--------------------- | :---------------         | :--------------- | :------------ 
-|    R X10               | too cautious             | Unresponsive     | 
-| R (config)             | consistent               | responsive       |
-| R, measured bearing sd | too confident            | responsive       |
-| R / 10                 | overly confident         | Very responsive  | 
+When taking into account track A. Where the robot's main objective is to reach the charging station without any collisions. No matter the time taken. R (config) would make the most logical sense. For, whilst slower. Being aligned with consistency means that it will measure less noise and move smoothly. At the cost of speed, which isn't a requirement for this track.
+
+As a result, **consistency is preferred over reliability**.
 
 
 
