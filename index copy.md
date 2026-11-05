@@ -322,7 +322,39 @@ All variables listed come from ([estimation.json](config/estimation.json))
 
 ### 4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds [D]
 
-To begin, below is a simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). This serves as a quick and efficient method of checking whether it is able to pass everything or not in a simulated environment.
+To analyse and report the performance, ([run_demo.py](evaluation/run_demo.py)) is utilised. Running a simulated test of the robot and reporting back both its odometry and EKF. This will be further compared within 4.5
+
+**RMSE (Root Mean Square Error)**: Reports the average distance between predicted values of the model and actual values.
+
+**NEES (Normalised Estimation Error Squared)**: Utilised to evaluate the consistency of the Kalman filter. Through comparing the estimation error to the expected covariance of the estimator.
+
+**NIS (Normalised Innovation Squared)**: Checks whether the Kalman filter's noise assumption aligns with the actual measurements.
+
+**Odometry** 
+
+![Your Alt Text](./results/demo_centre.png)
+
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | RMSE [cm]  | Dock lateral [cm]| Heading [deg] | Collisions |
+| :--------| :------| :--------| :--------------------| :--------- |:-----------------| :-------------| :----------|
+|   none   | Yes    | 37.4     | 1.37                 | 1.16       | +0.7             | -1.1          | None       |
+|   left   | Yes    | 37.2     | 1.32                 | 1.03       | +0.6             | -1.1          | None       |
+|   centre | Yes    | 43.1     | 1.62                 | 0.76       |+0.5              | -0.8          | None       |
+|   right  | Yes    | 37.4     | 1.37                 | 1.16       |+0.7              | -1.1          | None       |
+
+
+
+**EKF (nominal run, 4 cases)**
+
+![Your Alt Text](./results/demo_centre_ekf.png)
+ 
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | RMSE [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
+| :--------| :------| :--------| :--------------------| :-------- | :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
+|   none   | Yes    | 37.4     | 1.01                 | 0.43      | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+|   left   | Yes    | 37.2     | 1.06                 | 0.58      | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
+|   centre | Yes    | 43.3     | 1.58                 | 0.83      | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
+|   right  | Yes    | 37.4     | 1.01                 | 0.43      | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+
+To summarise. The robot performs relatively well. As displayed by this simple pass/fail check from ([estimation_test.py](src/estimation/estimation_test.py)). Showcasing that it is able to reach its charging station, and pass every test.
 
 -----------------------------------------------------------------------------------
 
@@ -362,38 +394,15 @@ PASS  config: by default the sim camera's ekf_noise replaces range bias, range s
 
 PASS  config: the real camera's range_correction drops the sim bias (never subtracted twice)
 
-0 failed - all checks passed
+**0 failed - all checks passed**
 
 ------------------------------------------------------------------------------------
 
-Below an expansion upon the results from ([run_demo.py](evaluation/run_demo.py)). Observing the test results of both the EKF and odometry.
-
-Odometry only 
-
-![Your Alt Text](./results/demo_paths.png)
-
-|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions |
-| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------|
-|   none   | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
-|   left   | Yes    | 37.2     | 1.32                 | +0.6              | -1.1          | None       |
-|   centre | Yes    | 43.1     | 1.62                 | +0.5              | -0.8          | None       |
-|   right  | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
-
-EKF (nominal run, 4 cases)
-
-![Your Alt Text](./results/demo_paths_ekf.png)
- 
-|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
-| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
-|   none   | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
-|   left   | Yes    | 37.2     | 1.06                 | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
-|   centre | Yes    | 43.3     | 1.58                 | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
-|   right  | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
-
-
 ### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) [D]
 
-This runs a test to compare Consistency to Responsiveness. It scales the EKF's measurement noise (R). Watch NEES, NIS, and the error.
+This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
+
+
 
 ![Your Alt Text](./results/sweep_r.png)
 
@@ -405,6 +414,13 @@ These test results are from ([sweep_r](evaluation/sweep_r.py)). Modified with AI
 |R (config)	            | 100 %	 |3.08 ± 0.49 |0.12 |0.2  |	1.78 ± 0.65      |
 |R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
 |R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
+
+
+From this, **R x 10** appears to produce the best outcome. The measurement noise is in ANEES, has a small NIS spread, and its worst errors are smaller compared to the others. Especially R/10. Which features the widest, worst error spread.
+
+
+
+
 
 ### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] (C has no hardware credit, so this is C's HD; re-run, current files identical)
 
@@ -716,12 +732,24 @@ Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, 
 
 
 
-## 8. Limitations and Lessons
-### 8.1 What the results do and do not support [HD]
-### 8.2 What failed during development, and how it was diagnosed [D]
+## 8. Independent Contribution Summary (only list what has results) Core (needed):
+### 8.1 Real-robot implementation (section 7): HD evidence for B, D, E [HD-hw]
+### 8.2 Model limits (2.4) and limitations (9.1): HD evidence for A [HD]
+### 8.3 Second estimator comparison (4.5): HD evidence for C. Cheapest option: the odometry-only mode already exists, it just needs a proper re-run [HD]
 
-## 9. Reproducibility
-### 9.1 Install and run from a fresh environment [D]
+## 9. Limitations and Lessons
+### 9.1 What the results do and do not support [HD]
+
+Will get back to this
+
+### 9.2 What failed during development, and how it was diagnosed [D]
+
+When the team was stuck with a problem. We would utilise AI to help break the problem down, and help guide us in the right direction. Acting almost as a tutor.
+
+For example, when it came to writing the estimation section of the report. AI was utilised to help lay out a general outline of what needed to be done, and how. Narrowing down on a section when there was confusion.
+
+## 10. Reproducibility
+### 10.1 Install and run from a fresh environment [D]
 
 You need **Python 3.10** (64-bit) and **Git**. Each member creates their own virtual environment
 `.venv_mujoco` inside the project folder; it is never committed.
