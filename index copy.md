@@ -306,17 +306,16 @@ The design has 2 main functions: predict and update.
 
 - **P0 (starting uncertainty)**
 
-The table below is an expansion upon these 3 variable groups. Illustrating what each variable belongs to, and what it does.
+The table below is an expansion upon these 3 variable groups. It illustrates what each variable belongs to and what it does.
 
-|  Group   |    Variable     |                    What it is                    |
-| :------- | :-------------- |  :---------------------------------------------- |
-|   Q      | k_wheel         | Wheel error, which grows with distance travelled |
-|          | q_floor         | noise, which is added to Qd every step. Keeps P  |    
-|          |                 | positive                                         |
-|   R      | range_sd [a,b]  | range noise = a + b*r^2                          |
-|          | bearing_sd_deg  | bearing noise                                    |
-|          | range_bias_r2   | Known camera range bias.                         |
-|   P0     | P0_sd           | Starting uncertainty: x, y, heading              |    
+|  Group   |    Variable     | Value             |                   What it is                     |
+| :------- | :-------------- | :---------------- |  :---------------------------------------------- |
+|   Q      | k_wheel         |   0.06            | Wheel error, which grows with distance travelled |
+|          | q_floor         |   1e-8            | noise, which is added to Qd every step. Keeps P positive |                                        
+|   R      | range_sd [a,b]  | [0.003, 0.004]    | range noise = a + b*r^2                          |
+|          | bearing_sd_deg  | 0.1               | bearing noise                                    |
+|          | range_bias_r2   | 0.0055            | Known camera range bias.                         |
+|   P0     | P0_sd           | [0.05, 0.05, 5.0] | Starting uncertainty: x, y, heading              |    
 
 All variables listed come from ([estimation.json](config/estimation.json))
 
@@ -429,11 +428,9 @@ The table below is an expansion upon the data above. Analysing their consistency
 
 When taking into account track A. Where the robot's main objective is to reach the charging station without any collisions. No matter the time taken. R (config) would make the most logical sense. For, whilst slower. Being aligned with consistency means that it will measure less noise and move smoothly. At the cost of speed, which isn't a requirement for this track.
 
-As a result, **consistency is preferred over reliability**.
+As a result, **consistency succeeds reliability** for this track.
 
-
-
-### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] (C has no hardware credit, so this is C's HD; re-run, current files identical)
+### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] 
 
 This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
 
@@ -447,6 +444,8 @@ To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create
 ![Your Alt Text](./results/demo_compare.png)
 
 From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
+
+
 
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, turn and IBVS [D]
