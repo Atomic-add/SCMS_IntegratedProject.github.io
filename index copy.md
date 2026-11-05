@@ -304,7 +304,7 @@ The design has 2 main functions: predict and update.
   
 - **R (sensor noise)**: These are random, unwanted variations of the sensor's output. Affecting the accuracy and reliability of measurements
 
-- **P0 (starting uncertainty)**
+- **P0 (filter's starting uncertainty)**: A non-zero setup value for placement accuracy. Dictated by the trustworthiness of the robot's starting position. If it were 0, it would be overconfident and slow to correct any starting offsets. This can throw the robot off course if left unchecked.
 
 The table below is an expansion upon these 3 variable groups. It illustrates what each variable belongs to and what it does.
 
