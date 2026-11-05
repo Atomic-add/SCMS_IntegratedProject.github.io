@@ -724,6 +724,7 @@ The controller must use the estimated state, never the ground truth. Ground trut
 
 ### 11.2 Individual contribution statement
 
+#### Contribution table
 |   Task                             | Person          |
 | :--------------------------------- | :-------------- |
 |    Overview                        | Addison + Kim   | 
@@ -736,11 +737,18 @@ The controller must use the estimated state, never the ground truth. Ground trut
 |    Limitations and Lessons         | Addison         | 
 |    Reproducibility                 | Addison         | 
 
+#### Addison's  statement
+I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
+
+#### Kim's statement
+
+
+#### Thien's statement
+
 
 ### 11.3 Generative AI declaration: tools and purpose
 
-**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor
-models and their checks; see the project page's GenAI declaration. Additionally, it was utilised to make presented data easier to read and comprehend.
+**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration. In addition to this, it was also utilised to help guide the development of the project page. Not only outlining what needs to be done, and how, simply. It assisted in turning data outputs into tables. Improving their readability for the project page.
 
 ### 11.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
 
