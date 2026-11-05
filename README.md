@@ -130,7 +130,32 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ------------------------------------------------------------------------------------
 
-INSERT RUN DEMO OUTCOMES
+Below an expansion upon the results from ([run_demo.py](evaluation/run_demo.py)). Observing the test results of both the EKF and odometry.
+
+Odometry only 
+
+![Your Alt Text](./results/demo_paths.png)
+
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions |
+| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------|
+|   none   | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
+|   left   | Yes    | 37.2     | 1.32                 | +0.6              | -1.1          | None       |
+|   centre | Yes    | 43.1     | 1.62                 | +0.5              | -0.8          | None       |
+|   right  | Yes    | 37.4     | 1.37                 | +0.7              | -1.1          | None       |
+
+EKF (nominal run, 4 cases)
+
+![Your Alt Text](./results/demo_paths_ekf.png)
+ 
+|   Case   | Docked | Time [s] | Cross-track RMS [cm] | Dock lateral [cm] | Heading [deg] | Collisions | ANEES (95 % band) | NEES inside | ANIS | NIS inside |
+| :--------| :------| :--------| :--------------------| :-----------------| :-------------| :----------| :-----------------| :-----------| :----| :----------|
+|   none   | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+|   left   | Yes    | 37.2     | 1.06                 | +0.4              | -0.7          | None       | 2.66 [2.83, 3.18] | 88 %        | 0.09 | 44 %       |
+|   centre | Yes    | 43.3     | 1.58                 | +0.4              | -0.7          | None       | 3.50 [2.84, 3.17] | 89 %        | 0.13 | 41 %       |
+|   right  | Yes    | 37.4     | 1.01                 | +0.4              | -0.7          | None       | 2.61 [2.83, 3.18] | 88 %        | 0.10 | 46 %       |
+
+
+
 
 ### 4.4 Tuning trade-off
 
