@@ -378,13 +378,27 @@ Headless Linux (no display): prefix with `MUJOCO_GL=egl`, e.g. `MUJOCO_GL=egl py
 
 ### Commands to regenerate each figure and table
 
+```bash
+python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
+python -m evaluation.run_demo centre --ekf   # one case on the EKF -> results/demo_centre_ekf.png
+python -m evaluation.random_trials --n 20    # 20 random scenarios on the EKF -> results/random_trials.png/.json
+python -m evaluation.random_trials --n 20 --odometry   # the same 20 on odometry only
+python -m evaluation.sweep_r --n 20          # R x10, x1, /10: NEES, NIS, error -> results/sweep_r.png/.json
+python -m evaluation.marker_layout           # where the lab landmarks go: markers in view + EKF replay -> results/marker_layout.*
+python -m evaluation.consistency_sweep       # Qd x Rn grid on recorded lab runs: ANEES, ANIS, 2-sigma coverage -> results/consistency_*.*
+python -m evaluation.plot_like_a3          # Assessment 3 style: EKF error +-2 sigma, 2x2 summary, sim and real clips -> results/ekf_*, real_anim_*
+python -m evaluation.observability          # rank / Gramian per marker case, P growth with no marker, rank along the path -> results/observability.*
+python -m evaluation.sweep_lqr --n 20       # LQR weight R x10, x1, /10 on the EKF: tracking error vs effort -> results/sweep_lqr.*
+python -m evaluation.model_limits --n 20    # fixed K: |eig| vs speed, linear vs nonlinear, mission at 0.10/0.20/0.26 m/s -> results/model_limits.*
+```
 
-
-
+Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_trials_*.json`,
+`demo_compare.*`). An EKF run takes about 2 min on a machine without a GPU, because rendering the
+camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
+(`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
 
 ### Ground truth rule
 The controller must use the estimated state, never the ground truth. Ground truth can only be read in evaluation/
-
 
 ## 11. Team and Declarations 
 ### Group Number and Team members
@@ -397,20 +411,19 @@ The controller must use the estimated state, never the ground truth. Ground trut
 
 |   Task                             | Person          |
 | :--------------------------------- | :-------------- |
-|    Overview                        | Addison         | 
+|    Overview                        | Addison + Kim   | 
 |    Modelling (A)                   | Kim             | 
 |    Sensing (B)                     | Thien           | 
 |    Estimation (C)                  | Addison         | 
 |    Control (D)                     | Kim             | 
 |    Integration and Robustness (E)  | Kim             | 
 |    Real Robot                      | Thien           |
-|    Independent Contribution Summary| Kim             | 
 |    Limitations and Lessons         | Addison         | 
 |    Reproducibility                 | Addison         | 
 
 ### Generative AI declaration
 **Claude (Anthropic)** was used to scaffold the simulation environment, the sensor
-models and their checks; see the project page's GenAI declaration.
+models and their checks; see the project page's GenAI declaration. Additionally, it was utilised to make presented data easier to read and comprehend.
 
 ### Acknowledgements
 - Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
