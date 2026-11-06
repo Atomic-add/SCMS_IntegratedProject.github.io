@@ -118,9 +118,9 @@ $$\dot e_y = v\sin e_\theta, \qquad \dot e_\theta = \omega - \frac{v\kappa\cos e
 
 $$A = \left.\frac{\partial f}{\partial e}\right|_{e=0}, \qquad B = \left.\frac{\partial f}{\partial\,\delta\omega}\right|_{e=0}$$
 
-```math
+$$
 \dot e = \begin{bmatrix}0 & v\\ -v\kappa^2 & 0\end{bmatrix} e + \begin{bmatrix}0\\ 1\end{bmatrix}\delta\omega
-```
+$$
 
 On the lab's straight segments κ = 0, so A = [[0, v], [0, 0]] and B = [0, 1]: v sits inside A, and at v = 0 the robot cannot steer out a lateral error.
 
@@ -130,15 +130,15 @@ $$A_d = e^{AT_s}, \qquad B_d = \int_0^{T_s} e^{A\tau}B\,d\tau$$
 
 Because A² = 0 on a straight, the series e<sup>AT<sub>s</sub></sup> = I + AT<sub>s</sub> + (AT<sub>s</sub>)²/2 + … stops after two terms, so the result is exact:
 
-```math
+$$
 A_d = I + AT_s = \begin{bmatrix}1 & vT_s\\ 0 & 1\end{bmatrix}, \qquad e^{A\tau}B = \begin{bmatrix}v\tau\\ 1\end{bmatrix} \;\Rightarrow\; B_d = \begin{bmatrix}vT_s^2/2\\ T_s\end{bmatrix}
-```
+$$
 
 At v = 0.2 m/s:
 
-```math
+$$
 A_d = \begin{bmatrix}1 & 0.01\\ 0 & 1\end{bmatrix}, \qquad B_d = \begin{bmatrix}0.00025\\ 0.05\end{bmatrix}, \qquad e[k+1] = A_d\,e[k] + B_d\,\delta\omega[k]
-```
+$$
 
 Steering changes e<sub>θ</sub> directly (T<sub>s</sub> = 0.05 per unit δω), but moves e<sub>y</sub> only by turning the heading first, with coupling vT<sub>s</sub> = 0.01, so the authority over e<sub>y</sub> shrinks with speed and vanishes at v = 0.
 
@@ -165,9 +165,9 @@ The rank test only says whether the system is controllable, not how easy it is t
 
 **Rank test:** A linear model with sensor matrix C (y = Cx) is observable when the observability matrix has full rank:
 
-```math
+$$
 \mathcal{O} = \begin{bmatrix}C\\ CA\\ \vdots\\ CA^{n-1}\end{bmatrix}, \qquad \mathrm{rank}(\mathcal{O}) = n
-```
+$$
 
 In the EKF, the measurement Jacobian H<sub>k</sub> and the motion Jacobian F<sub>k</sub> change every frame, so the same idea is applied to the linearised EKF, frame by frame. A small error δx<sub>0</sub> in the initial pose changes each frame's predicted measurement by:
 
@@ -175,9 +175,9 @@ $$\delta z_0 = H_0\,\delta x_0, \qquad \delta z_1 = H_1F_0\,\delta x_0, \qquad \
 
 Stacking these gives
 
-```math
+$$
 \begin{bmatrix}\delta z_0\\ \delta z_1\\ \delta z_2\\ \vdots\end{bmatrix} = \mathcal{O}_N\,\delta x_0, \qquad \mathcal{O}_N = \begin{bmatrix}H_0\\ H_1F_0\\ H_2F_1F_0\\ \vdots\end{bmatrix}
-```
+$$
 
 If rank(O<sub>N</sub>) = 3, any small pose error δx<sub>0</sub> shows up in the measurements, so the pose is locally observable along that trajectory.
 
@@ -966,6 +966,3 @@ Additionally, Claude was utilised to turn strings of data outputs into tables. E
 - Code adapted from the 41014 Week 2-9 tutorial solutions (cited in each module's docstring).
 - Real-robot link: [UTS-RI/turtlebot_rosbridge](https://github.com/UTS-RI/turtlebot_rosbridge) (`rosbridge_api`,
   MIT), used unmodified; `src/robot/real_robot.py` hooks its message callbacks to keep arrival times.
-
-
-
