@@ -176,32 +176,29 @@ In the full runs, the cross-track error peaks at about 5 cm (5.2 cm in the worst
 - **What the model leaves out.** The linear model ignores the per-wheel speed limit (saturation), camera latency (lag) and a +0.6 cm steady offset (persistent error). An LQI could remove an offset caused by an outside disturbance. However, if the EKF estimate itself is biased, the LQI cannot remove that offset, as it integrates the estimated e<sub>y</sub> and sees no error to correct.
 
 ## 3. Sensing (B): calibration, noise handling and frame management
-The robot in this project uses three sensors including: wheel envodeer, a camera, and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions: read_encoders(), read_image() and read_scan(), with the real robot sends its data through rosbridge. These functions are used in both the simulator and the real robot to be processed using the same perception and estimation logic.  
+The robot in this project uses three sensors: wheel encoders, a camera and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions, read_encoders(), read_image() and read_scan(); the real robot sends its data through rosbridge. As a result, both platforms process the data with the same perception and estimation logic.
 
-- Wheel encoders (20Hz): provide wheel rotation measurements for odometry calulation, which then use for EKF to predict the robot's pose
+- Wheel encoders (20 Hz): provide wheel rotation measurements for odometry, which the EKF uses to predict the robot's pose.
 
-- Pi camera (640 x 480 pixels, 20Hz): measures range and bearing to visible ArUco markers for EKF updates. Our track uses three markers from the DICT_4x4_50 dictionary, with a 100 mm side length. 
+- Pi camera (640 x 480 pixels, 30 Hz): measures range and bearing to visible ArUco markers for EKF updates. Our track uses three markers from the DICT_4x4_50 dictionary, with a 100 mm side length.
 
-- LDS-01 LiDAR (360 beams, 1° interval, 5Hz): measures the free distance ahead, obstacle's edges and side clearances for obstacle avoidane
+- LDS-01 LiDAR (360 beams, 1° interval, 5 Hz): measures the free distance ahead, obstacle edges and side clearances for obstacle avoidance.
 ### 3.1 Calibration: camera, plus LiDAR validated against ray-cast truth 
-Camera intrinsics: We calibrated both caemeras using a 9 x 6 checkerboard with 25 mm squares, ([calibrate_camera.py](experiments/calibrate_camera.py)). 
+**Camera intrinsics**: We calibrated both cameras using a 9 x 6 checkerboard with 25 mm squares ([calibrate_camera.py](experiments/calibrate_camera.py)).
 
-**Simulated camera**: In simulation, the board was palced at 20 random poses in front of the camera
+**Simulated camera**: In simulation, the board was placed at 20 random poses in front of the camera.
 <p align="center">
   <img src="results/camera_calibration.png" width="80%" alt="Simulated camera calibration">
   <br><em>Simulated camera: board found in 20 of 20 frames.</em>
 </p>
-*Simulated amera: Board found in 20 of 20 frames*.
 
-**Real camera**: For the real camera, the board was held by hand, trying different posision and angles in front of it. A set of 40 captured images were collected for calibration.
+**Real camera**: For the real camera, the board was held by hand at different positions and angles in front of it. 51 images were captured for calibration.
 <p align="center">
   <img src="results/page/camera_calibration_real.png" width="80%" alt="Real camera calibration">
   <br><em>Real camera: board found in 40 of 51 captured images; those 40 were used for calibration.</em>
 </p>
 
-*Real camera: Board found in 40 of 51 captured images, with thoes 40 images used for calibration*
-
-These collected data was then used to estimate the camera matrix K and lens distortion. To assessed the calibration quality, reprojection error was used, with the table below compares the results from both cameras. 
+These images were then used to estimate the camera matrix K and the lens distortion. To assess the calibration quality, we used the reprojection error; the table below compares the results for both cameras.
 
 | Parameter | Simulation | Real camera |
 |---|---|---|
@@ -210,46 +207,46 @@ These collected data was then used to estimate the camera matrix K and lens dist
 | Focal lengths f<sub>x</sub>, f<sub>y</sub> | 692.07, 692.01 px | 691.5, 692.3 px |
 | Principal point (c<sub>x</sub>, c<sub>y</sub>) | (302.2, 245.2) px | (302.2, 245.2) px |
 
-The estimated simulated camera were then also compared with the true value from Mujoco camera. The estimated focal lengths matched the true value (692.00 px) within 0.010 %.
+The estimated simulated camera was also compared with the true values of the MuJoCo camera: the estimated focal lengths matched the true value (692.00 px) within 0.010 %.
 
-**Camera mounting pose**: Both the simulated and real cameras use the URDF mounting position: 0.076 m forward and 0.103 m above the robot's base origin. For the real camera, we also estimated pose of the camera ([camera_pitch.py](experiments/camera_pitch.py)). Returning an estimation a downward tilt of 6.3 degree from 50 AruCO images taken at different distances with a fixed marker height ([camera tilt images data](results/hardware)). The simulation camera was then reconfigured with the same 6.3° tilt to match the real one. 
+**Camera mounting pose**: Both the simulated and real cameras use the URDF mounting position: 0.076 m forward and 0.103 m above the robot's base origin. For the real camera, we also estimated the camera pitch ([camera_pitch.py](experiments/camera_pitch.py)): 50 ArUco images taken at different distances, with the marker at a fixed height, gave a downward tilt of 6.3° ([camera tilt image data](results/hardware)). The simulated camera was then set to the same 6.3° tilt to match the real one.
 
-**Real-camera range correction**: To verify the camera distances measurement, we compared the raw AruCo range estimates with the reference distances ([aruco_real_noise.py](experiments/aruco_real_noise.py)). The camera overestimated rage by approximately 0.6mm +3.2% of the reference distance, therefore a correction for this offset and scale error are used by [aruco.measure()](src/perception/aruco.py) to correct each range estimate before it is passed to the EKF for real robot
+**Real-camera range correction**: To verify the camera's distance measurement, we compared the raw ArUco range estimates with tape-measured reference distances ([aruco_real_noise.py](experiments/aruco_real_noise.py)). The camera overestimated the range by about 0.6 mm + 3.2 % of the reference distance, so on the real robot [aruco.measure()](src/perception/aruco.py) corrects this offset and scale error before each range is passed to the EKF.
 
-**Simulated LiDAR validation**: To check whether our LiDar measurement, noise and dropout behaviour matched the configured model, we compared its range with reference distances calcualted by a seperate 2D ray caster using the same map geometry, at five poses on the robot route (([check_sensor_lab.py](evaluation/check_sensors_lab.py)), ray caster in [grouth_truth.py](evaluation/ground_truth.py)).
-The result show that, tange-noise standard deviation was 9.95 mm, close to the configured 10 mm. The beam dropout rate was 1.01%, compared with the configured 1%
+**Simulated LiDAR validation**: To check whether our LiDAR measurements, noise and dropout matched the configured model, we compared its ranges with reference distances calculated by a separate 2D ray caster using the same map geometry, at five poses on the robot's route ([check_sensors_lab.py](evaluation/check_sensors_lab.py), ray caster in [ground_truth.py](evaluation/ground_truth.py)).
+With noise off, the scans matched the ray caster to 0.002 mm. With noise on, the range-noise standard deviation was 9.95 mm, close to the configured 10 mm, and the beam dropout rate was 1.01 %, compared with the configured 1 %.
 <p align="center">
-  <img src="results/page/ray_cast_test.png" width="65%" alt="Simulated LiDAR vs ray caster">
+  <img src="results/page/lab_raycast.png" width="65%" alt="Simulated LiDAR vs ray caster">
 </p>
 
 ### 3.2 Noise handling: measured noise characterisation 
 
 
 **Planar-pose ambiguity**:
-We use ArUco range and bearing for the EKF correction measurement. This is because, for a flat marker viewed nearly straight on, IPPE can return two similar pose solution with different marker orientation. Therefore, we exclude the marker yaw and evaluate the range and bearing below. 
+We use only the ArUco range and bearing for the EKF correction. For a flat marker viewed nearly straight on, IPPE can return two similar pose solutions with different marker orientations, so we do not use the marker yaw, and we evaluate the range and bearing below.
 
-**ArUco measurement errors in simulation.**: 
-We tested how ArUco range and bearing errors change with distance to check the EKF’s range-bias correction and measurement-noise settings in R<sub>n</sub>. This is done by using 20 frames with different robot poses then compare it with simulation grouth truth
+**ArUco measurement errors in simulation**:
+We tested how the ArUco range and bearing errors change with distance, to check the EKF's range-bias correction and the measurement-noise settings in R<sub>n</sub>. At each robot pose we took 20 frames and compared them with the simulation ground truth.
 
-The result showing that simulated camera tended to overestimate marker distance, with mean range errors of around 65 mm at 3 m and 131 mm at 4.5 m. Bearing bias remained below 0.02° at the tested poses. 
-Because similar measurement accross consecutive frames can still share the same bias. consistent reading are not always accurate. To solve this, EKF first subtrach the know bias (4.5 mmr^2) and its range noise is set larger than the frame to frame spread to reduce it overcondident on repeated readings.  
+The results show that the simulated camera tends to overestimate the marker distance, with mean range errors of about 65 mm at 3 m and 131 mm at 4.5 m (left). The bearing bias stayed below 0.02° at the tested poses (right).
+Consecutive frames can share the same bias, so consistent readings are not always accurate. Therefore, the EKF first subtracts the known bias (4.5 mm·r²), and its range noise is set larger than the frame-to-frame spread (middle), so that it does not become overconfident from repeated readings.
 <p align="center">
   <img src="results/page/lab_aruco.png" width="90%" alt="ArUco errors on the lab track">
 </p>
 
 **Real-camera range measurements**:
-We tested the camera range reading at seven different distance, keeping the robot and marker stationary between each distance. Between these trial, the range standard deviation across repeated image was 0.05-3.4 mm. We then used tape-measured distances as reference value and fitted a linear correction to the raw ArUco ranges using ([aruco_real_noise.py](experiments/aruco_real_noise.py)). This removes a fixed offset and adjust the range scale. After appying it, the mean diffeerence was within +- 3mm for the datasets used to fit the EKF correction. 
+We tested the camera range readings at seven distances, keeping the robot and the marker stationary at each distance. Across repeated images, the range standard deviation was 0.05–3.4 mm. We then used tape-measured distances as reference values and fitted a linear correction to the raw ArUco ranges ([aruco_real_noise.py](experiments/aruco_real_noise.py)). This removes a fixed offset and adjusts the range scale. After applying it, the mean difference was within ±3 mm for the datasets used to fit the correction.
 <p align="center">
   <img src="results/page/aruco_real_simple.png" width="60%" alt="Real camera ArUco range">
 </p>
 
 **Wheel-encoder evaluation**:
-To evaluate the robot wheel odometry, we used [ubmmark.py](experiments/umbmark.py) to assess it errors. The robot drove 0.5 m squres three times in clockwise and counter-clockwise. With each run we measure the final position and heading errors. 
+To evaluate the wheel odometry, we used [umbmark.py](experiments/umbmark.py). The robot drove a 0.5 m square three times clockwise and three times counter-clockwise, and after each run we measured the final position and heading errors.
 
-The result showing that a right to left wheel size ratio is 1.006 and a wheel seperation of 292.6 mm, compared with the nomina 288 mm. The wheel distance noise estimate was 5.2%, to include manual measurement error, we kepth k_wheel=6%. We kept the nominal wheel parameters and used Aruco updates to reduce pose drift. 
+The results give a right-to-left wheel size ratio of 1.006 and a wheel separation of 292.6 mm, compared with the nominal 288 mm. The estimated wheel distance noise was 5.2 %; to allow for manual measurement error, we kept k_wheel = 6 %. We kept the nominal wheel parameters and rely on the ArUco updates to correct the pose drift.
 ### 3.3 Noise handling: outlier rejection and marker-loss handling [D]
 
-Before every measurements reaches the EKF, it need to passes the checks below. The robot also stop when the dock marker is unavailable during docking ([docking.py](src/control/docking.py)), or when LiDAR data return cover less than 80% in simulation or 20% on the real robot ([lidar_obs.py](src/control/lidar_obs.py)) 
+Before a measurement reaches the EKF, it must pass the checks below. The robot also stops when the dock marker is unavailable during docking ([docking.py](src/control/docking.py)), or when the LiDAR returns cover less than 80 % of the forward half in simulation, or 20 % on the real robot ([lidar_obs.py](src/control/lidar_obs.py)).
 
 <p align="center">
   <img src="results/page/camera_measurement_flow.png" width="30%" alt="Camera Measurement">
@@ -258,29 +255,29 @@ Before every measurements reaches the EKF, it need to passes the checks below. T
 (Frame age, bias, NIS gate from [ekf.py](src/estimation/ekf.py)), 
 (Detection, IPPE from [aruco.py](src/perception/aruco.py)).
 
-**Real-robot validation**: To test our noise handling method on the real robot, we compared the marker 0 marker with it normal position and it have been moved. During a normal run, 96% of 1,092 marker measurement passed the NIS check. On the other hand 30 detections from the same marker exceeded the NIS threshold were rejected, while measurements from marker 1 and 2 still pass. The robot then waited 3 seconds and stopped with marker loss in this case 
+**Real-robot validation**: To test the noise handling on the real robot, we compared a docked run with a failed run (section 7.2). In the docked run (09:28), 96 % of 1,092 marker measurements passed the NIS check. In the failed run (09:41), all 30 detections of the dock marker exceeded the NIS threshold and were rejected, while measurements from markers 1 and 2 still passed. The robot then waited 3 seconds and stopped with marker_lost.
 
 <p align="center">
   <img src="results/page/real_nis.png" width="100%" alt="NIS TEST">
 </p>
  
- **LIDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in forward section.The real robot's Lidar coverage threshold was reduced from 80% to 20% because the lab's black foam panels using in the lab return very few to the LDS-01. However, this does not mean that obstacle detection's accuracy will be decreased, the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)). If a scan is more than 0.5 seconds old, the robot will also stops. 
+**LiDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in the forward half. The real robot's LiDAR coverage threshold was reduced from 80 % to 20 % because the lab's black foam panels return very few beams to the LDS-01. This did not stop the obstacle detection: the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)). The robot also stops if a scan is more than 0.5 seconds old.
 ### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
 <p align="center">
   <img src="results/page/frame_chain_3_4.png" width="80%" alt="Frame chain">
   <br><em>Blue: known or estimated transforms, Red: T<sub>C</sub><sup>M</sup>, measured every camera frame by ArUco + PnP.</em>
 </p>
 
-**Frame chain**: Camera and LiDAR sensors start their measurements in their own coordinate frames, {C} and {S}. We then use each sensor's mounting pose to calculated and transfer each sensor data to the robot's base frame {B}, centred between the two drive wheels T<sub>B</sub><sup>C</sup> or T<sub>B</sub><sup>S</sup>. Then, the EKF combines the marker range and bearing with the wheel encoders to estimate the robot pose T<sub>W</sub><sup>B</sup> in the map {W}, with the know marker poses T<sub>W</sub><sup>M</sup>. This estimate then used by the path tracker to compute the cross-track and heading errors, and the LiDAR points in {B} are used for obstacle avoidance. 
+**Frame chain**: Camera and LiDAR sensors start their measurements in their own coordinate frames, {C} and {S}. We then use each sensor's mounting pose, T<sub>B</sub><sup>C</sup> or T<sub>B</sub><sup>S</sup>, to transform its data into the robot's base frame {B}, centred between the two drive wheels. Next, the EKF combines the marker range and bearing with the wheel encoders to estimate the robot pose T<sub>W</sub><sup>B</sup> in the map {W}, using the known marker poses T<sub>W</sub><sup>M</sup>. The path tracker then uses this estimate to compute the cross-track and heading errors, and the LiDAR points in {B} are used for obstacle avoidance.
 ### 3.5 Simulated vs real sensor noise, and why they differ [HD-hw]
 **Sensor performance: simulation vs real robot**
 
-| Check | Simulation | Real robot | Why the different| 
+| Check | Simulation | Real robot | Why they differ |
 |---|---|---|---|
-|Camera calibration (reprojection RMS)| 0.046 px | 0.41 px | The simulated camera uses an ideal pinhole m. While real images involve lens distortion, board imperfection and hand-held board|
+|Camera calibration (reprojection RMS)| 0.046 px | 0.41 px | The simulated camera is an ideal pinhole model, while real images include lens distortion, board imperfections and a hand-held board |
 |ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncertainty may affect the result| 
-|LIdar forward coverage| 88-100% | about 23% | The real LiDAR received fewer returns as a black foam panels|
-|Wheel geometry| +- 0.1%|Right and left wheel ratio: 1.006, with wheel speration +1.6% relative to nominal value| Real tyres and assembly may introduce geometry differences |
+|LiDAR forward coverage| 88–100 % | about 23 % | The real LiDAR receives few returns from the black foam panels |
+|Wheel geometry| +- 0.1%|Right-to-left wheel ratio 1.006; wheel separation +1.6 % relative to the nominal value| Real tyres and assembly may introduce geometry differences |
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design [D]
 
@@ -687,30 +684,30 @@ These problems were identified and addressed during development, before the fina
 
 ## 7. Real Robot
 ### 7.1 Setup and differences from simulation [HD-hw]
-We tested the system using a TurtleBot3 Waffle Pi that running ROS 2, with an LDS-01 LiDAR and a Pi camera. Our laptop receives sensor data and sends velocity commands over the lab wifi and through the rosbeidge (UTS-RI rosbridge_api). The real robot ([real_robot.py](src/robot/real_robot.py)) provide the sensor reading and command function as the simulation, allowing the EKF, controllers, and mission logic to run on both platforms with the same logic. Wheel joint data from /joint_states is used to calculate odometry, camera images are used to detect ArUco markers, LiDAR data from /scan is used for obstacle avoidance. 
+We tested the system on a TurtleBot3 Waffle Pi running ROS 2, with an LDS-01 LiDAR and a Pi camera. Our laptop receives the sensor data and sends velocity commands over the lab wifi through rosbridge (UTS-RI rosbridge_api). The real robot interface ([real_robot.py](src/robot/real_robot.py)) provides the same sensor-reading and command functions as the simulation, so the EKF, the controllers and the mission logic run unchanged on both platforms. Wheel joint data from /joint_states is used to compute odometry, camera images are used to detect ArUco markers, and LiDAR data from /scan is used for obstacle avoidance.
 
-The laptop can control linear, angular velocity of the robot through /cmd_vel. 
-The real rrack contained three 100 mm ArUco markers and a 20cm box (obstacle). 
+The laptop controls the robot's linear and angular velocity through /cmd_vel.
+The real track contained three 100 mm ArUco markers and a 20 cm box (obstacle).
 
-The run command is python main.py --real --task config/arena_lab.json. 
+The run command is `python main.py --real --task config/arena_lab.json`.
 
 <p align="center">
-  <img src="results/page/robot_start.jpg" width="30%" alt="Frame chain">
-  <br><em>The real robot is on its start mark, marker 1 and 2 on the front wall with the obstacle (box) in the driving lane.</em>
+  <img src="results/page/robot_start.jpg" width="30%" alt="Real robot at the start">
+  <br><em>The real robot on its start mark, with markers 1 and 2 on the front wall and the obstacle (box) in the driving lane.</em>
 </p>
 
 
-| Setting | Simulation | Real robot | Why the different| 
+| Setting | Simulation | Real robot | Why they differ |
 |---|---|---|---|
-|Speed limits| Linear: 0.26 m/s / Angular: 1.82 rad/s | Linear: 0.1 m/s / Angular: 1.0 rad/s|  Lower speeds on real robot were used to improve marker detection and control reliability by reducing motion blure and communication delays' effect|
-|Minimum valid LiDAR forward coverage| 80% | 20% | Real LiDAR can not receive many returns from every surface. the return quality depends on different factor, as material, distance. In our test black foam panels even produced few returns|
-|Docking state| v: 0.8 m/s/ Lateral tolerance: 3 cm/ Heading Tolerance: 5°|v: 0.05 m/s/ Lateral tolerance: 4 cm/ Heading Tolerance: 8°, stop 1.5 cm early| The real robot move more slowly and stop early to reduce overshoot at the docking position. Wider tolerances allow for localisation and control errors observed during hardware calibration| 
-|Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| Smaller clearance and side margins allow the planned avoidance path to fit within the lab narrower real corridor| 
+|Speed limits| Linear: 0.26 m/s / Angular: 1.82 rad/s | Linear: 0.1 m/s / Angular: 1.0 rad/s| Safety caps for the first lab runs; slower driving also reduces the effect of communication delays |
+|Minimum valid LiDAR forward coverage| 80% | 20% | The real LiDAR does not get returns from every surface; the return depends on factors such as material and distance. In our lab, the black foam panels produced very few returns |
+|Docking| v: 0.08 m/s / lateral tolerance: 3 cm / heading tolerance: 5°|v: 0.05 m/s / lateral tolerance: 4 cm / heading tolerance: 8°, stop 1.5 cm early| The real robot moves more slowly and stops early to reduce overshoot at the docking position. Wider tolerances allow for the localisation and control errors seen in the hardware tests |
+|Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| A smaller clearance and side margin let the planned avoidance path fit within the narrower real lane |
 ### 7.2 Real-robot results with the same metrics: tracking (D), docking (D), number of runs under real noise (E) [HD-hw]
 
-**Real-robot trials** We filmed 9 full tracks runs on 30 October. In three runs, the box was centred in the lane. In the other sex, it was shifeted 15 cm left or right. 
+**Real-robot trials**: We filmed 9 full-track runs on 30 October. In three runs, the box was centred in the lane; in the other six, it was shifted 15 cm left or right.
 
-The real robot also drive without external ground truth system using EKF during track mode. Therefore, the real distance error between the robot and track was not independently verified. For six successful docks, we measure the robot's final position and heading to compare it with simulation environment.
+The real robot has no external ground-truth system, so the cross-track error in the table is the EKF estimate and was not independently verified. For five of the six successful docks, we measured the robot's final position and heading with a tape to compare them with the simulation (7.3).
 
 | Run | Box position | Outcome | Run time | Estimated cross-track RMS during TRACK | Marker measurements accepted |
 |---|---|---|---|---|---|
@@ -724,20 +721,21 @@ The real robot also drive without external ground truth system using EKF during 
 | 10:54 | Right | Docked | 61.8 s | 1.4 cm | 96% |
 | 10:59 | Left | Docked | 61.5 s | 1.7 cm | 99% |
 
-The three unsucessful runs (9:40-9:43) occuring during the final approach, where the side markers were all out of view and the EKF relied completely on wheel odometry. The robot caught on a raised floor vent coer, causing turing motion stuck. Therefore, the estimated pose become inaccurate, and as a result dock-marker measurement were missing or rejected by the NIS gate. The robot than stopped safel
+The three unsuccessful runs (09:40–09:43) failed during the final approach, where the side markers were out of view and the EKF relied on wheel odometry alone. The robot caught on a raised floor vent cover while its wheel odometry kept counting, so the estimated pose became inaccurate, and the dock-marker measurements were missing or rejected by the NIS gate. The robot then stopped safely.
 
-After the track was moved away from the vent cover, the next three runs docked without code changes.This support that the NIS helps protect the estimate from bad measurements, but when the estimate is wrong, it cannot recover it self without any visible markers
+After the track was moved away from the vent cover, the next three runs docked without any code change. This shows that the NIS gate protects the estimate from bad measurements, but once the estimate itself is wrong and only one marker is in view, it cannot recover on its own.
 
 ### 7.3 Quantitative simulation vs real comparison [HD-hw]
-The below table show the different between the simulation and real robot docking stage. 
+The table below shows the difference between the simulation and the real robot in the docking stage.
+
 | Metric (5 measured hardware docks and their simulation counterparts) | Simulation | Real robot |
 |---|---|---|
 | Final distance to dock marker — target: 35 cm | 36.55 ± 0.03 cm | 35.35 ± 0.25 cm |
 | Lateral docking error | +0.46 ± 0.02 cm | +0.52 ± 0.35 cm |
 | Heading docking error | −0.77 ± 0.03° | −0.65 ± 1.11° |
-| Completion time | 43.8–44.9 s | Approximately 61–62 s |
+| Completion time | 43.8–44.9 s | 61.5–62.4 s |
 
-Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, at about36.5 cm from the marker. While the simulation stopped at 36.55 cm near to the intended value, the real robot stopped at 35.35 cm. Proving that there is a chance real robot still moving after docking complete. The real robot took longer to finish as the it interface limits speed to 0.10 m/s, while the simulation uses speed of 0.2 m/s
+Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at about 36.5 cm from the marker. The simulation stopped at 36.55 cm, close to this value, while the real robot stopped at 35.35 cm. This is consistent with the real robot rolling about 1.2 cm after the stop command. The real robot took longer to finish because its interface limits the speed to 0.10 m/s, while the simulation drives at 0.2 m/s.
 
 
 
