@@ -82,7 +82,7 @@ https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
 
 **Pipeline diagram**
 
-<img src="results/page/Overview_Pipeline.png" width="70%" alt="Sense, estimate, decide, act pipeline">
+<img src="results/page/SCMS_PipelineDiagram.drawio.png" width="70%" alt="Sense, estimate, decide, act pipeline">
 
 *Figure 1.2. Pipeline diagram*
 
