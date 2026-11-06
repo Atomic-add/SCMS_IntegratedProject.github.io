@@ -137,7 +137,7 @@ With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = 
 
 **Interpretation:** Controllable at every speed except zero: at v = 0, the only path from steering to e<sub>y</sub> (ė<sub>y</sub> = v e<sub>θ</sub>) is cut, so rank C drops to 1. This is the nonholonomic constraint: the robot cannot move sideways.
 
-The rank test only says whether the system is controllable, not how easy it is to control. The singular values of C are 1 and v (calculated in the code). Therefore, slow driving is weakly controllable, not uncontrollable. So, the LQR is used only when the robot is driving on a straight. At the corners, the robot stops and turns on the spot with a P-controller, as e<sub>θ</sub> stays controllable at v = 0.
+The rank test only says whether the system is controllable, not how easy it is to control. The singular values of C are 1 and v (calculated in the code). Therefore, slow driving is weakly controllable. So, the LQR is used only when the robot is driving straight. At the corners, the robot stops and turns on the spot with a P-controller, as e<sub>θ</sub> stays controllable at v = 0.
 
 ### 2.3 Observability analysis
 **Measurement:** The EKF measures range and bearing to each marker centre, not the full ArUco pose, so each marker in view adds two rows to the measurement Jacobian H<sub>k</sub>. The pose has three states, (x, y, θ).
@@ -201,7 +201,7 @@ Therefore, the closed-loop poles change as the robot's speed changes, even thoug
   <br><em>Model limits: (a) closed-loop poles vs speed, (b) linear vs nonlinear response, (c) tracking and NEES vs speed.</em>
 </p>
 
-**Controller:** all poles stay inside the unit circle, indicating the closed-loop's stability across the tested speeds. Cross-track RMS increased only 9 %, and all 60 runs successfully docked. Therefore, the same LQR gain (K) remained effective without redesign.
+**Controller:** All poles stay inside the unit circle, indicating the closed-loop's stability across the tested speeds. Cross-track RMS increased only 9 %, and all 60 runs successfully docked. Therefore, the same LQR gain (K) remained effective without redesign.
 
 #### 2. When does the linear model become inaccurate?
 
@@ -224,14 +224,16 @@ The linear and nonlinear models differed by only 0.13 % at an initial cross-trac
 An LQI could remove a steady-state error caused by a disturbance, but not a tracking error caused by a biased EKF. This is because the LQI integrates the estimated error rather than the ground-truth error.
 
 ## 3. Sensing (B): calibration, noise handling and frame management
-The robot in this project uses three sensors: wheel encoders, a camera and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions, read_encoders(), read_image() and read_scan(). The real robot sends its data through rosbridge. As a result, both platforms process the data with the same perception and estimation logic.
+The robot in this project uses three sensors: wheel encoders, a camera and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions: read_encoders(), read_image() and read_scan(); the real robot sends its data through rosbridge. As a result, both platforms process the data with the same perception and estimation logic.
 
 - Wheel encoders (20 Hz): provide wheel rotation measurements for odometry, which the EKF uses to predict the robot's pose.
 
 - Pi camera (640 x 480 pixels, 30 Hz): measures range and bearing to visible ArUco markers for EKF updates. Our track uses three markers from the DICT_4x4_50 dictionary, with a 100 mm side length.
 
 - LDS-01 LiDAR (360 beams, 1° interval, 5 Hz): measures the free distance ahead, obstacle edges and side clearances for obstacle avoidance.
+  
 ### 3.1 Calibration: camera, plus LiDAR validated against ray-cast truth 
+
 **Camera intrinsics**: We calibrated both cameras using a 9 x 6 checkerboard with 25 mm squares ([calibrate_camera.py](experiments/calibrate_camera.py)).
 
 **Simulated camera**: In simulation, the board was placed at 20 random poses in front of the camera.
@@ -269,12 +271,11 @@ With noise setting off, the scans matched the ray caster to 0.002 mm. With noise
 
 ### 3.2 Noise handling: measured noise characterisation 
 
-
 **Planar-pose ambiguity**:
 We use only the ArUco range and bearing for the EKF correction. For a flat marker viewed nearly straight on, IPPE can return two similar pose solutions with different marker orientations, so we do not use the marker yaw, and using only the range and bearing below to evaluate.
 
 **ArUco measurement errors in simulation**:
-We tested how the ArUco range and bearing errors change with distance, to check the EKF's range-bias correction and the measurement-noise settings in R<sub>n</sub>. At each robot pose we took 20 frames and compared them with the simulation ground truth.
+We tested how the ArUco range and bearing errors change with distance, to check the EKF's range-bias correction and the measurement-noise settings in R<sub>n</sub>. At each robot pose, we took 20 frames and compared them with the simulation ground truth.
 
 The results show that the simulated camera tends to overestimate the marker distance, with mean range errors of about 65 mm at 3 m and 131 mm at 4.5 m (left). The bearing bias stayed below 0.02° at the tested poses (right).
 Consecutive frames can share the same bias, so consistent readings are not always accurate. Therefore, the EKF first subtracts the known bias (4.5 mm*r²), and its range noise is set larger than the frame-to-frame spread (middle), so that it does not become overconfident from repeated readings.
@@ -519,7 +520,6 @@ Below is the data behind the graph:
 From these 2 tests, it is made clear that the **EKF outperforms the odometry** as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
 
 
-
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, Turn, Avoid and IBVS 
 The robot has four modes (TRACK, AVOID, TURN and DOCK), handled by three controllers: TRACK and AVOID share the same LQR, TURN uses a P-controller, and DOCK uses IBVS. All three controllers use only EKF-estimated states or camera measurements (for IBVS), never the ground-truth pose.
@@ -537,7 +537,7 @@ $$\omega = v\kappa - K\hat e$$
 
 At v = 0.20 m/s, the calculated gain is K = [9.16, 3.25], and the angular velocity is limited to |ω| ≤ 1.82 rad/s.
 
-- **Stability check:** The closed-loop eigenvalue magnitudes are below 1 for both the straight path (0.965, 0.871) and a test arc of radius 0.5 m (0.960, 0.875). This confirms stability of the nominal linear model, while motor saturation, estimation errors and nonlinear dynamics are checked separately in simulation (Sections 2.4 and 5.3).
+- **Stability check:** The closed-loop eigenvalue magnitudes are below 1 for both the straight path (0.965, 0.871) and a test arc of radius 0.5 m (0.960, 0.875). This confirms the stability of the nominal linear model, while motor saturation, estimation errors and nonlinear dynamics are checked separately in simulation (Sections 2.4 and 5.3).
 - **Approaching the dock:** After the pre-dock waypoint W3 (about 0.70 m from the marker), the LQR gain is recalculated at v<sub>dock</sub> = 0.08 m/s, which gives K = [9.25, 2.92]. It drives the robot until the marker is 0.55 m away, where IBVS takes over.
 - **Why LQI is not used:** An LQI controller was also implemented in the code but disabled because the LQR already shows no large steady-state offset (mean cross-track error ≤ 0.83 cm, Section 5.4). Furthermore, LQI integrates the estimated cross-track error ê<sub>y</sub>, so it cannot reliably remove an offset caused by the estimation bias (Section 2.4).
 
@@ -917,23 +917,21 @@ The controller must use the estimated state, never the ground truth. Ground trut
 |    Reproducibility                 | Addison         | 
 
 #### Addison's  statement
-I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
+I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team. For the video, I was responsible for the introduction and overview of the system.
 
 #### Kim's statement
 I was responsible for designing the robot controller and contributed to system integration and assisted with real-robot implementation. I also contributed to the Overview, Modelling, Control, and Integration sections of the project page. For the final video, I prepared my own slides and script and was responsible for editing and finalising the video. Additionally, I conducted a final quality check of the group's assignment to ensure its accuracy and consistency.
 
 #### Thien's statement
-I was responsible for simulation, sensing, and real hardware testing. I also planning and carrying out experiements to collect data from real robot for comparision with simulation. Finally, I made first PowerPoint slide strucutre, assigend each team member their section and content, and helped finalise the video
+I was responsible for simulation, sensing, and real hardware testing. I also planned and carried out experiments to collect data from the real robot for comparison with simulation. Finally, I made the first PowerPoint slide structure, assigned each team member their section and content, and helped finalise the video
 
 ### 10.3 Generative AI declaration
 
-**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks.
+**Claude (Anthropic)** was utilised throughout this assignment to assist the team in developing this project. It helped clarify assessment requirements. Re-explain technical concepts in an easier-to-understand manner. Finally, it helped to find bugs and suggest improvements for our simulation and hardware. 
 
-Claude was also utilised to help guide the development of the project page. By recommending what to cover for each section, and where to get the information from. Acting only as a push in the right direction. 
+The team took the time to review each suggestion and test it when a roadblock was encountered. Utilising it to help guide the team into the correct direction.
 
-Additionally, Claude was utilised to turn strings of data outputs into tables. Especially important for scripts such as ([run_demo](evaluation/run_demo.py)). As the text produced was too long, and confusing to read, to belong on the project page.
-
-Claude was also used to convert the team's Word documents into Markdown for the project page.
+Additionally, Claude was utilised to turn strings of data outputs into tables. Especially important for scripts such as ([run_demo](evaluation/run_demo.py)). As the text produced was too long, and confusing to read, to belong on the project page. Utilising Claude like this helped save time and effort for the team, giving greater focus to the programming and documentation.
 
 ### 10.4 Acknowledgements
 
