@@ -42,7 +42,10 @@ For real-robot operation:
 
 ```bash
 python -m pip install -r requirements-real.txt
+python -m pip install --no-deps "git+https://github.com/UTS-RI/turtlebot_rosbridge.git@8a6c481c506d1b817937d865af0d794ea0d45d51"
 ```
+
+`--no-deps` keeps `opencv-contrib-python` (and `cv2.aruco`) from being replaced by `opencv-python`.
 
 ## Run the simulation
 
