@@ -12,7 +12,7 @@ The same perception, estimation and control logic is used in MuJoCo and on the r
 
 ## Project page
 
-See the [project page](project_page.md) for the model, calibration, estimator and controller design, results, demo video, team contributions and generative AI declaration.
+See the [project page](index.md) for the model, calibration, estimator and controller design, results, demo video, team contributions and generative AI declaration.
 
 ## Installation
 
