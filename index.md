@@ -966,17 +966,3 @@ Additionally, Claude was utilised to turn strings of data outputs into tables. E
 - Code adapted from the 41014 Week 2-9 tutorial solutions (cited in each module's docstring).
 - Real-robot link: [UTS-RI/turtlebot_rosbridge](https://github.com/UTS-RI/turtlebot_rosbridge) (`rosbridge_api`,
   MIT), used unmodified; `src/robot/real_robot.py` hooks its message callbacks to keep arrival times.
-
-
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  tex2jax: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']],
-    displayMath: [['$$', '$$'], ['\\[', '\\]']],
-    processEscapes: true
-  }
-});
-</script>
-<script async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
