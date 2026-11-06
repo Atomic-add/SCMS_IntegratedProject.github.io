@@ -1,4 +1,25 @@
+remote_theme: pages-themes/minimal@v0.2.0
+plugins:
+- jekyll-remote-theme # add this line to the plugins list if you already have one
+
 # Project page 
+
+<script>
+window.MathJax = {
+  startup: {
+    pageReady: function () {
+      document.querySelectorAll('div.language-math, pre > code.language-math').forEach(function (el) {
+        var box = el.closest('div.language-math') || el.closest('pre') || el;
+        var d = document.createElement('div');
+        d.textContent = '\\[' + el.textContent.trim() + '\\]';
+        box.replaceWith(d);
+      });
+      return MathJax.startup.defaultPageReady();
+    }
+  }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 
 ## GROUP NUMBER / TEAM MEMBERS
 **TEAM 12**
