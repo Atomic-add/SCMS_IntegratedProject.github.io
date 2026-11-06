@@ -6,6 +6,10 @@ A TurtleBot3 Waffle Pi follows waypoints, avoids an obstacle using 2D LiDAR, and
 
 The same perception, estimation and control logic is used in MuJoCo and on the real TurtleBot3, with separate robot interfaces and configuration files. The controller uses estimated states and sensor measurements; simulator ground truth is used only for evaluation.
 
+## Video
+
+Video Link: https://youtu.be/6AC7xNN-bZU
+
 ## Project page
 
 See the [project page](index.md) for the model, calibration, estimator and controller design, results, demo video, team contributions and generative AI declaration.
