@@ -132,7 +132,7 @@ Steering changes e<sub>θ</sub> directly (T<sub>s</sub> = 0.05 per unit δω), b
 
 **Assumptions:** Kinematics only (no slip, no motor lag), constant v, small errors (checked in 2.4), nominal track width 288 mm (UMBmark: 292.6 mm). The controller sees only the EKF estimate.
 
-**Open-loop behaviour:** On a straight, the open loop has a repeated eigenvalue at z = 1, so it is unstable: a constant heading error makes e<sub>y</sub> grow linearly. Our lab path is straight segments (κ = 0) with corners turned on the spot, but to check the model on a curve we also test an arc of R = 0.5 m (κ = 2 /m). There the eigenvalues are s = ±j vκ = ±0.4j rad/s (on the unit circle in z), so it is marginally stable but not asymptotically stable. Feedback is needed in both cases, and because v sits inside A, everything below depends on speed.
+**Open-loop behaviour:** Without feedback control, the robot cannot correct its heading error, causing the cross-track error to increase as the robot travels. Therefore, feedback is needed to keep the robot on the planned path.
 
 ### 2.2 Controllability analysis 
 With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = [[0, v], [1, 0]], so det C = −v.
@@ -140,7 +140,8 @@ With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = 
 | Speed | Rank of C | det C |
 |---|---|---|
 | 0.20 m/s (cruise) | 2 | −0.20 |
-| 0.05 m/s (docking) | 2 | −0.05 |
+| 0.08 m/s (sim docking) | 2 | −0.08 |
+| 0.05 m/s (real-robot docking) | 2 | −0.05 |
 | 0 (turn on the spot) | **1** | 0 |
 
 **Interpretation:** Controllable at every speed except zero: at v = 0, the only path from steering to e<sub>y</sub> (ė<sub>y</sub> = v e<sub>θ</sub>) is cut, so rank C drops to 1. This is the nonholonomic constraint: the robot cannot move sideways.
@@ -186,41 +187,50 @@ From the converged P, the position standard deviation σ (worst horizontal direc
 
 A second marker at a different place breaks the circle and results in rank 3. This works whether both markers are seen at the same time or one after the other, with odometry linking the two views.
 
-With no marker, nothing is measured and the error drifts instead of decaying, so the pose is not even detectable. Driving blind would let the 3σ bound pass the 3 cm tolerance after about 3.5 s, so docking never drives without a marker. It stops at once, waits for the marker, and declares failure if none returns within 3 s ([docking.py](src/control/docking.py), `marker_lost_timeout` = 3 s in [control.json](config/control.json)).
+With no marker, the EKF can only predict from wheel odometry; no external measurement corrects the accumulated error, so it drifts instead of decaying and the pose is not even detectable. Driving blind would let the 3σ bound pass the 3 cm tolerance after about 3.5 s, so docking never drives without a marker. It stops at once, waits for the marker, and declares failure if none returns within 3 s ([docking.py](src/control/docking.py), `marker_lost_timeout` = 3 s in [control.json](config/control.json)).
 
 ### 2.4 Model correctness
-The robot was run at three speeds without redesigning K (20 runs each, [model_limits.py](evaluation/model_limits.py)). For δω = −(k<sub>y</sub> e<sub>y</sub> + k<sub>θ</sub> e<sub>θ</sub>) on a straight, the closed-loop poles satisfy:
+
+#### 1. How does speed affect the model and controller?
+
+The LQR gain (K) was designed at 0.20 m/s and tested without any modification at three different speeds, with 20 test runs for each speed ([model_limits.py](evaluation/model_limits.py)). On a straight path, the closed-loop poles satisfy:
 
 $$\lambda^2 + k_\theta\lambda + k_y v = 0$$
 
-so they depend on v. The decay time shortens 3.5 times from 0.10 to 0.26 m/s (3.2 to 0.92 s), but the distance over which an error decays changes much less, from 0.32 to 0.24 m.
+Therefore, the closed-loop poles change as the robot's speed changes, even though the LQR gain (K) remains fixed.
 
-| Speed | Slow pole \|z\|, straight / test arc (R = 0.5 m) | S1 cross-track RMS | NEES ≤ 7.81 | Docked |
+| Speed | Slow pole \|z\| | Cross-track RMS | NEES ≤ 7.81 | Docked |
 |---|---|---|---|---|
-| 0.10 m/s | 0.985 / 0.984 | 1.65 cm | **89 %** | 20 / 20 |
-| 0.20 m/s (design) | 0.965 / 0.960 | 1.73 cm | 96 % | 20 / 20 |
-| 0.26 m/s (top speed) | 0.947 / 0.933 | 1.80 cm | 99 % | 20 / 20 |
+| 0.10 m/s | 0.985 | 1.76 cm | 91 % | 20/20 |
+| 0.20 m/s (design) | 0.965 | 1.84 cm | 96 % | 20/20 |
+| 0.26 m/s (top speed) | 0.947 | 1.92 cm | 98 % | 20/20 |
 
 <p align="center">
   <img src="results/model_limits.png" width="90%" alt="Model limits">
-  <br><em>Closed-loop poles, linear vs nonlinear response, and tracking and NEES against speed.</em>
+  <br><em>Model limits: (a) closed-loop poles vs speed, (b) linear vs nonlinear response, (c) tracking and NEES vs speed.</em>
 </p>
 
-**Linear vs nonlinear:** Both models start from the same lateral offset at 0.2 m/s on a straight, with the same K. The nonlinear model uses sin e<sub>θ</sub> and clips ω at the robot's 1.82 rad/s (same script; values in [model_limits.json](results/model_limits.json), "validity").
+**Controller:** all poles stay inside the unit circle, indicating the closed-loop's stability across the tested speeds. Cross-track RMS increased only 9 %, and all 60 runs successfully docked. Therefore, the same LQR gain (K) remained effective without redesign.
 
-| Initial offset | Peak command | Peak heading error | Linear vs nonlinear gap |
-|---|---|---|---|
-| 5 cm (maximum in the full runs) | 0.46 rad/s | 6° | 0.13 % |
-| 20 cm | 1.83 rad/s (limit reached) | 26° | 1.2 % |
-| 50 cm | 4.6 rad/s (clipped) | 64° | 12 % |
+#### 2. When does the linear model become inaccurate?
 
-In the full runs, the cross-track error peaks at about 5 cm (5.2 cm in the worst of 60 runs), well inside the range where the linear model holds. The gap grows steadily with the offset (3.7 % at 30 cm) and becomes significant from about 50 cm, where the command is clipped at 1.82 rad/s and the heading error is too large for sin e<sub>θ</sub> ≈ e<sub>θ</sub>. This test covers only these two effects; the effects listed below can cause errors at any offset.
+We started the linear and nonlinear models from the same initial cross-track error (v = 0.20 m/s, same K). The nonlinear model uses sin e<sub>θ</sub> and clips ω at 1.82 rad/s. Values are from [model_limits.json](results/model_limits.json), "validity".
 
-**Interpretation:**
+| Initial cross-track error | Peak unsaturated command | Linear vs nonlinear gap |
+|---|---|---|
+| 5 cm | 0.46 rad/s | 0.13 % |
+| 20 cm | 1.83 rad/s (applied limit: 1.82) | 1.2 % |
+| 50 cm | 4.6 rad/s (applied limit: 1.82) | 12 % |
 
-- **Controller: robust to speed.** An error is always corrected over roughly the same distance, so tracking RMS rises only 9 % from 0.10 to 0.26 m/s. The same K works at every tested speed without redesigning.
-- **Estimator: the first component to breach the A3 specification, at low speed.** A3's S4 requires at least 90 % of samples to have NEES ≤ 7.81, the 95th percentile of χ²<sub>3</sub>; a consistent filter would give about 95 %. Position RMSE does not change with speed (0.74, 0.79, 0.69 cm), but at 0.10 m/s NEES coverage falls to 89 %, below A3's 90 %, so the filter is overconfident. A likely cause, not yet tested on its own, is that Q<sub>d</sub> (process noise covariance) was tuned around the design speed and does not grow enough at low speed, so the filter becomes overconfident.
-- **What the model leaves out.** The linear model ignores the per-wheel speed limit (saturation), camera latency (lag) and a +0.6 cm steady offset (persistent error). An LQI could remove an offset caused by an outside disturbance. However, if the EKF estimate itself is biased, the LQI cannot remove that offset, as it integrates the estimated e<sub>y</sub> and sees no error to correct.
+The linear and nonlinear models differed by only 0.13 % at an initial cross-track error of 5 cm. The gap increased at larger errors because the small-angle approximation sin e<sub>θ</sub> ≈ e<sub>θ</sub> became less accurate and the angular velocity command reached its saturation limit. The difference became significant at an initial cross-track error of 50 cm, reaching 12 %. However, in these 60 runs, the maximum cross-track error was only 5.3 cm, indicating that the linear model remained sufficiently accurate for the robot's normal operation. In addition, Figure (b) shows the comparison for initial cross-track errors of 10, 30, 50 and 80 cm.
+
+#### 3. What the model leaves out
+
+- **Per-wheel speed limits:** Wheel saturation can prevent the robot from achieving commanded motion.
+- **Camera latency:** Delayed measurements can affect the pose estimation, potentially increasing the errors.
+- **A small steady offset:** A steady cross-track offset of about +0.6 cm was observed at the design speed, but its cause has not been established.
+
+An LQI could remove a steady-state error caused by a disturbance, but not a tracking error caused by a biased EKF. This is because the LQI integrates the estimated error rather than the ground-truth error.
 
 ## 3. Sensing (B): calibration, noise handling and frame management
 The robot in this project uses three sensors: wheel encoders, a camera and a LiDAR. Both the [simulator](src/robot/sim_robot.py) and the [real robot](src/robot/real_robot.py) read sensor data through the same three functions, read_encoders(), read_image() and read_scan(); the real robot sends its data through rosbridge. As a result, both platforms process the data with the same perception and estimation logic.
