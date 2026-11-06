@@ -40,7 +40,7 @@
   - [7.1 Setup and differences from simulation](#71-setup-and-differences-from-simulation)
   - [7.2 Real-robot results with the same metrics](#72-real-robot-results-with-the-same-metrics)
   - [7.3 Quantitative simulation vs real comparison](#73-quantitative-simulation-vs-real-comparison)
-- **[8. Limitations and Lessons](#8-limitations-and-lessons)**
+- **[8. Limitations](#8-limitations)**
   - [8.1 What the results do and do not support](#81-what-the-results-do-and-do-not-support)
 - **[9. Reproducibility](#9-reproducibility)**
   - [9.1 Install and run from a fresh environment](#91-install-and-run-from-a-fresh-environment)
@@ -797,7 +797,7 @@ The table below shows the difference between the simulation and the real robot i
 Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at about 36.5 cm from the marker. The simulation stopped at 36.55 cm, close to this value, while the real robot stopped at 35.35 cm. This is consistent with the real robot rolling about 1.2 cm after the stop command. The real robot took longer to finish because its interface limits the speed to 0.10 m/s, while the simulation drives at 0.2 m/s.
 
 
-## 8. Limitations and Lessons
+## 8. Limitations
 ### 8.1 What the results do and do not support 
 
 | results              | supports            | doesnt support                             |
@@ -906,7 +906,7 @@ The controller must use the estimated state, never the ground truth. Ground trut
 |    Control (D)                     | Kim             | 
 |    Integration and Robustness (E)  | Kim             | 
 |    Real Robot                      | Thien           |
-|    Limitations and Lessons         | Addison         | 
+|    Limitations                     | Addison         | 
 |    Reproducibility                 | Addison         | 
 
 #### Addison's  statement
