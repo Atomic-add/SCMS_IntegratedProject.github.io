@@ -9,7 +9,7 @@
 ## 1. Overview
 ### 1.1 Task, platform, the rule that the controller uses the estimated state only, plus repo and video links [D]
 
-This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
+This is **Track A, a mobile robot**. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
 - 2D LiDAR
 - Camera
 - Wheel-encoder odometry
@@ -18,7 +18,7 @@ This task’s constraint is that the controller must use the estimated state, ne
 **repo:**
 (https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git)
 
-**video link:**
+**Video link:**
 (INSERT VIDEO)
 
 
@@ -421,18 +421,38 @@ As a result, **consistency succeeds reliability** for this track.
 
 ### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] 
 
-This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
+This compares the EKF to odometry through 20 random tests. Observing through simulation whether it could dock successfully.
+
+To determine this, 2 tests were run:
+
+Test 1 utilises ([random_trials.py](evaluation/random_trials.py)). Observing how the odometry compares to the EKF. When placed on randomised routes and starting positions. This has generated 2 graphs.
+
+**EKF output**
+![Your Alt text](./results/random_trials.png)
+
+**Odometry output**
+![Your Alt text](./results/random_trials_odometry.png)
+
+Below is the data for both:
 
 | Run | Docked | Contacts | Notes |
 |---|---|---|---|
 | EKF | 20 / 20 | 0 | 42.0 +- 1.9 s, dock lateral 0.23 +- 0.44 cm, yaw -0.37 +- 0.76 deg, ANEES 3.8; seed 5 (box beside the lane) used to stop `too_close` on its narrow side; the pass side is now the one needing the smaller sideways offset (`avoidance.py`) |
 | Odometry only | 9 / 20 | 2 | the hidden placement and wheel errors are never corrected (estimate off by up to 74 cm) |
 
-To expand upon this, ([run_demo](evaluation/run_demo.py)) was utilised to create a graph. This showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
+Test 2 follows ([run_demo](evaluation/run_demo.py)). The graph showcases how not only does the EKF have a higher docking rate, but also its errors are more consistently close to 0. In comparison to the odometry readings. With very inconsistent errors
 
 ![Your Alt Text](./results/demo_compare.png)
 
-From these 2 points, it is made clear that the EKF outperforms the odometry as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
+Below is the data behind the graph:
+| Case   | Docked (odo / EKF) | Cross-track RMS [cm] (odo / EKF) | Dock lateral [cm] (odo / EKF) | Heading [deg] (odo / EKF) | Time [s] (odo / EKF) |
+| :----- | :----------------- | :------------------------------- | :---------------------------- | :------------------------ | :------------------- |
+| none   | Yes / Yes          | 1.37 / 1.01                      | +0.7 / +0.4                   | -1.1 / -0.7               | 37.4 / 37.4          |
+| left   | Yes / Yes          | 1.32 / 1.06                      | +0.6 / +0.4                   | -1.1 / -0.7               | 37.2 / 37.2          |
+| centre | Yes / Yes          | 1.62 / 1.58                      | +0.5 / +0.4                   | -0.8 / -0.7               | 43.1 / 43.3          |
+| right  | Yes / Yes          | 1.37 / 1.01                      | +0.7 / +0.4                   | -1.1 / -0.7               | 37.4 / 37.4          |
+
+From these 2 tests, it is made clear that the **EKF outperforms the odometry** as an estimator. Not only has a higher success rate of docking. But also produces fewer errors.
 
 
 
@@ -730,8 +750,6 @@ The table below shows the difference between the simulation and the real robot i
 Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at about 36.5 cm from the marker. The simulation stopped at 36.55 cm, close to this value, while the real robot stopped at 35.35 cm. This is consistent with the real robot rolling about 1.2 cm after the stop command. The real robot took longer to finish because its interface limits the speed to 0.10 m/s, while the simulation drives at 0.2 m/s.
 
 
-
-
 ## 8. Limitations and Lessons
 ### 8.1 What the results do and do not support [HD]
 
@@ -912,7 +930,11 @@ I was assigned the estimation section of the project for the robot. With Kim hel
 
 ### 10.3 Generative AI declaration: tools and purpose
 
-**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration. In addition to this, it was also utilised to help guide the development of the project page. Not only outlining what needs to be done, and how, simply. It assisted in turning data outputs into tables. Improving their readability for the project page.
+**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration.
+
+Claude was also utilised to help guide the development of the project page. By recommending what to cover for each section, and where to get the information from. Acting only as a push in the right direction. 
+
+Additionally, Claude was utilised to turn strings of data outputs into tables. Especially important for scripts such as ([run_demo](evaluation/run_demo.py)). As the text produced was too long, and confusing to read, to belong on the project page.
 
 ### 10.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
 
