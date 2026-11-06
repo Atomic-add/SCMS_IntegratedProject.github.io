@@ -6,43 +6,98 @@
 - Nguyen Kim Uyen Phan (25596519)
 - Nhat Thien Mai (25161391)
 
-## 1. Overview
-### 1.1 Task, platform, the rule that the controller uses the estimated state only, plus repo and video links [D]
+## Contents
 
-This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
+- **[1. Overview](#1-overview)**
+  - [1.1 Introduction](#11-introduction)
+  - [1.2 Pipeline diagram, simulation and real-robot photos](#12-pipeline-diagram-simulation-and-real-robot-photos)
+- **[2. Modelling (A)](#2-modelling-a-state-space-model-controllability-and-observability-analysis)**
+  - [2.1 State-space model](#21-state-space-model)
+  - [2.2 Controllability analysis](#22-controllability-analysis)
+  - [2.3 Observability analysis](#23-observability-analysis)
+  - [2.4 Model correctness](#24-model-correctness)
+- **[3. Sensing (B)](#3-sensing-b-calibration-noise-handling-and-frame-management)**
+  - [3.1 Calibration: camera, plus LiDAR validated against ray-cast truth](#31-calibration-camera-plus-lidar-validated-against-ray-cast-truth)
+  - [3.2 Noise handling: measured noise characterisation](#32-noise-handling-measured-noise-characterisation)
+  - [3.3 Noise handling: outlier rejection and marker-loss handling](#33-noise-handling-outlier-rejection-and-marker-loss-handling)
+  - [3.4 Frame management: frame chain from sensor measurement to controller input](#34-frame-management-frame-chain-from-sensor-measurement-to-controller-input)
+  - [3.5 Simulated vs real sensor noise, and why they differ](#35-simulated-vs-real-sensor-noise-and-why-they-differ)
+- **[4. Estimation (C)](#4-estimation-c-ekf-design-tuning-and-reported-performance)**
+  - [4.1 EKF design](#41-ekf-design)
+  - [4.2 Tuning: Q, R and P0, and where each value comes from](#42-tuning-q-r-and-p0-and-where-each-value-comes-from)
+  - [4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds](#43-reported-performance-rmse-nees-nis-3σ-bounds)
+  - [4.4 Tuning trade-off: consistency vs responsiveness (R sweep)](#44-tuning-trade-off-consistency-vs-responsiveness-r-sweep)
+  - [4.5 Comparison with a second estimator: EKF vs odometry only, same seeds](#45-comparison-with-a-second-estimator-ekf-vs-odometry-only-same-seeds)
+- **[5. Control (D)](#5-control-d-controller-design-tuning-and-tracking-results)**
+  - [5.1 Controller design: LQR, Turn, Avoid and IBVS](#51-controller-design-lqr-turn-avoid-and-ibvs)
+  - [5.2 Tuning](#52-tuning)
+  - [5.3 Tracking Results in Simulation](#53-tracking-results-in-simulation)
+  - [5.4 Tuning trade-off: control effort vs tracking error](#54-tuning-trade-off-control-effort-vs-tracking-error)
+- **[6. Integration and Robustness (E)](#6-integration-and-robustness-e-performance-under-disturbance-and-noise)**
+  - [6.1 Performance under disturbance and noise](#61-performance-under-disturbance-and-noise)
+  - [6.2 Failure analysis traced to model, sensing, estimator or controller](#62-failure-analysis-traced-to-model-sensing-estimator-or-controller)
+- **[7. Real Robot](#7-real-robot)**
+  - [7.1 Setup and differences from simulation](#71-setup-and-differences-from-simulation)
+  - [7.2 Real-robot results with the same metrics](#72-real-robot-results-with-the-same-metrics)
+  - [7.3 Quantitative simulation vs real comparison](#73-quantitative-simulation-vs-real-comparison)
+- **[8. Limitations and Lessons](#8-limitations-and-lessons)**
+  - [8.1 What the results do and do not support](#81-what-the-results-do-and-do-not-support)
+  - [8.2 What failed during development, and how it was diagnosed](#82-what-failed-during-development-and-how-it-was-diagnosed)
+- **[9. Reproducibility](#9-reproducibility)**
+  - [9.1 Install and run from a fresh environment](#91-install-and-run-from-a-fresh-environment)
+  - [9.2 Commands that regenerate each figure and table](#92-commands-that-regenerate-each-figure-and-table)
+  - [9.3 Ground-truth rule: truth is read only in evaluation/](#93-ground-truth-rule-truth-is-read-only-in-evaluation)
+- **[10. Team and Declarations](#10-team-and-declarations)**
+  - [10.1 Group number and team members](#101-group-number-and-team-members)
+  - [10.2 Individual contribution statement](#102-individual-contribution-statement)
+  - [10.3 Generative AI declaration](#103-generative-ai-declaration)
+  - [10.4 Acknowledgements](#104-acknowledgements)
+
+## 1. Overview
+### 1.1 Introduction
+
+This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising:
+
 - 2D LiDAR
 - Camera
 - Wheel-encoder odometry
-This task’s constraint is that the controller must use the estimated state, never the ground truth
 
-**repo:**
-(https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git)
+This task’s constraint is that the controller must use the estimated state, never the ground truth.
 
-**video link:**
+**The track:**
+
+<img src="results/page/Overview_Track.png" width="90%" alt="Track layout with markers, waypoints, box and dock">
+
+*Figure 1.1. The track*
+
+**GitHub repository:**
+
+https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
+
+**Video link:**
+
 (INSERT VIDEO)
 
+### 1.2 Pipeline diagram, simulation and real-robot photos
 
-### 1.2 Pipeline diagram, simulation and real-robot photos [D]
+**Pipeline diagram**
 
-**pipeline diagram**
+<img src="results/page/Overview_Pipeline.png" width="70%" alt="Sense, estimate, decide, act pipeline">
 
-I.O.U
+*Figure 1.2. Pipeline diagram*
 
-**simulation**
+**Photos**
 
-![Your Alt Text](./results/page/Overview_Simulation.png)
+<img src="results/page/Overview_Sim_Track.png" width="90%" alt="MuJoCo simulation track">
 
-**hardware appliance**
+*Figure 1.3. MuJoCo sim track*
 
-![Your Alt Text](./results/page/Overview_Real.png)
+<img src="results/page/Overview_Real_Robot.png" width="50%" alt="Real TurtleBot in the lab arena">
 
-
-### 1.3 Headline results: simulation vs real robot [HD]
-
-![Your Alt Text](./results/real_vs_sim.png)
+*Figure 1.4. Real TurtleBot implementation*
 
 ## 2. Modelling (A): state-space model, controllability and observability analysis
-### 2.1 State-space model: derived for the TurtleBot3, with stated assumptions [D]
+### 2.1 State-space model
 **Error dynamics:** Path following regulates the error to the path. With cross-track error e<sub>y</sub>, heading error e<sub>θ</sub> and curvature κ, the error dynamics are (A3 A.1)
 
 $$\dot e_y = v\sin e_\theta, \qquad \dot e_\theta = \omega - \frac{v\kappa\cos e_\theta}{1-\kappa e_y}$$
@@ -79,7 +134,7 @@ Steering changes e<sub>θ</sub> directly (T<sub>s</sub> = 0.05 per unit δω), b
 
 **Open-loop behaviour:** On a straight, the open loop has a repeated eigenvalue at z = 1, so it is unstable: a constant heading error makes e<sub>y</sub> grow linearly. Our lab path is straight segments (κ = 0) with corners turned on the spot, but to check the model on a curve we also test an arc of R = 0.5 m (κ = 2 /m). There the eigenvalues are s = ±j vκ = ±0.4j rad/s (on the unit circle in z), so it is marginally stable but not asymptotically stable. Feedback is needed in both cases, and because v sits inside A, everything below depends on speed.
 
-### 2.2 Controllability analysis [D]
+### 2.2 Controllability analysis 
 With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = [[0, v], [1, 0]], so det C = −v.
 
 | Speed | Rank of C | det C |
@@ -92,7 +147,7 @@ With A = [[0, v], [0, 0]] and B = [0, 1] from 2.1 (on a straight), C = [B AB] = 
 
 The rank test only says whether the system is controllable, not how easy it is to control. The singular values of C are 1 and v (calculated in the code). Therefore, slow driving is weakly controllable, not uncontrollable. So, the LQR is used only when the robot is driving on a straight. At the corners, the robot stops and turns on the spot with a P-controller, as e<sub>θ</sub> stays controllable at v = 0.
 
-### 2.3 Observability analysis, including marker lost [D] MISSING
+### 2.3 Observability analysis
 **Measurement:** The EKF measures range and bearing to each marker centre, not the full ArUco pose, so each marker in view adds two rows to the measurement Jacobian H<sub>k</sub>. The pose has three states, (x, y, θ).
 
 **Rank test:** A linear model with sensor matrix C (y = Cx) is observable when the observability matrix has full rank:
@@ -133,7 +188,7 @@ A second marker at a different place breaks the circle and results in rank 3. Th
 
 With no marker, nothing is measured and the error drifts instead of decaying, so the pose is not even detectable. Driving blind would let the 3σ bound pass the 3 cm tolerance after about 3.5 s, so docking never drives without a marker. It stops at once, waits for the marker, and declares failure if none returns within 3 s ([docking.py](src/control/docking.py), `marker_lost_timeout` = 3 s in [control.json](config/control.json)).
 
-### 2.4 Model correctness: where the model breaks down and what that costs, e.g. closed-loop eigenvalues vs speed (adapt Assessment 3 D.4) [HD] (A has no hardware credit, so this is A's HD)
+### 2.4 Model correctness
 The robot was run at three speeds without redesigning K (20 runs each, [model_limits.py](evaluation/model_limits.py)). For δω = −(k<sub>y</sub> e<sub>y</sub> + k<sub>θ</sub> e<sub>θ</sub>) on a straight, the closed-loop poles satisfy:
 
 $$\lambda^2 + k_\theta\lambda + k_y v = 0$$
@@ -236,7 +291,7 @@ We tested the camera range readings at seven distances, keeping the robot and th
 To evaluate the wheel odometry, we used [umbmark.py](experiments/umbmark.py). The robot drove a 0.5 m square three times clockwise and three times counter-clockwise, and after each run we measured the final position and heading errors.
 
 The results give a right-to-left wheel size ratio of 1.006 and a wheel separation of 292.6 mm, compared with the nominal 288 mm. The estimated wheel distance noise was 5.2 %; to allow for manual measurement error, we kept k_wheel = 6 %. We kept the nominal wheel parameters and rely on the ArUco updates to correct the pose drift.
-### 3.3 Noise handling: outlier rejection and marker-loss handling [D]
+### 3.3 Noise handling: outlier rejection and marker-loss handling 
 
 Before a measurement reaches the EKF, it must pass the checks below. The robot also stops when the dock marker is unavailable during docking ([docking.py](src/control/docking.py)), or when the LiDAR returns cover less than 80 % of the forward half in simulation, or 20 % on the real robot ([lidar_obs.py](src/control/lidar_obs.py)).
 
@@ -254,14 +309,14 @@ Before a measurement reaches the EKF, it must pass the checks below. The robot a
 </p>
  
 **LiDAR data checks**: During tracking and obstacle avoidance, the robot stops if too few valid beams return in the forward half. The real robot's LiDAR coverage threshold was reduced from 80 % to 20 % because the lab's black foam panels return very few beams to the LDS-01. This did not stop the obstacle detection: the box still triggered avoidance in all nine filmed runs ([lidar_obs.py](src/control/lidar_obs.py)). The robot also stops if a scan is more than 0.5 seconds old.
-### 3.4 Frame management: frame chain from sensor measurement to controller input [D]
+### 3.4 Frame management: frame chain from sensor measurement to controller input 
 <p align="center">
   <img src="results/page/frame_chain_3_4.png" width="80%" alt="Frame chain">
   <br><em>Blue: known or estimated transforms, Red: T<sub>C</sub><sup>M</sup>, measured every camera frame by ArUco + PnP.</em>
 </p>
 
 **Frame chain**: Camera and LiDAR sensors start their measurements in their own coordinate frames, {C} and {S}. We then use each sensor's mounting pose, T<sub>B</sub><sup>C</sup> or T<sub>B</sub><sup>S</sup>, to transform its data into the robot's base frame {B}, centred between the two drive wheels. Next, the EKF combines the marker range and bearing with the wheel encoders to estimate the robot pose T<sub>W</sub><sup>B</sup> in the map {W}, using the known marker poses T<sub>W</sub><sup>M</sup>. The path tracker then uses this estimate to compute the cross-track and heading errors, and the LiDAR points in {B} are used for obstacle avoidance.
-### 3.5 Simulated vs real sensor noise, and why they differ [HD-hw]
+### 3.5 Simulated vs real sensor noise, and why they differ 
 **Sensor performance: simulation vs real robot**
 
 | Check | Simulation | Real robot | Why they differ |
@@ -271,7 +326,7 @@ Before a measurement reaches the EKF, it must pass the checks below. The robot a
 |LiDAR forward coverage| 88–100 % | about 23 % | The real LiDAR receives few returns from the black foam panels |
 |Wheel geometry| +- 0.1%|Right-to-left wheel ratio 1.006; wheel separation +1.6 % relative to the nominal value| Real tyres and assembly may introduce geometry differences |
 ## 4. Estimation (C): EKF design, tuning and reported performance
-### 4.1 EKF design [D]
+### 4.1 EKF design 
 
 The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3, Task B.3**, borrowing the following variables:
 - ekf_predict
@@ -287,7 +342,7 @@ The design has 2 main functions: predict and update.
 
 **Update** is generated once per new camera frame. This fuses one marker's range and bearing, and returns its NIS.
 
-### 4.2 Tuning: Q, R and P0, and where each value comes from [D]
+### 4.2 Tuning: Q, R and P0, and where each value comes from 
 
 - **Q (process noise)**: This refers to uncertainty in the motion prediction at each step. This includes wheel slip and radius error, which grows with the distance travelled.
   
@@ -308,7 +363,7 @@ The table below is an expansion upon these 3 variable groups. It illustrates wha
 
 All variables listed come from ([estimation.json](config/estimation.json))
 
-### 4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds [D]
+### 4.3 Reported performance: RMSE, NEES, NIS, ±3σ bounds 
 
 To analyse and report the performance, ([run_demo.py](evaluation/run_demo.py)) is utilised. Running a simulated test of the robot and reporting back both its odometry and EKF. This will be further compared within 4.5
 
@@ -385,7 +440,7 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ------------------------------------------------------------------------------------
 
-### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) [D]
+### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) 
 
 This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
 
@@ -419,7 +474,7 @@ When taking into account track A. Where the robot's main objective is to reach t
 
 As a result, **consistency succeeds reliability** for this track.
 
-### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds [HD] 
+### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds 
 
 This compares the EKF to odometry through 20 random tests. Observing through simulation if it could dock successfully
 
@@ -437,7 +492,7 @@ From these 2 points, it is made clear that the EKF outperforms the odometry as a
 
 
 ## 5. Control (D): controller design, tuning and tracking results
-### 5.1 Controller design: LQR, turn and IBVS [D]
+### 5.1 Controller design: LQR, Turn, Avoid and IBVS 
 The robot switches between three controllers according to its mode. All three controllers use only EKF-estimated states or camera measurements (for IBVS), never the ground-truth pose.
 
 | Mode | Controller | Command | Why this controller |
@@ -481,7 +536,7 @@ Docking is confirmed only after the SETTLE checks verify that the robot's dockin
 
 For obstacle avoidance, the same LQR follows a shifted reference path without requiring a new controller. The P-controller handles sharp turns in place, while IBVS handles the final docking by minimising image-feature errors. Together, the three controllers handle different operating conditions of the robot.
 
-### 5.2 Tuning: weights, why, and what limits the gains [D]
+### 5.2 Tuning:
 **LQR tuning: where Q and R come from.** We used Bryson's rule to select the weighting matrices Q and R. Each tracking error and control input is weighted by the inverse square of its maximum acceptable value:
 
 $$Q = \mathrm{diag}\left(\frac{1}{e_{y,max}^2}, \frac{1}{e_{\theta,max}^2}\right) = \mathrm{diag}\left(\frac{1}{0.05^2}, \frac{1}{0.1745^2}\right) = \mathrm{diag}(400,\ 32.8)$$
@@ -506,7 +561,7 @@ with e<sub>θ,max</sub> = 10° = 0.1745 rad. Q penalises the cross-track and hea
 
 **IBVS parameters:** The gain is λ = 0.8 to provide gradual correction of image-feature errors without reacting too aggressively to camera noise.
 
-### 5.3 Tracking Results in Simulation [D]
+### 5.3 Tracking Results in Simulation 
 This section evaluates how accurately the LQR makes the robot follow the path and how effectively IBVS performs docking. The controllers use only the estimated states and the camera measurements, while the ground-truth pose is used to evaluate their performance.
 
 **Path tracking: how accurately does LQR follow the path?**
@@ -553,7 +608,7 @@ The image-feature errors decreased from approximately 93 to 57 px, but IBVS stop
 
 Overall, IBVS reduced docking time in these 10 tests but did not show a measurable improvement in the final docking accuracy. Under the randomised 20 runs, the system also achieved 20/20 successful dockings (Section 6.1).
 
-### 5.4 Tuning trade-off: control effort vs tracking error [D]
+### 5.4 Tuning trade-off: control effort vs tracking error 
 The LQR weight R was tested at three values with Q fixed: R = 40, R = 4 (chosen) and R = 0.4. Each value was tested on the centre case with 20 seeds, each seed adding a random initial position and encoder-scale error, with LQR using EKF-estimated states for feedback rather than ground truth. All 60 runs completed docking successfully. Cross-track errors were evaluated using the ground-truth pose, while control effort was evaluated using the steering commands. The tracking and steering metrics include only LQR path-tracking periods, while docking success and the NEES share are computed over the whole run (evaluation/sweep_lqr.py).
 
 | R | Cross-track RMS | Steady offset | RMS feedback steering | NEES ≤ 7.81 | Command rate |
@@ -585,7 +640,7 @@ The weight sweep also kept Q fixed to isolate the effect of R, so the effect of 
 
 ## 6. Integration and Robustness (E): performance under disturbance and noise
 
-### 6.1 Performance under disturbance and noise [D]
+### 6.1 Performance under disturbance and noise 
 
 This section tests whether the complete system can still navigate and dock when the starting position, the obstacle location and the sensor measurements vary. Twenty randomised scenarios were tested using both EKF and wheel odometry alone.
 
@@ -631,7 +686,7 @@ In contrast, with wheel odometry alone, only 9 of the same 20 runs completed doc
 
 **Why it looks this way:** The main difference between the 20 EKF and odometry-only runs was the accuracy of their position estimates. Marker measurements helped EKF correct accumulated estimation errors, allowing the robot to follow the planned route accurately and complete docking reliably under multiple random disturbances.
 
-### 6.2 Failure analysis traced to model, sensing, estimator or controller [D]
+### 6.2 Failure analysis traced to model, sensing, estimator or controller 
 
 The observed failures and safety stops were investigated using the simulation ground truth and the real-robot sensor logs to identify their most likely causes. This section presents an analysis of failures and safety stops observed in the final tests, problems identified and fixed during development and remaining limitations.
 
@@ -675,7 +730,7 @@ These problems were identified and addressed during development, before the fina
 - **Lower LiDAR coverage threshold not re-tested:** The threshold was reduced from 0.8 to 0.2 to allow the robot to operate despite the low LiDAR scan coverage caused by the black foam panels. Previously, the robot required at least 80% valid scan coverage to move, but after the change, only 20% was required. Although this allowed the robot to operate, it also meant that the robot could continue moving with less valid LiDAR data. The system was not re-tested with a blocked or faulty LiDAR, so its safety under these conditions remains unverified.
 
 ## 7. Real Robot
-### 7.1 Setup and differences from simulation [HD-hw]
+### 7.1 Setup and differences from simulation 
 We tested the system on a TurtleBot3 Waffle Pi running ROS 2, with an LDS-01 LiDAR and a Pi camera. Our laptop receives the sensor data and sends velocity commands over the lab wifi through rosbridge (UTS-RI rosbridge_api). The real robot interface ([real_robot.py](src/robot/real_robot.py)) provides the same sensor-reading and command functions as the simulation, so the EKF, the controllers and the mission logic run unchanged on both platforms. Wheel joint data from /joint_states is used to compute odometry, camera images are used to detect ArUco markers, and LiDAR data from /scan is used for obstacle avoidance.
 
 The laptop controls the robot's linear and angular velocity through /cmd_vel.
@@ -695,8 +750,7 @@ The run command is `python main.py --real --task config/arena_lab.json`.
 |Minimum valid LiDAR forward coverage| 80% | 20% | The real LiDAR does not get returns from every surface; the return depends on factors such as material and distance. In our lab, the black foam panels produced very few returns |
 |Docking| v: 0.08 m/s / lateral tolerance: 3 cm / heading tolerance: 5°|v: 0.05 m/s / lateral tolerance: 4 cm / heading tolerance: 8°, stop 1.5 cm early| The real robot moves more slowly and stops early to reduce overshoot at the docking position. Wider tolerances allow for the localisation and control errors seen in the hardware tests |
 |Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| A smaller clearance and side margin let the planned avoidance path fit within the narrower real lane |
-### 7.2 Real-robot results with the same metrics: tracking (D), docking (D), number of runs under real noise (E) [HD-hw]
-
+### 7.2 Real-robot results with the same metrics
 **Real-robot trials**: We filmed 9 full-track runs on 30 October. In three runs, the box was centred in the lane; in the other six, it was shifted 15 cm left or right.
 
 The real robot has no external ground-truth system, so the cross-track error in the table is the EKF estimate and was not independently verified. For five of the six successful docks, we measured the robot's final position and heading with a tape to compare them with the simulation (7.3).
@@ -717,7 +771,7 @@ The three unsuccessful runs (09:40–09:43) failed during the final approach, wh
 
 After the track was moved away from the vent cover, the next three runs docked without any code change. This shows that the NIS gate protects the estimate from bad measurements, but once the estimate itself is wrong and only one marker is in view, it cannot recover on its own.
 
-### 7.3 Quantitative simulation vs real comparison [HD-hw]
+### 7.3 Quantitative simulation vs real comparison 
 The table below shows the difference between the simulation and the real robot in the docking stage.
 
 | Metric (5 measured hardware docks and their simulation counterparts) | Simulation | Real robot |
@@ -733,7 +787,7 @@ Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at 
 
 
 ## 8. Limitations and Lessons
-### 8.1 What the results do and do not support [HD]
+### 8.1 What the results do and do not support 
 
 | results              | supports            | doesnt support                             |
 | :------------------- | :------------------ | :----------------------------------------- |
@@ -746,8 +800,7 @@ Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at 
 
 These results have been gathered from ([run_demo](evaluation/run_demo.py)). All of these results are generated from the simulation from 10-20 seeds. 
 
-### 8.2 What failed during development, and how it was diagnosed [D]
-
+### 8.2 What failed during development, and how it was diagnosed
 During development, the team found that the error model breaks down and fails due to 3 factors, which are:
 
 1. **closed-loop eigenvalues vs. speed** (**gain only suits one speed**)
@@ -804,7 +857,7 @@ The unchanged K and EKF never break across the 60 runs. Showcasing that within t
 
 
 ## 9. Reproducibility
-### 9.1 Install and run from a fresh environment [D]
+### 9.1 Install and run from a fresh environment 
 
 You need **Python 3.10** (64-bit) and **Git**. Each member creates their own virtual environment
 `.venv_mujoco` inside the project folder; it is never committed.
@@ -853,7 +906,7 @@ install line again.
 **Every time** you open a new terminal: go to the project folder and activate the environment
 (`source .venv_mujoco/bin/activate` or `.\.venv_mujoco\Scripts\Activate.ps1`).
 
-### 9.2 Commands that regenerate each figure and table [D]
+### 9.2 Commands that regenerate each figure and table 
 
 ```bash
 python -m evaluation.run_demo                # everything: 4 cases on odometry and on the EKF, repeated trials, comparison
@@ -874,12 +927,12 @@ Figures and metrics go to `results/` (`demo_*.png`, `demo_metrics*.json`, `demo_
 camera dominates; odometry-only runs take about 20 s. The trial scripts run `--workers 4` sims at a time
 (`evaluation/__init__.py`): one per core renders 20 cameras at once and freezes a laptop.
 
-### 9.3 Ground-truth rule: truth is read only in evaluation/ [D]
+### 9.3 Ground-truth rule: truth is read only in evaluation/
 
 The controller must use the estimated state, never the ground truth. Ground truth can only be read in evaluation/
 
 
-## 10. Team and Declarations (required; a missing item caps the affected criteria at Pass)
+## 10. Team and Declarations 
 ### 10.1 Group number and team members
 
 - Addison Possamai (25840164)
@@ -910,11 +963,11 @@ I was assigned the estimation section of the project for the robot. With Kim hel
 #### Thien's statement
 
 
-### 10.3 Generative AI declaration: tools and purpose
+### 10.3 Generative AI declaration
 
 **Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration. In addition to this, it was also utilised to help guide the development of the project page. Not only outlining what needs to be done, and how, simply. It assisted in turning data outputs into tables. Improving their readability for the project page.
 
-### 10.4 Acknowledgements: tutorial code, Assessment 2/3 code reused, ROBOTIS model, MuJoCo examples
+### 10.4 Acknowledgements
 
 - Robot model and meshes: [ROBOTIS robotis_mujoco_menagerie](https://github.com/ROBOTIS-GIT/robotis_mujoco_menagerie),
   Apache-2.0 (`models/robotis_tb3/LICENSE`); sensor poses from ROBOTIS `turtlebot3_waffle_pi.urdf`.
