@@ -13,32 +13,7 @@
     python main.py --real 192.168.1.213 --task config/arena_lab.json   # another robot, the whole lab track
     python main.py --headless --log results/run.npz              # also save the run log (always on with --real)
 
-Without --task the sim runs config/arena_lab.json, the lab floor as the robot will meet it: the 0.5 m
-tiles, the panels, the 20 cm box and the three markers, the LDS-01 range, and the lab robot's camera.
-The robot starts from the task file's prior, follows the waypoints with the LQR, goes around the box with
-the LiDAR and docks at the ArUco station (marker ID 0). There is one simulated world, the lab track, and
-one simulated camera, the lab robot's (config/camera_sim.json). --randomise draws lab scenarios
-(src/robot/scenario.py): the robot is TOLD a new start spot (its prior) and a new route; it is NOT told
-where it was really placed, where the box is, how noisy its sensors are or how wrong its wheel radii
-are. The terminal prints both halves. The estimator is the EKF in
-src/estimation (wheel odometry + ArUco range-bearing) and the controller acts on its estimate xh only.
-Nothing here reads simulator ground truth; evaluation/ is the only place that does.
 
---real swaps only the robot: the same run_mission, estimator and controllers drive the TurtleBot over
-rosbridge. It needs config/camera_real.json (experiments/calibrate_camera.py --images ...) and a
-task file measured in the lab arena (--task is required: config/arena_lab.json or a stage that
-extends it). --case has no effect there, the box is wherever it was put. Run
-experiments/check_robot.py first. Every real run is logged (--log, default results/hardware/run_<time>.npz),
-also when it stops early, so a failure can be diagnosed afterwards.
-
-The simulated camera is the lab robot's camera as measured on 23 Oct (49.7 x 38.2 deg, 6.3 deg down,
-30 Hz), so a sim run sees what the real camera sees.
-
-Exit code: 0 when the robot docked, 1 otherwise, so a script or CI can check the run.
-
-Adapted from 41014 Week 8 C (run_landmark_lqg: LQR on the range-bearing EKF, closed loop).
-Additions: one entry point for the sim and the real robot (--real), the camera window, the run log,
-the start-pose warning and the printed docking checks.
 """
 import argparse
 import json
