@@ -827,8 +827,8 @@ You need **Python 3.10** (64-bit) and **Git**. Each member creates their own vir
 ##### Linux (Ubuntu)
 
 ```bash
-git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
-cd IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+git clone https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
+cd SCMS_IntegratedProject.github.io
 python3.10 -m venv .venv_mujoco            # Ubuntu: sudo apt install python3.10-venv if this fails
 source .venv_mujoco/bin/activate
 python -m pip install --upgrade pip
@@ -839,8 +839,8 @@ python -m pip install -r requirements.txt
 ##### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
-cd IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+git clone https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
+cd SCMS_IntegratedProject.github.io
 py -3.10 -m venv .venv_mujoco
 .\.venv_mujoco\Scripts\Activate.ps1
 python -m pip install --upgrade pip

@@ -19,8 +19,8 @@ See the [project page](index.md) for the model, calibration, estimator and contr
 Use **Python 3.10**.
 
 ```bash
-git clone https://github.com/Atomic-add/IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026.git
-cd IntegratedProject_SensorsAndControlsForMechatronicSystems_SPR2026
+git clone https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
+cd SCMS_IntegratedProject.github.io
 python -m venv .venv
 ```
 
