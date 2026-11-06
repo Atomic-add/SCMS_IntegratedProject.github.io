@@ -755,32 +755,58 @@ Will get back to this
 ### 9.2 What failed during development, and how it was diagnosed [D]
 
 During development, the team found that the error model breaks down and fails due to 3 factors, which are:
-1. closed-loop eigenvalues vs. speed
-2. linear vs. non-linear motion
-3. mission running too fast
 
+1. **closed-loop eigenvalues vs. speed** (**gain only suits one speed**)
+The controller is tuned at 0.2m/s. The closed-loop performance depends on the fixed speed. It becomes problematic when the speed increases. It can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can lose steering capabilities. Causing the robot to drift.
 
-
-Each of these factors has been diagnosed and tested with ([model_limits](evaluation/model_limits.py)).
-
-#### closed-loop eigenvalues vs. speed
-
-(**gain only suits one speed**)
-
-The controller is tuned at 0.2m/s. With the closed-loop depending on the fixed speed. It becomes problematic when the speed increases. As it can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can lose steering capabilities. Causing the robot to drift.
-
-#### linear vs non-linear motion
-
-(**simplified model only holds for small errors**)
-
-The model's prediction stops matching reality when it comes to big sideways offsets. Assuming there are small angles, with no limit to how hard the robot can turn. This creates a problem where the robot fails to make big turns due to the limitation of the wheel's speed. With the response lagging, and the small-angle shortcut failing
-
-#### mission running too fast
-
-(**driving faster without redesigning**)
-
+2. **linear vs. non-linear motion** (**simplified model only holds for small errors**)
+The model's prediction stops matching reality for large sideways offsets. Assuming there are small angles, with no limit to how hard the robot can turn. This creates a problem where the robot fails to make big turns because of the wheel speed limit. With the response lagging, and the small-angle shortcut failing
+   
+3. **mission running too fast** (**driving faster without redesigning**)
 The gain is never redesigned, with the controller being used outside of the design point. Thus, when running at higher cruise speeds, either the controller or estimator degrades. Leaving the robot further away from the true pose, and it begins drifting.
 
+
+Each of these factors has been diagnosed and tested with ([model_limits](evaluation/model_limits.py)). Observe to see if the tests support or counter the argument for each factor.
+
+![Your Alt text](./results/model_limits.png)
+
+#### 1. closed-loop eigenvalues vs. speed
+
+| v [m/s]       | Slow \|z\| | Fast \|z\| | τ [s] | v·τ [m] |
+| :------------ | :--------- | :--------- | :---- | :------ |
+| 0.00          | 1.0000     | 0.8375     | n/a   | n/a     |
+| 0.02          | 0.9971     | 0.8402     | 17.4  | 0.348   |
+| 0.05          | 0.9926     | 0.8443     | 6.77  | 0.339   |
+| 0.10          | 0.9845     | 0.8519     | 3.21  | 0.321   |
+| 0.15          | 0.9754     | 0.8604     | 2.01  | 0.301   |
+| 0.20 (design) | 0.9646     | 0.8707     | 1.39  | 0.277   |
+| 0.26          | 0.9470     | 0.8875     | 0.92  | 0.239   |
+
+K is speed-specific, with it remaining stable when away from 0.2m/s. But it corrects over a different distance. However, it fails when v = 0. Losing the ability to steer the sideways error.
+
+#### 2. Linear vs. non-linear motion
+
+| Offset [cm] | Peak turn cmd [rad/s] | Clipped steps | Peak heading [deg] | Max lin vs nonlin gap | Settle lin / nonlin [s] |
+| :---------- | :-------------------- | :------------ | :----------------- | :-------------------- | :---------------------- |
+| 2           | 0.18                  | 0 %           | 3                  | 0.00 cm (0.1 %)       | 5.85 / 5.85             |
+| 5           | 0.46                  | 0 %           | 6                  | 0.01 cm (0.1 %)       | 5.85 / 5.85             |
+| 10          | 0.92                  | 0 %           | 13                 | 0.03 cm (0.3 %)       | 5.85 / 5.85             |
+| 20          | 1.83                  | 0 %           | 26                 | 0.23 cm (1.2 %)       | 5.85 / 5.90             |
+| 30          | 2.75                  | 1 %           | 39                 | 1.12 cm (3.7 %)       | 5.85 / 6.00             |
+| 50          | 4.58                  | 3 %           | 64                 | 5.86 cm (11.7 %)      | 5.85 / 6.35             |
+| 80          | 7.33                  | 5 %           | 101                | 21.18 cm (26.5 %)     | 5.85 / 7.15             |
+
+The model is fine for this model, as it can deal with small errors. However, it cannot deal with large recoveries. The mission errors are about 2cm RMS, with a max of approximately 5cm. This is inside the valid RMS region.
+
+#### 3. Mission running too fast
+
+| v [m/s] | Docked | Cross-track RMS [cm] | Max [cm] | Pos RMSE [cm] | ANEES | NEES inside | Sat | Time [s] |
+| :------ | :----- | :------------------- | :------- | :------------ | :---- | :---------- | :-- | :------- |
+| 0.10    | 100 %  | 1.76 ± 0.09          | 4.92     | 0.79          | 3.29  | 91.2 %      | 0 % | 55.3     |
+| 0.20    | 100 %  | 1.84 ± 0.12          | 5.06     | 0.81          | 3.20  | 96.0 %      | 0 % | 43.2     |
+| 0.26    | 100 %  | 1.92 ± 0.10          | 5.12     | 0.75          | 3.06  | 97.9 %      | 0 % | 40.1     |
+
+The unchanged K and EKF never break across the 60 runs. Showcasing that within this range, no degradation is present. Disproving the argument for this range.
 
 
 ## 10. Reproducibility
