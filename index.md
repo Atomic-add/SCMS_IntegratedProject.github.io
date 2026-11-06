@@ -1,4 +1,4 @@
-# Track A project page structure (final)
+# Project page 
 
 ## GROUP NUMBER / TEAM MEMBERS
 **TEAM 12**
@@ -443,11 +443,11 @@ PASS  config: the real camera's range_correction drops the sim bias (never subtr
 
 ### 4.4 Tuning trade-off: consistency vs responsiveness (R sweep) 
 
-This runs a test to compare Consistency to Responsiveness. For this test, **R (EKF's measurement noise)** is tested across its 4 conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**. 
+This test compares consistency and responsiveness. For this test, **R (EKF's measurement noise covariance)** is tested under four conditions. **R x10, R (config), R (measured bearing sd)**, and **R / 10**.
 
 To elaborate:
 
-**Consistency** refers to whether the error matches the set uncertainty. If the real errors are above it, that being the ANEES, it's overconfident. Then, overly cautious if it's below the ANEES. Further helping prevent collisions, at the cost of the robot's speed.
+**Consistency** refers to whether the estimation error matches the estimated uncertainty. If the ANEES is above the expected value, the filter is overconfident. If it is below the expected value, the filter is overly cautious.
 
 **Responsiveness** refers to how fast the filter chases the measurements. A small R results in the filter reacting to every sighting, including noise. This results in more jitter. Whereas a large R results in a slower filter. This makes it slower to correct drift, but it is an overall smoother experience.
 
@@ -455,25 +455,25 @@ To elaborate:
 
 These test results are from ([sweep_r](evaluation/sweep_r.py)).
 
-|R                      |	Docked | ANEES      |	NIS	|Gated|	Worst error [cm] |
-| :-------------------- | :----- | :--------- | :-- | :-- | :--------------- |
-|R x10	                |  100 % |1.54 ± 0.06	|0.02 |0.0  |	0.82 ± 0.08      |
-|R (config)	            | 100 %	 |3.08 ± 0.49 |0.12 |0.2  |	1.78 ± 0.65      |
-|R, measured bearing sd |	100 %	 |4.76 ± 0.70 |0.21 |0.6  |	3.17 ± 0.83      |
-|R / 10	                | 100 %	 |10.85 ± 1.99|1.25 |12.0 |	3.75 ± 0.78      |
+| R                      | Docked | ANEES        | NIS  | Gated | Worst error \[cm\] |
+|------------------------|--------|--------------|------|-------|--------------------|
+| R x10                  | 100 %  | 1.54 ± 0.06  | 0.02 | 0.0   | 0.82 ± 0.08        |
+| R (config)             | 100 %  | 3.08 ± 0.49  | 0.12 | 0.2   | 1.78 ± 0.65        |
+| R, measured bearing sd | 100 %  | 4.76 ± 0.70  | 0.21 | 0.6   | 3.17 ± 0.83        |
+| R / 10                 | 100 %  | 10.85 ± 1.99 | 1.25 | 12.0  | 3.75 ± 0.78        |
 
-The table below is an expansion upon the data above. Analysing their consistency and responsiveness. Then concluding how that would impact the robot's performance on the track.
+The table below expands upon the data above by analysing consistency and expected responsiveness.
 
-| R setting              | Consistency       | Responsiveness   | Verdict                      |
-| :--------------------- | :---------------  | :--------------- | :--------------------------- | 
-|    R X10               | too cautious      | Unresponsive     | staggent                     |
-| R (config)             | consistent        | responsive       | slow but steady movement     |
-| R, measured bearing sd | too confident     | responsive       | fast but unreliable movement |
-| R / 10                 | overly confident  | Overly responsive| uncontrollable movement      |
+| R setting              | Consistency      | Expected responsiveness |
+|------------------------|------------------|-------------------------|
+| R X10                  | too cautious     | Less responsive         |
+| R (config)             | consistent       | responsive              |
+| R, measured bearing sd | too confident    | responsive              |
+| R / 10                 | overly confident | More responsive         |
 
-When taking into account track A. Where the robot's main objective is to reach the charging station without any collisions. No matter the time taken. R (config) would make the most logical sense. For, whilst slower. Being aligned with consistency means that it will measure less noise and move smoothly. At the cost of speed, which isn't a requirement for this track.
+When considering Track A, where the robot's main objective is to reach the charging station without any collisions, all four R settings docked in 100% of the runs. R (config) would make the most logical sense. Whilst R × 10 had the lowest worst error, R (config) is the most consistent, with an ANEES of 3.08, closest to the expected value of 3. This suggests that its reported uncertainty better matches the actual estimation error, which is important for the NIS gate. The effect of R on the EKF’s correction speed was not directly measured in this test.
 
-As a result, **consistency succeeds reliability** for this track.
+As a result, **consistency is prioritised over responsiveness** for this track.
 
 ### 4.5 Comparison with a second estimator: EKF vs odometry only, same seeds 
 
