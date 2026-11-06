@@ -337,6 +337,14 @@ The estimation section is adapted from **Week 7 C.3 / C.4**, and **Assessment 3,
 - H_rb
 - Qd reasoning
 
+The state of the estimation can be determined from ([ekf.py](src/estimation/ekf.py)). With it being as follows:
+**xh, P = (x0, P0)**
+
+- xh = state estimate
+- P = uncertainty
+- x0 = the starting guess for the state
+- P0 = starting uncertainty of the guess
+
 The design has 2 main functions: predict and update.
 
 **Predict** is generated once per new encoder sample. Utilised to move the estimate with the wheel increments and grow P by the wheel noise. 
