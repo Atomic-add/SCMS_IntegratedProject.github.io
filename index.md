@@ -66,7 +66,7 @@ This task’s constraint is that the controller must use the estimated state, ne
 **Video link:**
 [41014 Integrated Project - Team 12, Track A | TurtleBot3 Navigation and Visual Docking](https://youtu.be/wC_1g5ZVvbk)
 
-**GitHub repository (code and README):** https://github.com/Atomic-add/SCMS_IntegratedProject.github.io
+**GitHub repository (code and README):** [SCMS_IntegratedProject.github.io](https://github.com/Atomic-add/SCMS_IntegratedProject.github.io)
 
 
 ### 1.2 Pipeline diagram, simulation and real-robot photos
