@@ -37,17 +37,9 @@ I.O.U
 ![Your Alt Text](./results/page/Overview_Real.png)
 
 
-### 1.3 What is new beyond the coursework (Assessment 3 covered path-error LQR/LQI and a range-only EKF): range+bearing ArUco EKF, LiDAR avoidance, IBVS docking, randomised trials, real robot [D]
-
-
-
-### 1.4 Headline results: simulation vs real robot [HD]
+### 1.3 Headline results: simulation vs real robot [HD]
 
 ![Your Alt Text](./results/real_vs_sim.png)
-
-### 1.5 Marker's guide: where each criterion is evidenced, plus video timestamps for the task completed, a disturbed trial, and the estimate with uncertainty vs ground truth [D]
-
-
 
 ## 2. Modelling (A): state-space model, controllability and observability analysis
 ### 2.1 State-space model: derived for the TurtleBot3, with stated assumptions [D]
@@ -742,17 +734,12 @@ Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, 
 
 
 
-## 8. Independent Contribution Summary (only list what has results) Core (needed):
-### 8.1 Real-robot implementation (section 7): HD evidence for B, D, E [HD-hw]
-### 8.2 Model limits (2.4) and limitations (9.1): HD evidence for A [HD]
-### 8.3 Second estimator comparison (4.5): HD evidence for C. Cheapest option: the odometry-only mode already exists, it just needs a proper re-run [HD]
-
-## 9. Limitations and Lessons
-### 9.1 What the results do and do not support [HD]
+## 8. Limitations and Lessons
+### 8.1 What the results do and do not support [HD]
 
 Will get back to this
 
-### 9.2 What failed during development, and how it was diagnosed [D]
+### 8.2 What failed during development, and how it was diagnosed [D]
 
 During development, the team found that the error model breaks down and fails due to 3 factors, which are:
 1. closed-loop eigenvalues vs. speed
@@ -783,8 +770,8 @@ The gain is never redesigned, with the controller being used outside of the desi
 
 
 
-## 10. Reproducibility
-### 10.1 Install and run from a fresh environment [D]
+## 9. Reproducibility
+### 9.1 Install and run from a fresh environment [D]
 
 You need **Python 3.10** (64-bit) and **Git**. Each member creates their own virtual environment
 `.venv_mujoco` inside the project folder; it is never committed.
