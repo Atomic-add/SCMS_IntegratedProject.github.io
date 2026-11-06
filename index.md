@@ -30,7 +30,7 @@ window.MathJax = {
 ## Contents
 
 - **[1. Overview](#1-overview)**
-  - [1.1 Introduction](#11-introduction)
+  - [1.1 Introduction, video and code repository](#11-introduction-video-and-code-repository)
   - [1.2 Pipeline diagram, simulation and real-robot photos](#12-pipeline-diagram-simulation-and-real-robot-photos)
 - **[2. Modelling (A)](#2-modelling-a-state-space-model-controllability-and-observability-analysis)**
   - [2.1 State-space model](#21-state-space-model)
@@ -74,7 +74,7 @@ window.MathJax = {
   - [10.4 Acknowledgements](#104-acknowledgements)
 
 ## 1. Overview
-### 1.1 Introduction
+### 1.1 Introduction, video and code repository
 
 
 This is **Track A, a mobile robot**. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
