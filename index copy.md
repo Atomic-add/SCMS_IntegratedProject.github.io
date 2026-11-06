@@ -745,12 +745,13 @@ Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, 
 ## 8. Independent Contribution Summary (only list what has results) Core (needed):
 ### 8.1 Real-robot implementation (section 7): HD evidence for B, D, E [HD-hw]
 ### 8.2 Model limits (2.4) and limitations (9.1): HD evidence for A [HD]
-### 8.3 Second estimator comparison (4.5): HD evidence for C. Cheapest option: the odometry-only mode already exists, it just needs a proper re-run [HD]
+### 8.3 Second estimator comparison (4.5): HD evidence for C. Cheapest option: the odometry-only mode already exists; it just needs a proper re-run [HD]
 
 ## 9. Limitations and Lessons
 ### 9.1 What the results do and do not support [HD]
 
-Will get back to this
+
+
 
 ### 9.2 What failed during development, and how it was diagnosed [D]
 
