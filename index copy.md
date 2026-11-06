@@ -26,7 +26,7 @@ This task’s constraint is that the controller must use the estimated state, ne
 
 **pipeline diagram**
 
-I.O.U
+![Your Alt Text](./results/page/SCMS_PipelineDiagram.drawio.png)
 
 **simulation**
 
