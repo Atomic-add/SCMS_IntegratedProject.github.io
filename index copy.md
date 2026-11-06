@@ -754,9 +754,34 @@ Will get back to this
 
 ### 9.2 What failed during development, and how it was diagnosed [D]
 
-When the team was stuck with a problem. We would utilise AI to help break the problem down, and help guide us in the right direction. Acting almost as a tutor.
+During development, the team found that the error model breaks down and fails due to 3 factors, which are:
+1. closed-loop eigenvalues vs. speed
+2. linear vs. non-linear motion
+3. mission running too fast
 
-For example, when it came to writing the estimation section of the report. AI was utilised to help lay out a general outline of what needed to be done, and how. Narrowing down on a section when there was confusion.
+
+
+Each of these factors has been diagnosed and tested with ([model_limits](evaluation/model_limits.py)).
+
+#### closed-loop eigenvalues vs. speed
+
+(**gain only suits one speed**)
+
+The controller is tuned at 0.2m/s. With the closed-loop depending on the fixed speed. It becomes problematic when the speed increases. As it can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can lose steering capabilities. Causing the robot to drift.
+
+#### linear vs non-linear motion
+
+(**simplified model only holds for small errors**)
+
+The model's prediction stops matching reality when it comes to big sideways offsets. Assuming there are small angles, with no limit to how hard the robot can turn. This creates a problem where the robot fails to make big turns due to the limitation of the wheel's speed. With the response lagging, and the small-angle shortcut failing
+
+#### mission running too fast
+
+(**driving faster without redesigning**)
+
+The gain is never redesigned, with the controller being used outside of the design point. Thus, when running at higher cruise speeds, either the controller or estimator degrades. Leaving the robot further away from the true pose, and it begins drifting.
+
+
 
 ## 10. Reproducibility
 ### 10.1 Install and run from a fresh environment [D]
