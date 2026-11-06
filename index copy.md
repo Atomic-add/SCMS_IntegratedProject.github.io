@@ -750,15 +750,23 @@ Both system used a 35 cm taget distance and were both set to stop 1.5 cm early, 
 ## 9. Limitations and Lessons
 ### 9.1 What the results do and do not support [HD]
 
+| results              | supports            | doesnt support                             |
+| :------------------- | :------------------ | :----------------------------------------- |
+| Nominal run, 4 cases | system completes mission in this setup               | repeatability |
+| Cross-track RMS      | EKF is slightly better in 3/4 cases                  | gap in the centre case |
+| Trials: EKF 100%     | EKF is more robust to start-pose, and encoder errors | Whenever it is always safe or not. With the trials only covering a limited range |
+| ANEES                | ANEES is close to the target (3)                              | Consistency: 3/4 sit just below the ANEES band |
+| NEES inside 88 - 89% | estimator is mostly honest                           | P is reliable at every step |
+| ANIS about 0.1, NIS inside 41-46%       | estimator is cautious about the camera               | Whenever R is right or not |
 
-
+These results have been gathered from ([run_demo](evaluation/run_demo.py)). All of these results are generated from the simulation from 10-20 seeds. 
 
 ### 9.2 What failed during development, and how it was diagnosed [D]
 
 During development, the team found that the error model breaks down and fails due to 3 factors, which are:
 
 1. **closed-loop eigenvalues vs. speed** (**gain only suits one speed**)
-The controller is tuned at 0.2m/s. The closed-loop performance depends on the fixed speed. It becomes problematic when the speed increases. It can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can lose steering capabilities. Causing the robot to drift.
+The controller is tuned at 0.2m/s. The closed-loop performance depends on the fixed speed. It becomes problematic when the speed increases. It can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can cause it to lose steering capabilities. Causing the robot to drift.
 
 2. **linear vs. non-linear motion** (**simplified model only holds for small errors**)
 The model's prediction stops matching reality for large sideways offsets. Assuming there are small angles, with no limit to how hard the robot can turn. This creates a problem where the robot fails to make big turns because of the wheel speed limit. With the response lagging, and the small-angle shortcut failing
