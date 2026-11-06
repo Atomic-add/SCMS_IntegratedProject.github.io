@@ -670,7 +670,7 @@ The weight sweep also kept Q fixed to isolate the effect of R, so the effect of 
 
 ### 6.1 Performance under disturbance and noise 
 
-This section tests whether the complete system can still navigate and dock when the starting position, the obstacle location and the sensor measurements vary. Twenty randomised scenarios were tested using both EKF and wheel odometry alone.
+This section tests whether the complete system can still navigate and dock when the starting position, the obstacle location and the sensor measurements vary. Twenty randomised scenarios were tested with the EKF.
 
 Each of the 20 randomised scenarios (seeds 1–20) varied two types of conditions: those known to the robot and those hidden from it ([random_trials.py](evaluation/random_trials.py), [scenario.py](src/robot/scenario.py)).
 
@@ -690,18 +690,12 @@ A run is considered completed when the docking check passes. It is considered a 
 |---|---|---|---|---|---|---|
 | Nominal, 4 box cases (none, left, centre, right) | 4 (1 per case) | 4/4 | 4/4 | 0/4 | 37.2–43.1 s<br>Docking lateral error: 0.43–0.45 cm | [demo_metrics_ekf.json](results/demo_metrics_ekf.json) |
 | Disturbed, EKF | 20 | 20/20 | 20/20 | 0/20 | 42.0 ± 1.9 s<br>Docking lateral position error: 0.23 ± 0.44 cm<br>Docking heading error: −0.37 ± 0.76° | [random_trials.json](results/random_trials.json) |
-| Disturbed, odometry only | 20 | 9/20 | 9/20 | 2/20 | Estimate error at the end 33.7 ± 21.9 cm (max: 74 cm) | [random_trials_odometry.json](results/random_trials_odometry.json) |
 
 These trials evaluated the robustness of the complete system under multiple random disturbances. However, they did not isolate the individual effect of each disturbance.
 
 <p align="center">
   <img src="results/random_trials.png" width="80%" alt="20 random scenarios on the EKF">
-  <br><em>Figure 6.1a: True paths of the 20 randomised trials with the EKF.</em>
-</p>
-
-<p align="center">
-  <img src="results/random_trials_odometry.png" width="80%" alt="The same 20 scenarios on odometry only">
-  <br><em>Figure 6.1b: The same 20 seeds steered on wheel odometry only.</em>
+  <br><em>Figure 6.1: True paths of the 20 randomised trials with the EKF.</em>
 </p>
 
 **Results:**
@@ -710,9 +704,7 @@ All four nominal runs (none, left, right and centre box cases) docked successful
 
 With EKF, all 20 random runs docked successfully without collision. The mean docking lateral error was 0.23 cm, with a standard deviation of 0.44 cm across the 20 trials. The maximum position estimation error during these trials was 10.9 cm (seed 14, with a 7.8 cm initial placement error). However, the error decreased to below 0.4 cm by the end of every run, as marker measurements helped correct the position estimates.
 
-In contrast, with wheel odometry alone, only 9 of the same 20 runs completed docking and two runs had collision. Without marker-based corrections, the initial placement error remained uncorrected, while small errors in the wheel encoder measurements accumulated as the robot moved. As a result, the position estimation error reached up to 74 cm.
-
-**Why it looks this way:** The main difference between the 20 EKF and odometry-only runs was the accuracy of their position estimates. Marker measurements helped EKF correct accumulated estimation errors, allowing the robot to follow the planned route accurately and complete docking reliably under multiple random disturbances.
+**Why it looks this way:** Marker measurements let the EKF correct the accumulated estimation errors, so the robot followed the planned route and docked reliably under multiple random disturbances. The comparison with odometry alone on the same 20 seeds is in Section 4.5.
 
 ### 6.2 Failure analysis traced to model, sensing, estimator or controller 
 
@@ -722,11 +714,11 @@ The observed failures and safety stops were investigated using the simulation gr
 
 | Observed issue          | Source                    | Evidence                                                                                        | Primary cause         |
 |-------------------------|---------------------------|-------------------------------------------------------------------------------------------------|-----------------------|
-| Odometry drift          | Simulation, odometry only | 11/20 failed; position estimation error: 20–74 cm                                               | Estimator             |
+| Odometry drift          | Simulation, odometry only | 11/20 failed; position estimation error: 20–74 cm (see Section 4.5)                                               | Estimator             |
 | Displaced marker        | Real robot                | 30 measurements rejected by the NIS gate; `marker_lost` stop                                    | Sensing / environment |
 | Low LiDAR scan coverage | Real robot                | Forward scan coverage 0.34–0.55, below the required threshold of 0.8; robot waited at the start | Sensing               |
 
-**1. Odometry drift (estimator):** Using the same 20 random seeds, all 20 runs with EKF completed the task successfully, compared with only 9 out of 20 odometry-only runs. In the 11 failed odometry-only runs, the position estimation error ranged from 20 to 74 cm at the pre-dock point. These estimation errors led to three different stop reasons:
+**1. Odometry drift (estimator):** Using the same 20 random seeds, all 20 runs with EKF completed the task successfully, compared with only 9 out of 20 odometry-only runs (Section 4.5). In the 11 failed odometry-only runs, the position estimation error ranged from 20 to 74 cm at the pre-dock point. These estimation errors led to three different stop reasons:
 
 | Stop reason   | Runs (seeds)            | What happened                                                                                                                                                                                                                                              |
 |---------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
