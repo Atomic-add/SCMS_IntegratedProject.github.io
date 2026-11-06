@@ -74,12 +74,6 @@ python -m evaluation.random_trials --n 20
 python -m evaluation.real_vs_sim
 ```
 
-Run the project checks:
-
-```bash
-python -m evaluation.check_rules
-```
-
 See the Reproducibility section of the project page for the remaining evaluation commands.
 
 ## Repository structure
