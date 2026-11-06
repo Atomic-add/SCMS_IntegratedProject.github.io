@@ -327,6 +327,7 @@ Before a measurement reaches the EKF, it must pass the checks below. The robot a
 |ArUco range bias near 1 m| +1.8 mm | +33 mm raw, after correction +- 3 mm on fitted datasets|Residual calibration errors, tape measurement uncertainty may affect the result| 
 |LiDAR forward coverage| 88–100 % | about 23 % | The real LiDAR receives few returns from the black foam panels |
 |Wheel geometry| +- 0.1%|Right-to-left wheel ratio 1.006; wheel separation +1.6 % relative to the nominal value| Real tyres and assembly may introduce geometry differences |
+
 ## 4. Estimation (C): EKF design, tuning and reported performance
 ### 4.1 EKF design 
 
@@ -510,6 +511,7 @@ Test 2 follows ([run_demo](evaluation/run_demo.py)). The graph showcases how not
 ![Your Alt Text](./results/demo_compare.png)
 
 Below is the data behind the graph:
+
 | Case   | Docked (odo / EKF) | Cross-track RMS [cm] (odo / EKF) | Dock lateral [cm] (odo / EKF) | Heading [deg] (odo / EKF) | Time [s] (odo / EKF) |
 | :----- | :----------------- | :------------------------------- | :---------------------------- | :------------------------ | :------------------- |
 | none   | Yes / Yes          | 1.37 / 1.01                      | +0.7 / +0.4                   | -1.1 / -0.7               | 37.4 / 37.4          |
@@ -771,6 +773,7 @@ The run command is `python main.py --real --task config/arena_lab.json`.
 |Minimum valid LiDAR forward coverage| 80% | 20% | The real LiDAR does not get returns from every surface; the return depends on factors such as material and distance. In our lab, the black foam panels produced very few returns |
 |Docking| v: 0.08 m/s / lateral tolerance: 3 cm / heading tolerance: 5°|v: 0.05 m/s / lateral tolerance: 4 cm / heading tolerance: 8°, stop 1.5 cm early| The real robot moves more slowly and stops early to reduce overshoot at the docking position. Wider tolerances allow for the localisation and control errors seen in the hardware tests |
 |Avoidance clearance| 0.1 m, side margin 0.05 m | 0.08 m, side margin 0.03 m| A smaller clearance and side margin let the planned avoidance path fit within the narrower real lane |
+
 ### 7.2 Real-robot results with the same metrics
 **Real-robot trials**: We filmed 9 full-track runs on 30 October. In three runs, the box was centred in the lane, and in the other six, it was shifted 15 cm left or right.
 
