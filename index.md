@@ -914,7 +914,7 @@ The controller must use the estimated state, never the ground truth. Ground trut
 |    Integration and Robustness (E)  | Kim             | 
 |    Real Robot                      | Thien           |
 |    Limitations                     | Addison         | 
-|    Reproducibility                 | Addison         | 
+|    Reproducibility                 | Addison         |
 
 #### Addison's  statement
 I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team. For the video, I was responsible for the introduction and overview of the system.
