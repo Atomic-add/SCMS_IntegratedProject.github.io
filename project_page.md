@@ -42,7 +42,6 @@
   - [7.3 Quantitative simulation vs real comparison](#73-quantitative-simulation-vs-real-comparison)
 - **[8. Limitations and Lessons](#8-limitations-and-lessons)**
   - [8.1 What the results do and do not support](#81-what-the-results-do-and-do-not-support)
-  - [8.2 What failed during development, and how it was diagnosed](#82-what-failed-during-development-and-how-it-was-diagnosed)
 - **[9. Reproducibility](#9-reproducibility)**
   - [9.1 Install and run from a fresh environment](#91-install-and-run-from-a-fresh-environment)
   - [9.2 Commands that regenerate each figure and table](#92-commands-that-regenerate-each-figure-and-table)
@@ -56,7 +55,6 @@
 ## 1. Overview
 ### 1.1 Introduction
 
-This is Track A, a mobile robot. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising:
 
 This is **Track A, a mobile robot**. This task has a TurtleBot navigating a room of obstacles to reach its ArUco-marked charging station. This task has been performed both in MuJoCo and in real life. Utilising: 
 - 2D LiDAR
@@ -66,15 +64,10 @@ This is **Track A, a mobile robot**. This task has a TurtleBot navigating a room
 This task’s constraint is that the controller must use the estimated state, never the ground truth.
 
 **Video link:**
-(INSERT VIDEO)
+https://youtu.be/6AC7xNN-bZU?si=gPtYCtcILld3Gk_L
 
-**GitHub repository:**
+**GitHub repository (code and README):** https://github.com/Atomic-add/SCMS_IntegratedProject.github.io
 
-https://github.com/Atomic-add/SCMS_IntegratedProject.github.io.git
-
-**Video link:**
-
-(INSERT VIDEO)
 
 ### 1.2 Pipeline diagram, simulation and real-robot photos
 
@@ -521,7 +514,7 @@ From these 2 tests, it is made clear that the **EKF outperforms the odometry** a
 
 ## 5. Control (D): controller design, tuning and tracking results
 ### 5.1 Controller design: LQR, Turn, Avoid and IBVS 
-The robot switches between three controllers according to its mode. All three controllers use only EKF-estimated states or camera measurements (for IBVS), never the ground-truth pose.
+The robot has four modes (TRACK, AVOID, TURN and DOCK), handled by three controllers: TRACK and AVOID share the same LQR, TURN uses a P-controller, and DOCK uses IBVS. All three controllers use only EKF-estimated states or camera measurements (for IBVS), never the ground-truth pose.
 
 | Mode | Controller | Command | Why this controller |
 |---|---|---|---|
@@ -715,7 +708,7 @@ The observed failures and safety stops were investigated using the simulation gr
 | Observed issue          | Source                    | Evidence                                                                                        | Primary cause         |
 |-------------------------|---------------------------|-------------------------------------------------------------------------------------------------|-----------------------|
 | Odometry drift          | Simulation, odometry only | 11/20 failed; position estimation error: 20–74 cm (see Section 4.5)                                               | Estimator             |
-| Displaced marker        | Real robot                | 30 measurements rejected by the NIS gate; `marker_lost` stop                                    | Sensing / environment |
+| Floor vent cover        | Real robot                | Dock-marker detections rejected by the NIS gate (30 in run 09:41); `marker_lost` stop        | Environment           |
 | Low LiDAR scan coverage | Real robot                | Forward scan coverage 0.34–0.55, below the required threshold of 0.8; robot waited at the start | Sensing               |
 
 **1. Odometry drift (estimator):** Using the same 20 random seeds, all 20 runs with EKF completed the task successfully, compared with only 9 out of 20 odometry-only runs (Section 4.5). In the 11 failed odometry-only runs, the position estimation error ranged from 20 to 74 cm at the pre-dock point. These estimation errors led to three different stop reasons:
@@ -728,7 +721,7 @@ The observed failures and safety stops were investigated using the simulation gr
 
 The comparison between EKF and odometry-only runs showed that accumulated position estimation errors were the primary cause of the odometry-only failures. Depending on the run, these errors caused the robot to lose sight of the docking marker, fail the final docking check or trigger the LiDAR safety stop.
 
-**2. Displaced marker (sensing / environment):** Marker 0 was moved from its designated position, causing the camera measurements to become inconsistent with the EKF predictions. The NIS gate rejected 30 measurements from Marker 0, while measurements from Markers 1 and 2 were still accepted. This prevented the EKF from updating its position estimate using the inconsistent measurements from Marker 0. During the test, the robot stopped docking and reported `marker_lost` as the reason. The recommended solution is to check the marker positions before each run.
+**2. Floor vent cover (environment):** In runs 09:40–09:43, the wheels were slipping but the encoders kept counting. The side markers were out of sight and the EKF only used wheel odometry, so the estimated pose drifted. The dock-marker measurements then disagreed with the prediction and were rejected by the NIS gate (all 30 detections in run 09:41) while Markers 1 and 2 were still accepted. The robot had no valid dock marker update so it safely stopped and reported `marker_lost`. The track was moved away from the vent cover and the next three runs docked with no change in code (see Section 7.2). The suggested solution is to check the floor along the track for floor obstacles prior to each run.
 
 **3. Low LiDAR scan coverage (sensing):** During real-robot testing on 28 October, the forward LiDAR scan coverage was only 0.34-0.55, compared with 0.88-1.00 in simulation. This was likely because the LDS-01 received too few valid measurements from the black foam panels forming the corridor walls.
 
@@ -817,62 +810,6 @@ Both systems used a 35 cm target distance and were set to stop 1.5 cm early, at 
 | ANIS about 0.1, NIS inside 41-46%       | estimator is cautious about the camera               | Whenever R is right or not |
 
 These results have been gathered from ([run_demo](evaluation/run_demo.py)). All of these results are generated from the simulation from 10-20 seeds. 
-
-### 8.2 What failed during development, and how it was diagnosed
-During development, the team found that the error model breaks down and fails due to 3 factors, which are:
-
-1. **closed-loop eigenvalues vs. speed** (**gain only suits one speed**)
-The controller is tuned at 0.2m/s. The closed-loop performance depends on the fixed speed. It becomes problematic when the speed increases. It can overshoot or wobble. Another factor to consider is when v = 0. As the sideways error can cause it to lose steering capabilities. Causing the robot to drift.
-
-2. **linear vs. non-linear motion** (**simplified model only holds for small errors**)
-The model's prediction stops matching reality for large sideways offsets. Assuming there are small angles, with no limit to how hard the robot can turn. This creates a problem where the robot fails to make big turns because of the wheel speed limit. With the response lagging, and the small-angle shortcut failing
-   
-3. **mission running too fast** (**driving faster without redesigning**)
-The gain is never redesigned, with the controller being used outside of the design point. Thus, when running at higher cruise speeds, either the controller or estimator degrades. Leaving the robot further away from the true pose, and it begins drifting.
-
-
-Each of these factors has been diagnosed and tested with ([model_limits](evaluation/model_limits.py)). Observe to see if the tests support or counter the argument for each factor.
-
-![Your Alt text](./results/model_limits.png)
-
-#### 1. closed-loop eigenvalues vs. speed
-
-| v [m/s]       | Slow \|z\| | Fast \|z\| | τ [s] | v·τ [m] |
-| :------------ | :--------- | :--------- | :---- | :------ |
-| 0.00          | 1.0000     | 0.8375     | n/a   | n/a     |
-| 0.02          | 0.9971     | 0.8402     | 17.4  | 0.348   |
-| 0.05          | 0.9926     | 0.8443     | 6.77  | 0.339   |
-| 0.10          | 0.9845     | 0.8519     | 3.21  | 0.321   |
-| 0.15          | 0.9754     | 0.8604     | 2.01  | 0.301   |
-| 0.20 (design) | 0.9646     | 0.8707     | 1.39  | 0.277   |
-| 0.26          | 0.9470     | 0.8875     | 0.92  | 0.239   |
-
-K is speed-specific, with it remaining stable when away from 0.2m/s. But it corrects over a different distance. However, it fails when v = 0. Losing the ability to steer the sideways error.
-
-#### 2. Linear vs. non-linear motion
-
-| Offset [cm] | Peak turn cmd [rad/s] | Clipped steps | Peak heading [deg] | Max lin vs nonlin gap | Settle lin / nonlin [s] |
-| :---------- | :-------------------- | :------------ | :----------------- | :-------------------- | :---------------------- |
-| 2           | 0.18                  | 0 %           | 3                  | 0.00 cm (0.1 %)       | 5.85 / 5.85             |
-| 5           | 0.46                  | 0 %           | 6                  | 0.01 cm (0.1 %)       | 5.85 / 5.85             |
-| 10          | 0.92                  | 0 %           | 13                 | 0.03 cm (0.3 %)       | 5.85 / 5.85             |
-| 20          | 1.83                  | 0 %           | 26                 | 0.23 cm (1.2 %)       | 5.85 / 5.90             |
-| 30          | 2.75                  | 1 %           | 39                 | 1.12 cm (3.7 %)       | 5.85 / 6.00             |
-| 50          | 4.58                  | 3 %           | 64                 | 5.86 cm (11.7 %)      | 5.85 / 6.35             |
-| 80          | 7.33                  | 5 %           | 101                | 21.18 cm (26.5 %)     | 5.85 / 7.15             |
-
-The model is fine for this model, as it can deal with small errors. However, it cannot deal with large recoveries. The mission errors are about 2cm RMS, with a max of approximately 5cm. This is inside the valid RMS region.
-
-#### 3. Mission running too fast
-
-| v [m/s] | Docked | Cross-track RMS [cm] | Max [cm] | Pos RMSE [cm] | ANEES | NEES inside | Sat | Time [s] |
-| :------ | :----- | :------------------- | :------- | :------------ | :---- | :---------- | :-- | :------- |
-| 0.10    | 100 %  | 1.76 ± 0.09          | 4.92     | 0.79          | 3.29  | 91.2 %      | 0 % | 55.3     |
-| 0.20    | 100 %  | 1.84 ± 0.12          | 5.06     | 0.81          | 3.20  | 96.0 %      | 0 % | 43.2     |
-| 0.26    | 100 %  | 1.92 ± 0.10          | 5.12     | 0.75          | 3.06  | 97.9 %      | 0 % | 40.1     |
-
-The unchanged K and EKF never break across the 60 runs. Showcasing that within this range, no degradation is present. Disproving the argument for this range.
-
 
 ## 9. Reproducibility
 ### 9.1 Install and run from a fresh environment 
@@ -976,18 +913,20 @@ The controller must use the estimated state, never the ground truth. Ground trut
 I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
 
 #### Kim's statement
-
+I was responsible for designing the robot controller and contributed to system integration and assisted with real-robot implementation. I also contributed to the Overview, Modelling, Control, and Integration sections of the project page. For the final video, I prepared my own slides and script and was responsible for editing and finalising the video. Additionally, I conducted a final quality check of the group's assignment to ensure its accuracy, consistency, and completeness.
 
 #### Thien's statement
 
 
 ### 10.3 Generative AI declaration
 
-**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks; see the project page's GenAI declaration.
+**Claude (Anthropic)** was used to scaffold the simulation environment, the sensor models and their checks.
 
 Claude was also utilised to help guide the development of the project page. By recommending what to cover for each section, and where to get the information from. Acting only as a push in the right direction. 
 
 Additionally, Claude was utilised to turn strings of data outputs into tables. Especially important for scripts such as ([run_demo](evaluation/run_demo.py)). As the text produced was too long, and confusing to read, to belong on the project page.
+
+Claude was also used to convert the team's Word documents into Markdown for the project page.
 
 ### 10.4 Acknowledgements
 
