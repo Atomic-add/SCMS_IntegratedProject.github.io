@@ -64,7 +64,7 @@ This is **Track A, a mobile robot**. This task has a TurtleBot navigating a room
 This task’s constraint is that the controller must use the estimated state, never the ground truth.
 
 **Video link:**
-[41014 Integrated Project - Team 12, Track A | TurtleBot3 Navigation and Visual Docking](https://youtu.be/6AC7xNN-bZU)
+[41014 Integrated Project - Team 12, Track A | TurtleBot3 Navigation and Visual Docking](https://youtu.be/wC_1g5ZVvbk)
 
 **GitHub repository (code and README):** https://github.com/Atomic-add/SCMS_IntegratedProject.github.io
 

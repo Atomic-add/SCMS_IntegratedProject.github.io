@@ -8,7 +8,7 @@ The same perception, estimation and control logic is used in MuJoCo and on the r
 
 ## Video
 
-Video Link: https://youtu.be/6AC7xNN-bZU
+[41014 Integrated Project - Team 12, Track A | TurtleBot3 Navigation and Visual Docking](https://youtu.be/wC_1g5ZVvbk)
 
 ## Project page
 
