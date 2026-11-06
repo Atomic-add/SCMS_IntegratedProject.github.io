@@ -921,10 +921,10 @@ The controller must use the estimated state, never the ground truth. Ground trut
 I was assigned the estimation section of the project for the robot. With Kim helping me, as part of her Control section. After that, I was responsible for organising the project page. Getting everything up. As well as helping to organise hardware access for the team.
 
 #### Kim's statement
-I was responsible for designing the robot controller and contributed to system integration and assisted with real-robot implementation. I also contributed to the Overview, Modelling, Control, and Integration sections of the project page. For the final video, I prepared my own slides and script and was responsible for editing and finalising the video. Additionally, I conducted a final quality check of the group's assignment to ensure its accuracy, consistency, and completeness.
+I was responsible for designing the robot controller and contributed to system integration and assisted with real-robot implementation. I also contributed to the Overview, Modelling, Control, and Integration sections of the project page. For the final video, I prepared my own slides and script and was responsible for editing and finalising the video. Additionally, I conducted a final quality check of the group's assignment to ensure its accuracy and consistency.
 
 #### Thien's statement
-I was responsible for simulation, sensing, and real hardware testing. I also planning and carrying out experiements to collect data from real robot for comparision with simulation. Fianlly, I made first PowerPoint slide strucutre, assigend each team member their section and content, and helped finalise the video
+I was responsible for simulation, sensing, and real hardware testing. I also planning and carrying out experiements to collect data from real robot for comparision with simulation. Finally, I made first PowerPoint slide strucutre, assigend each team member their section and content, and helped finalise the video
 
 ### 10.3 Generative AI declaration
 
