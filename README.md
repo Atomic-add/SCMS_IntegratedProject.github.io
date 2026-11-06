@@ -12,7 +12,7 @@ Video Link: https://youtu.be/6AC7xNN-bZU
 
 ## Project page
 
-See the [project page](index.md) for the model, calibration, estimator and controller design, results, demo video, team contributions and generative AI declaration.
+See the [project page](project_page.md) for the model, calibration, estimator and controller design, results, demo video, team contributions and generative AI declaration.
 
 ## Installation
 
