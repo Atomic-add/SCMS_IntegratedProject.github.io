@@ -6,6 +6,18 @@
 - Nguyen Kim Uyen Phan (25596519)
 - Nhat Thien Mai (25161391)
 
+|   Task                             | Person          |
+| :--------------------------------- | :-------------- |
+|    Overview                        | Addison + Kim   | 
+|    Modelling (A)                   | Kim             | 
+|    Sensing (B)                     | Thien           | 
+|    Estimation (C)                  | Addison         | 
+|    Control (D)                     | Kim             | 
+|    Integration and Robustness (E)  | Kim             | 
+|    Real Robot                      | Thien           |
+|    Limitations                     | Addison         | 
+|    Reproducibility                 | Addison         |
+
 ## Contents
 
 - **[1. Overview](#1-overview)**
